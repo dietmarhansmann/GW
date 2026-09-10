@@ -32,7 +32,7 @@ Dieses Dokument fasst alle geschäftlichen Regeln, Spielerpräferenzen, Blackout
 
 ### Hansmann
 - **Slot-Präferenz**: Wunsch nach ca. 70% Einzel / 30% Doppel (`ratio: 0.3`).
-- **Blackout-Tage**: Kann an **Spieltag 9** (01.12.2026) nicht teilnehmen.
+- **Blackout-Tage**: Kann an **Spieltag 9** (Dienstag, 01.12. / 02.12.2026) nicht teilnehmen.
 
 ### Dedores
 - **Slot-Präferenz**: Spielt ausschließlich **Einzel** (0% Doppel, `ratio: 0.0`).
@@ -47,30 +47,31 @@ Dieses Dokument fasst alle geschäftlichen Regeln, Spielerpräferenzen, Blackout
 
 ### Mönning
 - **Slot-Präferenz**: Spielt ausschließlich **Einzel** (0% Doppel, `ratio: 0.0`).
+- **Verfügbarkeit / Präferenzen**: Nimmt regelmäßig an den Spielabenden teil, strikter Einzelspieler.
 
 ### Prodehl
 - **Slot-Präferenz**: Wunsch nach ca. 60% Doppel (`ratio: 0.6`).
-- **Urlaub**: In den ersten beiden Novemberwochen (**Spieltag 5 & 6**) abwesend.
+- **Urlaub**: In den ersten beiden Novemberwochen im Zeitraum **03.11. – 10.11.2026** (Spieltag 5 & 6) abwesend.
 
 ### Marschollek
 - **Slot-Präferenz**: Wunsch nach ca. 90% Doppel (`ratio: 0.9`).
-- **Blackout-Tage**: 13.10.26 (#2), 20.10.26 (#3), 03.11.26 (#5), 08.12.26 (#10), 19.01.27 (#16), 16.03.27 (#24).
+- **Blackout-Tage**: 13.10.26 (#2, im Zeitraum 29.09.–13.10.), 20.10.26 (#3), 03.11.26 (#5, im Zeitraum 03.11.–10.11.), 08.12.26 (#10), 19.01.27 (#16), 16.03.27 (#24).
 
 ### Kissner
 - **Slot-Präferenz**: Spielt ausschließlich **Einzel** (0% Doppel, `ratio: 0.0`).
 
 ### Heyn
 - **Slot-Präferenz**: Wunsch nach ca. 50% Doppel / 50% Einzel (`ratio: 0.5`).
-- **Blackout-Tage**: 13.10.26 (#2), 27.10.26 (#4), 03.11.26 (#5), 10.11.26 (#6), 08.12.26 (#10), 29.12.26 (#13).
+- **Blackout-Tage**: 13.10.26 (#2, Zeitraum 29.09.–13.10.), 27.10.26 (#4), 03.11.26 (#5, Zeitraum 03.11.–10.11.), 10.11.26 (#6, Zeitraum 03.11.–10.11.), 08.12.26 (#10), 29.12.26 (#13).
 
 ### Trojanski
 - **Frequenz**: 2-Wochen-Rhythmus (mindestens 1 Spieltag Pause zwischen Einsätzen).
 - **Slot-Präferenz**: Spielt ausschließlich **Einzel** (0% Doppel, `ratio: 0.0`).
-- **Blackout-Tage**: 13.10.26 (#2), 03.11.26 (#5), 08.12.26 (#10).
+- **Blackout-Tage**: 13.10.26 (#2, Zeitraum 29.09.–13.10.), 03.11.26 (#5, Zeitraum 03.11.–10.11.), 08.12.26 (#10).
 
 ### Kuhlhoff
 - **Slot-Präferenz**: Spielt ausschließlich **Einzel** (0% Doppel, `ratio: 0.0`).
-- **Blackout-Tage**: 10.11.26 (#6), 17.11.26 (#7), 24.11.26 (#8), 08.12.26 (#10), 29.12.26 (#13).
+- **Blackout-Tage**: 10.11.26 (#6, Zeitraum 03.11.–10.11.), 17.11.26 (#7), 24.11.26 (#8), 08.12.26 (#10), 29.12.26 (#13).
 
 ### van de Loo
 - **Frequenz**: Einmal im Monat (mindestens 3 Spieltage Pause / 4 Wochen Abstand).

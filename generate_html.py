@@ -285,6 +285,8 @@ for r in raw_rows:
     if r[0] is not None:
         for col in [2, 4, 6, 8, 10, 12, 14, 15, 17, 18]:
             val = str(r[col] or '').strip()
+            if val == 'Wojtanowtisch':
+                val = 'Wojtanowitsch'
             if val and val != 'vs':
                 all_excel_players.add(val)
 
@@ -328,8 +330,10 @@ for r in raw_rows:
             'd_t2_2': str(r[18] or '').strip(),
         }
 
-        # Clean 'vs' entries
+        # Clean 'vs' entries and normalize spelling
         for k in slots:
+            if slots[k] == 'Wojtanowtisch':
+                slots[k] = 'Wojtanowitsch'
             if slots[k] == 'vs' or slots[k] == 'Knust' or slots[k] == 'Höttinger':
                 slots[k] = ''
 
@@ -925,7 +929,7 @@ html_template = """<!DOCTYPE html>
         <div class="bg-white border border-gray-200 rounded-lg p-2.5 mb-2.5 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-2">
             <div class="flex-1 w-full">
                 <div class="flex justify-between items-center mb-1">
-                    <span class="text-[10px] font-bold uppercase tracking-wider text-gray-400">Spieler-Legende & Filter:</span>
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-gray-500">Spieler (Klick = Spiele filtern | 📅 = Kalender-Download für z.B. Google Kalender):</span>
                     <span v-if="currentFilter !== 'ALL'" class="text-[11px] text-emerald-700 font-semibold">
                         Filter aktiv: [[ currentFilter ]] ([[ filteredMatches.length ]] Spieltage)
                     </span>
@@ -1141,7 +1145,7 @@ html_template = """<!DOCTYPE html>
                     "Rumpf": { bg: '#fed7aa', text: '#111827', border: '#f97316' },    // Distinct Deep Orange/Amber for Rumpf
                     "Trojanski": { bg: '#cbd5e1', text: '#111827', border: '#94a3b8' }, // Soft Slate
                     "Weber": { bg: '#ddd6fe', text: '#111827', border: '#a78bfa' },    // Soft Violet
-                    "Wojtanowtisch": { bg: '#a7f3d0', text: '#111827', border: '#34d399' }, // Soft Emerald
+                    "Wojtanowitsch": { bg: '#a7f3d0', text: '#111827', border: '#34d399' }, // Soft Emerald
                     "van de Loo": { bg: '#bae6fd', text: '#111827', border: '#38bdf8' }  // Soft Sky
                 };
 
