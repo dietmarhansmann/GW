@@ -184,7 +184,7 @@ PLAYER_RULES = {
         "rules": [
             {
                 "id": "info_knust",
-                "description": "Nimmt nicht am Spielbetrieb teil (nur in der Statistik-Tabelle/Übersicht geführt)."
+                "description": "Nimmt erst 2027 teil."
             }
         ]
     },

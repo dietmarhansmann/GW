@@ -21,7 +21,7 @@ Dieses Dokument fasst alle geschäftlichen Regeln, Spielerpräferenzen, Blackout
   - Beumer, Dedores, Hansmann, Heyn, Hinz, Höttinger, Knust, Kuhlhoff, Marschollek, Mönning, Nolte, Prodehl, Redieker, Rumpf, Trojanski, Weber, Wojtanowitsch, van de Loo.
 - **Bereinigung / Roster-Anpassungen**:
   - Entfernte Spieler: *Höttinger*.
-  - Übersicht-only Spieler: *Knust* (wird in der Statistik-Tabelle/Übersicht geführt, nimmt jedoch an keinen Spielen teil).
+  - Übersicht-only Spieler: *Knust* (nimmt erst 2027 teil).
   - Hinzugefügte Spieler: *Kissner*.
   - Aktiver bereinigter Spieler-Pool: Beumer, Dedores, Hansmann, Heyn, Hinz, Kissner, Knust, Kuhlhoff, Marschollek, Mönning, Nolte, Prodehl, Redieker, Rumpf, Trojanski, Weber, Wojtanowitsch, van de Loo.
 - **Eindeutigkeit**: Pro Spielabend nehmen exakt 10 unique Spieler teil (keine Doppelbelegungen pro Spieler an demselben Abend).
