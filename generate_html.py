@@ -98,11 +98,6 @@ PLAYER_RULES = {
                 "id": "blackout_spieltage",
                 "spieltage": [3, 4, 8, 13],
                 "description": "Kann an folgenden Tagen nicht teilnehmen: 20.10.26 (Stg 3), 27.10.26 (Stg 4), 24.11.26 (Stg 8), 29.12.26 (Stg 13)."
-            },
-            {
-                "id": "mutual_exclusion",
-                "exclude_with": ["Beumer", "Heyn", "Prodehl"],
-                "description": "Spielt nicht am selben Spieltag wie Beumer, Heyn oder Prodehl."
             }
         ]
     },
@@ -334,24 +329,11 @@ for r in raw_rows:
         slot_keys = ['p1_1', 'p1_2', 'p2_1', 'p2_2', 'p3_1', 'p3_2', 'd_t1_1', 'd_t1_2', 'd_t2_1', 'd_t2_2']
         singles_keys = ['p1_1', 'p1_2', 'p2_1', 'p2_2', 'p3_1', 'p3_2']
 
-        def check_mutual_exclusion(p, current_occupied):
-            dedores_conflicts = {"Beumer", "Heyn", "Prodehl"}
-            if p == "Dedores":
-                if any(c in current_occupied for c in dedores_conflicts):
-                    return False
-            elif p in dedores_conflicts:
-                if "Dedores" in current_occupied:
-                    return False
-            return True
-
         def get_substitute(occupied_today, exclude_set=None, slot_type='any'):
             if exclude_set is None:
                 exclude_set = set()
 
             def check_can_play(p):
-                current_occ = set(slots.values()).union(occupied_today)
-                if not check_mutual_exclusion(p, current_occ):
-                    return False
 
                 # Check slot type restrictions
                 if slot_type == 'singles':
@@ -450,17 +432,6 @@ for r in raw_rows:
                     current_occ = set(slots.values())
                     sub = get_substitute(current_occ, slot_type="singles")
                     slots[sk] = sub
-
-        # Ensure mutual exclusion between Dedores and Beumer/Heyn/Prodehl
-        dedores_conflicts = {"Beumer", "Heyn", "Prodehl"}
-        current_players = set(slots[k] for k in slot_keys if slots[k])
-        if "Dedores" in current_players and any(c in current_players for c in dedores_conflicts):
-            for k in slot_keys:
-                if slots[k] == "Dedores":
-                    stype = 'singles' if k in singles_keys else 'doppel'
-                    current_occ = set(slots.values())
-                    sub = get_substitute(current_occ, exclude_set={"Dedores"}, slot_type=stype)
-                    slots[k] = sub
 
         # 1. Apply Player Rules dynamically from nested structure
         for player, player_data in PLAYER_RULES.items():

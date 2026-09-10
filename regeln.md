@@ -37,7 +37,6 @@ Dieses Dokument fasst alle geschäftlichen Regeln, Spielerpräferenzen, Blackout
 - **Slot-Präferenz**: Spielt ausschließlich **Einzel** (0% Doppel, `ratio: 0.0`).
 - **Zeitpräferenz**: Überwiegend 19:00 oder 20:00 Uhr.
 - **Blackout-Tage**: 20.10.26 (Stg 3), 27.10.26 (Stg 4), 24.11.26 (Stg 8), 29.12.26 (Stg 13).
-- **Ausschluss**: Spielt nicht am selben Spieltag wie Beumer, Heyn oder Prodehl.
 
 ### Hinz
 - **Slot-Präferenz**: Wunsch nach ca. 50% Doppel / 50% Einzel (`ratio: 0.5`).
