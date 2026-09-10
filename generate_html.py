@@ -965,7 +965,8 @@ html_template = """<!DOCTYPE html>
                         :id="isNextUpcoming(m, idx) ? 'next-match-target' : null"
                         :class="getRowClass(m, idx)">
                         <td class="py-2 px-1.5" :class="m.status === 'Abgeschlossen' ? 'text-gray-400' : 'text-gray-600'">
-                            <span class="font-bold">#[[ m.spieltag ]]</span> · [[ formatDate(m.date) ]]
+                            <span class="md:hidden">[[ formatShortDate(m.date) ]]</span>
+                            <span class="hidden md:inline"><span class="font-bold">#[[ m.spieltag ]]</span> · [[ formatFullDate(m.date) ]]</span>
                             <span v-if="m.status === 'Reserviert für alle'" class="ml-1 inline-flex items-center px-1 py-0.5 rounded text-[9px] font-semibold bg-amber-100 text-amber-800">
                                 Reserviert für alle
                             </span>
@@ -974,7 +975,7 @@ html_template = """<!DOCTYPE html>
                         <td class="py-2 px-1.5">
                             <div class="flex flex-wrap items-center gap-1">
                                 <span v-html="formatPlayerBadge(m.p1.p1, m.status === 'Abgeschlossen')"></span>
-                                <span v-if="m.p1.p1 && m.p1.p2" class="text-[9px]" :class="m.status === 'Abgeschlossen' ? 'text-gray-300' : 'text-gray-400'">vs</span>
+                                <span v-if="m.p1.p1 && m.p1.p2" class="text-[9px] hidden md:inline" :class="m.status === 'Abgeschlossen' ? 'text-gray-300' : 'text-gray-400'">vs</span>
                                 <span v-html="formatPlayerBadge(m.p1.p2, m.status === 'Abgeschlossen')"></span>
                             </div>
                         </td>
@@ -982,7 +983,7 @@ html_template = """<!DOCTYPE html>
                         <td class="py-2 px-1.5">
                             <div class="flex flex-wrap items-center gap-1">
                                 <span v-html="formatPlayerBadge(m.p2.p1, m.status === 'Abgeschlossen')"></span>
-                                <span v-if="m.p2.p1 && m.p2.p2" class="text-[9px]" :class="m.status === 'Abgeschlossen' ? 'text-gray-300' : 'text-gray-400'">vs</span>
+                                <span v-if="m.p2.p1 && m.p2.p2" class="text-[9px] hidden md:inline" :class="m.status === 'Abgeschlossen' ? 'text-gray-300' : 'text-gray-400'">vs</span>
                                 <span v-html="formatPlayerBadge(m.p2.p2, m.status === 'Abgeschlossen')"></span>
                             </div>
                         </td>
@@ -990,7 +991,7 @@ html_template = """<!DOCTYPE html>
                         <td class="py-2 px-1.5">
                             <div class="flex flex-wrap items-center gap-1">
                                 <span v-html="formatPlayerBadge(m.p3.p1, m.status === 'Abgeschlossen')"></span>
-                                <span v-if="m.p3.p1 && m.p3.p2" class="text-[9px]" :class="m.status === 'Abgeschlossen' ? 'text-gray-300' : 'text-gray-400'">vs</span>
+                                <span v-if="m.p3.p1 && m.p3.p2" class="text-[9px] hidden md:inline" :class="m.status === 'Abgeschlossen' ? 'text-gray-300' : 'text-gray-400'">vs</span>
                                 <span v-html="formatPlayerBadge(m.p3.p2, m.status === 'Abgeschlossen')"></span>
                             </div>
                         </td>
@@ -1001,7 +1002,7 @@ html_template = """<!DOCTYPE html>
                                     <span v-html="formatPlayerBadge(m.doppel.team1[0], m.status === 'Abgeschlossen')"></span>
                                     <span v-html="formatPlayerBadge(m.doppel.team1[1], m.status === 'Abgeschlossen')"></span>
                                 </span>
-                                <span v-if="(m.doppel.team1[0] || m.doppel.team1[1]) && (m.doppel.team2[0] || m.doppel.team2[1])" class="text-[9px]" :class="m.status === 'Abgeschlossen' ? 'text-gray-300' : 'text-emerald-700 font-bold'">vs</span>
+                                <span v-if="(m.doppel.team1[0] || m.doppel.team1[1]) && (m.doppel.team2[0] || m.doppel.team2[1])" class="text-[9px] hidden md:inline" :class="m.status === 'Abgeschlossen' ? 'text-gray-300' : 'text-emerald-700 font-bold'">vs</span>
                                 <span class="inline-flex flex-col gap-0.5">
                                     <span v-html="formatPlayerBadge(m.doppel.team2[0], m.status === 'Abgeschlossen')"></span>
                                     <span v-html="formatPlayerBadge(m.doppel.team2[1], m.status === 'Abgeschlossen')"></span>
@@ -1208,13 +1209,22 @@ html_template = """<!DOCTYPE html>
                     showPastMatches.value = !showPastMatches.value;
                 }
 
-                function formatDate(dateStr) {
+                function formatShortDate(dateStr) {
                     if (!dateStr) return '';
                     const parts = dateStr.split('-');
                     if (parts.length === 3) {
                         const day = parseInt(parts[2], 10);
                         const month = parseInt(parts[1], 10);
                         return `${day}.${month}.`;
+                    }
+                    return dateStr;
+                }
+
+                function formatFullDate(dateStr) {
+                    if (!dateStr) return '';
+                    const parts = dateStr.split('-');
+                    if (parts.length === 3) {
+                        return `${parts[2]}.${parts[1]}.${parts[0]}`;
                     }
                     return dateStr;
                 }
@@ -1309,7 +1319,8 @@ html_template = """<!DOCTYPE html>
                     getRowClass,
                     setFilter,
                     togglePastMatches,
-                    formatDate,
+                    formatShortDate,
+                    formatFullDate,
                     formatPlayerBadge,
                     downloadPlayerIcs
                 };
