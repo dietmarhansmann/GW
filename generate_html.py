@@ -1330,7 +1330,7 @@ html_content = html_content.replace('/*RULES_JSON_PLACEHOLDER*/', json.dumps(fro
 html_content = html_content.replace('/*PLAYER_STATS_JSON_PLACEHOLDER*/', json.dumps(player_stats, ensure_ascii=False))
 html_content = html_content.replace('/*UPDATE_DATE_PLACEHOLDER*/', datetime.datetime.now().strftime('%d.%m.%Y %H:%M'))
 
-with open('tennis_spielplan_2026_2027.html', 'w', encoding='utf-8') as f:
+with open('index.html', 'w', encoding='utf-8') as f:
     f.write(html_content)
 
-print('Successfully structured PLAYER_RULES with nested "rules" key and regenerated HTML!')
+print('Successfully structured PLAYER_RULES with nested "rules" key and regenerated index.html!')

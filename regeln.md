@@ -1,6 +1,6 @@
 all# Tennis Spielplan — Regeln, Präferenzen und Systemarchitektur (Stand: 2026)
 
-Dieses Dokument fasst alle geschäftlichen Regeln, Spielerpräferenzen, Blackout-Zeiten und technischen Anforderungen zusammen, die für die Generierung und den Betrieb des Tennis-Spielplans (`generate_html.py` und `tennis_spielplan_2026_2027.html`) gelten.
+Dieses Dokument fasst alle geschäftlichen Regeln, Spielerpräferenzen, Blackout-Zeiten und technischen Anforderungen zusammen, die für die Generierung und den Betrieb des Tennis-Spielplans (`generate_html.py` und `index.html`) gelten.
 
 ---
 
@@ -94,7 +94,7 @@ Die Werte werden über alle gespielten Spieltage hinweg aufsummiert.
 
 ## 6. Technische Bauanleitung & Architektur von `generate_html.py`
 
-Das Python-Skript `generate_html.py` ist der zentrale Generator für den interaktiven Spielplan (`tennis_spielplan_2026_2027.html`). Es integriert die Daten aus der Excel-Quelle und baut ein vollständiges, responsives Frontend auf.
+Das Python-Skript `generate_html.py` ist der zentrale Generator für den interaktiven Spielplan (`index.html`). Es integriert die Daten aus der Excel-Quelle und baut ein vollständiges, responsives Frontend auf.
 
 ### A. Excel-Struktur & Mapping (`Tennis_Spielplan_Google_Drive_Native_Fix.xlsx`)
 - **Tabellenblatt**: `Gesamt-Spielplan` (aktiv).
