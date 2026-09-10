@@ -48,7 +48,7 @@ Dieses Dokument fasst alle geschäftlichen Regeln, Spielerpräferenzen, Blackout
 - **Slot-Präferenz**: Spielt ausschließlich **Einzel** (0% Doppel, `ratio: 0.0`).
 
 ### Prodehl
-- **Slot-Präferenz**: Wunsch nach ca. 50% Doppel / 50% Einzel (`ratio: 0.5`).
+- **Slot-Präferenz**: Wunsch nach ca. 60% Doppel (`ratio: 0.6`).
 - **Urlaub**: In den ersten beiden Novemberwochen (**Spieltag 5 & 6**) abwesend.
 
 ### Marschollek
