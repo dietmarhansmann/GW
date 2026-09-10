@@ -150,8 +150,8 @@ PLAYER_RULES = {
             {
                 "id": "slot_preference_marschollek",
                 "target": "doppel_pref",
-                "ratio": 0.2,
-                "description": "Möchte ca. 20% Doppel spielen."
+                "ratio": 0.5,
+                "description": "Möchte ca. 50% Doppel spielen."
             },
             {
                 "id": "blackout_spieltage",
