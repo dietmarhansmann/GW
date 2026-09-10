@@ -179,6 +179,12 @@ PLAYER_RULES = {
     "Heyn": {
         "rules": [
             {
+                "id": "slot_preference_heyn",
+                "target": "doppel_pref",
+                "ratio": 0.5,
+                "description": "Möchte ca. 50% Doppel und 50% Einzel spielen."
+            },
+            {
                 "id": "blackout_spieltage",
                 "spieltage": [2, 4, 5, 6, 10, 13],
                 "description": "Kann an folgenden Tagen nicht teilnehmen: 13.10.26 (Stg 2), 27.10.26 (Stg 4), 03.11.26 (Stg 5), 10.11.26 (Stg 6), 08.12.26 (Stg 10), 29.12.26 (Stg 13)."

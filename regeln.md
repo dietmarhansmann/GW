@@ -62,6 +62,7 @@ Dieses Dokument fasst alle geschäftlichen Regeln, Spielerpräferenzen, Blackout
 - **Slot-Präferenz**: Spielt ausschließlich **Einzel** (0% Doppel, `ratio: 0.0`).
 
 ### Heyn
+- **Slot-Präferenz**: Wunsch nach ca. 50% Doppel / 50% Einzel (`ratio: 0.5`).
 - **Blackout-Tage**: 13.10.26 (Stg 2), 27.10.26 (Stg 4), 03.11.26 (Stg 5), 10.11.26 (Stg 6), 08.12.26 (Stg 10), 29.12.26 (Stg 13).
 
 ### Trojanski
