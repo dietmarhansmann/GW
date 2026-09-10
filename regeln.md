@@ -35,7 +35,7 @@ Dieses Dokument fasst alle geschäftlichen Regeln, Spielerpräferenzen, Blackout
 
 ### Dedores
 - **Slot-Präferenz**: Spielt ausschließlich **Einzel** (0% Doppel, `ratio: 0.0`).
-- **Blackout-Tage**: 20.10.26 (Stg 3), 27.10.26 (Stg 4), 24.11.26 (Stg 8), 29.12.26 (Stg 13).
+- **Blackout-Tage**: 20.10.26 (#3), 27.10.26 (#4), 24.11.26 (#8), 29.12.26 (#13).
 
 ### Hinz
 - **Slot-Präferenz**: Wunsch nach ca. 50% Doppel / 50% Einzel (`ratio: 0.5`).
@@ -53,23 +53,23 @@ Dieses Dokument fasst alle geschäftlichen Regeln, Spielerpräferenzen, Blackout
 
 ### Marschollek
 - **Slot-Präferenz**: Wunsch nach ca. 90% Doppel (`ratio: 0.9`).
-- **Blackout-Tage**: 13.10.26 (Stg 2), 20.10.26 (Stg 3), 03.11.26 (Stg 5), 08.12.26 (Stg 10), 19.01.27 (Stg 16), 16.03.27 (Stg 24).
+- **Blackout-Tage**: 13.10.26 (#2), 20.10.26 (#3), 03.11.26 (#5), 08.12.26 (#10), 19.01.27 (#16), 16.03.27 (#24).
 
 ### Kissner
 - **Slot-Präferenz**: Spielt ausschließlich **Einzel** (0% Doppel, `ratio: 0.0`).
 
 ### Heyn
 - **Slot-Präferenz**: Wunsch nach ca. 50% Doppel / 50% Einzel (`ratio: 0.5`).
-- **Blackout-Tage**: 13.10.26 (Stg 2), 27.10.26 (Stg 4), 03.11.26 (Stg 5), 10.11.26 (Stg 6), 08.12.26 (Stg 10), 29.12.26 (Stg 13).
+- **Blackout-Tage**: 13.10.26 (#2), 27.10.26 (#4), 03.11.26 (#5), 10.11.26 (#6), 08.12.26 (#10), 29.12.26 (#13).
 
 ### Trojanski
 - **Frequenz**: 2-Wochen-Rhythmus (mindestens 1 Spieltag Pause zwischen Einsätzen).
 - **Slot-Präferenz**: Spielt ausschließlich **Einzel** (0% Doppel, `ratio: 0.0`).
-- **Blackout-Tage**: 13.10.26 (Stg 2), 03.11.26 (Stg 5), 08.12.26 (Stg 10).
+- **Blackout-Tage**: 13.10.26 (#2), 03.11.26 (#5), 08.12.26 (#10).
 
 ### Kuhlhoff
 - **Slot-Präferenz**: Spielt ausschließlich **Einzel** (0% Doppel, `ratio: 0.0`).
-- **Blackout-Tage**: 10.11.26 (Stg 6), 17.11.26 (Stg 7), 24.11.26 (Stg 8), 08.12.26 (Stg 10), 29.12.26 (Stg 13).
+- **Blackout-Tage**: 10.11.26 (#6), 17.11.26 (#7), 24.11.26 (#8), 08.12.26 (#10), 29.12.26 (#13).
 
 ### van de Loo
 - **Frequenz**: Einmal im Monat (mindestens 3 Spieltage Pause / 4 Wochen Abstand).

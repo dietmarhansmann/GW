@@ -88,7 +88,7 @@ PLAYER_RULES = {
             {
                 "id": "blackout_spieltage",
                 "spieltage": [3, 4, 8, 13],
-                "description": "Kann an folgenden Tagen nicht teilnehmen: 20.10.26 (Stg 3), 27.10.26 (Stg 4), 24.11.26 (Stg 8), 29.12.26 (Stg 13)."
+                "description": "Kann an folgenden Tagen nicht teilnehmen: 20.10.26 (#3), 27.10.26 (#4), 24.11.26 (#8), 29.12.26 (#13)."
             }
         ]
     },
@@ -143,7 +143,7 @@ PLAYER_RULES = {
             {
                 "id": "blackout_spieltage",
                 "spieltage": [2, 3, 5, 10, 16, 24],
-                "description": "Kann an folgenden Tagen nicht teilnehmen: 13.10.26 (Stg 2), 20.10.26 (Stg 3), 03.11.26 (Stg 5), 08.12.26 (Stg 10), 19.01.27 (Stg 16), 16.03.27 (Stg 24)."
+                "description": "Kann an folgenden Tagen nicht teilnehmen: 13.10.26 (#2), 20.10.26 (#3), 03.11.26 (#5), 08.12.26 (#10), 19.01.27 (#16), 16.03.27 (#24)."
             }
         ]
     },
@@ -168,7 +168,7 @@ PLAYER_RULES = {
             {
                 "id": "blackout_spieltage",
                 "spieltage": [2, 4, 5, 6, 10, 13],
-                "description": "Kann an folgenden Tagen nicht teilnehmen: 13.10.26 (Stg 2), 27.10.26 (Stg 4), 03.11.26 (Stg 5), 10.11.26 (Stg 6), 08.12.26 (Stg 10), 29.12.26 (Stg 13)."
+                "description": "Kann an folgenden Tagen nicht teilnehmen: 13.10.26 (#2), 27.10.26 (#4), 03.11.26 (#5), 10.11.26 (#6), 08.12.26 (#10), 29.12.26 (#13)."
             }
         ]
     },
@@ -188,7 +188,7 @@ PLAYER_RULES = {
             {
                 "id": "blackout_spieltage",
                 "spieltage": [2, 5, 10],
-                "description": "Kann an folgenden Tagen nicht teilnehmen: 13.10.26 (Stg 2), 03.11.26 (Stg 5), 08.12.26 (Stg 10)."
+                "description": "Kann an folgenden Tagen nicht teilnehmen: 13.10.26 (#2), 03.11.26 (#5), 08.12.26 (#10)."
             }
         ]
     },
@@ -197,7 +197,7 @@ PLAYER_RULES = {
             {
                 "id": "blackout_spieltage",
                 "spieltage": [6, 7, 8, 10, 13],
-                "description": "Kann an folgenden Tagen nicht teilnehmen: 10.11.26 (Stg 6), 17.11.26 (Stg 7), 24.11.26 (Stg 8), 08.12.26 (Stg 10), 29.12.26 (Stg 13)."
+                "description": "Kann an folgenden Tagen nicht teilnehmen: 10.11.26 (#6), 17.11.26 (#7), 24.11.26 (#8), 08.12.26 (#10), 29.12.26 (#13)."
             },
             {
                 "id": "slot_preference_kuhlhoff",
