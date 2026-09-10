@@ -8,6 +8,7 @@ wb = openpyxl.load_workbook('Tennis_Spielplan_Google_Drive_Native_Fix.xlsx', dat
 sheet = wb['Gesamt-Spielplan']
 
 global_pair_counts = defaultdict(int)
+global_time_counts = defaultdict(lambda: {19: 0, 20: 0, 21: 0})
 
 def get_matchday_score(test_slots, singles_keys, doppel_keys):
     score = 0
@@ -28,6 +29,17 @@ def get_matchday_score(test_slots, singles_keys, doppel_keys):
         if len(pair) == 2:
             score += global_pair_counts[pair]
 
+    # Time slot fairness penalty (balance 19:00, 20:00, 21:00 across season)
+    slot_hours = [
+        ('p1_1', 19), ('p1_2', 19),
+        ('p2_1', 20), ('p2_2', 20),
+        ('p3_1', 21), ('p3_2', 21)
+    ]
+    for sk, hour in slot_hours:
+        p = test_slots.get(sk)
+        if p:
+            score += global_time_counts[p][hour] * 3.0
+
     return score
 
 def register_matchday_pairs(test_slots, singles_keys, doppel_keys):
@@ -46,6 +58,16 @@ def register_matchday_pairs(test_slots, singles_keys, doppel_keys):
     for pair in [tuple(sorted(t1)), tuple(sorted(t2))]:
         if len(pair) == 2:
             global_pair_counts[pair] += 1
+
+    slot_hours = [
+        ('p1_1', 19), ('p1_2', 19),
+        ('p2_1', 20), ('p2_2', 20),
+        ('p3_1', 21), ('p3_2', 21)
+    ]
+    for sk, hour in slot_hours:
+        p = test_slots.get(sk)
+        if p:
+            global_time_counts[p][hour] += 1
 
 # =========================================================================
 # 📋 PRO-SPIELER REGELWERK (Verschachtelt unter "rules")
