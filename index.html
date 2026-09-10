@@ -20,7 +20,7 @@
             </div>
             <div>
                 <span class="text-xs bg-emerald-900/80 text-emerald-100 px-2.5 py-1 rounded font-medium border border-emerald-700">
-                    Stand: 10.09.2026 17:38
+                    Stand: 10.09.2026 17:55
                 </span>
             </div>
         </header>
@@ -97,57 +97,53 @@
             <table class="w-full text-left border-collapse text-xs">
                 <thead>
                     <tr class="bg-gray-100 text-gray-600 uppercase text-[10px] tracking-wider border-b border-gray-200">
-                        <th class="py-2 px-2.5 whitespace-nowrap">Stg.</th>
-                        <th class="py-2 px-2.5 whitespace-nowrap">Datum</th>
-                        <th class="py-2 px-2.5">19:00 Uhr</th>
-                        <th class="py-2 px-2.5">20:00 Uhr</th>
-                        <th class="py-2 px-2.5">21:00 Uhr</th>
-                        <th class="py-2 px-2.5">Doppel <span class="font-normal normal-case text-gray-500">(20:30 Uhr)</span></th>
+                        <th class="py-2 px-1.5 whitespace-nowrap">Datum</th>
+                        <th class="py-2 px-1.5">19:00 Uhr</th>
+                        <th class="py-2 px-1.5">20:00 Uhr</th>
+                        <th class="py-2 px-1.5">21:00 Uhr</th>
+                        <th class="py-2 px-1.5">Doppel <span class="font-normal normal-case text-gray-500">(20:30)</span></th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200">
                     <tr v-if="displayedMatches.length === 0">
-                        <td colspan="6" class="py-6 text-center text-gray-500 text-xs">Keine entsprechenden Spiele gefunden (Vergangene Spiele sind ausgeblendet).</td>
+                        <td colspan="5" class="py-6 text-center text-gray-500 text-xs">Keine entsprechenden Spiele gefunden (Vergangene Spiele sind ausgeblendet).</td>
                     </tr>
                     <tr v-for="(m, idx) in displayedMatches" :key="m.spieltag"
                         :id="isNextUpcoming(m, idx) ? 'next-match-target' : null"
                         :class="getRowClass(m, idx)">
-                        <td class="py-2 px-2.5 font-bold whitespace-nowrap" :class="m.status === 'Abgeschlossen' ? 'text-gray-400' : 'text-gray-700'">
-                            #[[ m.spieltag ]]
-                        </td>
-                        <td class="py-2 px-2.5 whitespace-nowrap" :class="m.status === 'Abgeschlossen' ? 'text-gray-400' : 'text-gray-600'">
-                            [[ formatDate(m.date) ]]
-                            <span v-if="m.status === 'Reserviert für alle'" class="ml-1.5 inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-semibold bg-amber-100 text-amber-800">
+                        <td class="py-2 px-1.5" :class="m.status === 'Abgeschlossen' ? 'text-gray-400' : 'text-gray-600'">
+                            <span class="font-bold">#[[ m.spieltag ]]</span> · [[ formatDate(m.date) ]]
+                            <span v-if="m.status === 'Reserviert für alle'" class="ml-1 inline-flex items-center px-1 py-0.5 rounded text-[9px] font-semibold bg-amber-100 text-amber-800">
                                 Reserviert für alle
                             </span>
                         </td>
                         <!-- Platz 1 (19:00) -->
-                        <td class="py-2 px-2.5 whitespace-nowrap">
-                            <div class="flex items-center gap-1">
+                        <td class="py-2 px-1.5">
+                            <div class="flex flex-wrap items-center gap-1">
                                 <span v-html="formatPlayerBadge(m.p1.p1, m.status === 'Abgeschlossen')"></span>
                                 <span v-if="m.p1.p1 && m.p1.p2" class="text-[9px]" :class="m.status === 'Abgeschlossen' ? 'text-gray-300' : 'text-gray-400'">vs</span>
                                 <span v-html="formatPlayerBadge(m.p1.p2, m.status === 'Abgeschlossen')"></span>
                             </div>
                         </td>
                         <!-- Platz 1 (20:00) -->
-                        <td class="py-2 px-2.5 whitespace-nowrap">
-                            <div class="flex items-center gap-1">
+                        <td class="py-2 px-1.5">
+                            <div class="flex flex-wrap items-center gap-1">
                                 <span v-html="formatPlayerBadge(m.p2.p1, m.status === 'Abgeschlossen')"></span>
                                 <span v-if="m.p2.p1 && m.p2.p2" class="text-[9px]" :class="m.status === 'Abgeschlossen' ? 'text-gray-300' : 'text-gray-400'">vs</span>
                                 <span v-html="formatPlayerBadge(m.p2.p2, m.status === 'Abgeschlossen')"></span>
                             </div>
                         </td>
                         <!-- Platz 1 (21:00) -->
-                        <td class="py-2 px-2.5 whitespace-nowrap">
-                            <div class="flex items-center gap-1">
+                        <td class="py-2 px-1.5">
+                            <div class="flex flex-wrap items-center gap-1">
                                 <span v-html="formatPlayerBadge(m.p3.p1, m.status === 'Abgeschlossen')"></span>
                                 <span v-if="m.p3.p1 && m.p3.p2" class="text-[9px]" :class="m.status === 'Abgeschlossen' ? 'text-gray-300' : 'text-gray-400'">vs</span>
                                 <span v-html="formatPlayerBadge(m.p3.p2, m.status === 'Abgeschlossen')"></span>
                             </div>
                         </td>
                         <!-- Platz 2 - Doppel (20:30) -->
-                        <td class="py-2 px-2.5 whitespace-nowrap">
-                            <div class="flex items-center gap-1">
+                        <td class="py-2 px-1.5">
+                            <div class="flex flex-wrap items-center gap-1">
                                 <span class="inline-flex flex-col gap-0.5">
                                     <span v-html="formatPlayerBadge(m.doppel.team1[0], m.status === 'Abgeschlossen')"></span>
                                     <span v-html="formatPlayerBadge(m.doppel.team1[1], m.status === 'Abgeschlossen')"></span>
@@ -363,7 +359,9 @@
                     if (!dateStr) return '';
                     const parts = dateStr.split('-');
                     if (parts.length === 3) {
-                        return `${parts[2]}.${parts[1]}.${parts[0]}`;
+                        const day = parseInt(parts[2], 10);
+                        const month = parseInt(parts[1], 10);
+                        return `${day}.${month}.`;
                     }
                     return dateStr;
                 }
