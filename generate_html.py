@@ -378,25 +378,35 @@ for r in raw_rows:
             p = slots[dk]
             if p and not can_play_slot(p, "doppel"):
                 slots[dk] = ''
-                # find someone in singles who can play doppel
+                swapped = False
                 for sk in singles_keys:
                     sp = slots[sk]
                     if sp and can_play_slot(sp, "doppel"):
                         slots[sk] = p
                         slots[dk] = sp
+                        swapped = True
                         break
+                if not swapped:
+                    current_occ = set(slots.values())
+                    sub = get_substitute(current_occ, slot_type="doppel")
+                    slots[dk] = sub
 
         for sk in singles_keys:
             p = slots[sk]
             if p and not can_play_slot(p, "singles"):
                 slots[sk] = ''
-                # find someone in doppel who can play singles
+                swapped = False
                 for dk in doppel_keys:
                     dp = slots[dk]
                     if dp and can_play_slot(dp, "singles"):
                         slots[dk] = p
                         slots[sk] = dp
+                        swapped = True
                         break
+                if not swapped:
+                    current_occ = set(slots.values())
+                    sub = get_substitute(current_occ, slot_type="singles")
+                    slots[sk] = sub
 
         # 1. Apply Player Rules dynamically from nested structure
         for player, player_data in PLAYER_RULES.items():
