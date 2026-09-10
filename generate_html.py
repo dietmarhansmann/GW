@@ -150,8 +150,8 @@ PLAYER_RULES = {
             {
                 "id": "slot_preference_marschollek",
                 "target": "doppel_pref",
-                "ratio": 0.9,
-                "description": "Möchte ca. 90% Doppel spielen."
+                "ratio": 0.2,
+                "description": "Möchte ca. 20% Doppel spielen."
             },
             {
                 "id": "blackout_spieltage",
@@ -238,6 +238,19 @@ PLAYER_RULES = {
         ]
     }
 }
+
+def can_play_slot(player, stype):
+    for rule in PLAYER_RULES.get(player, {}).get("rules", []):
+        r_target = rule.get("target")
+        r_id = rule.get("id", "")
+        r_ratio = rule.get("ratio", 0.8)
+        if (r_target == "doppel_pref" or r_id.startswith("slot_preference")):
+            if stype == "singles" and r_ratio >= 1.0:
+                return False
+            if stype == "doppel" and r_ratio <= 0.0:
+                return False
+    return True
+
 
 # Get all unique players from Excel as a substitution pool
 all_excel_players = set()
@@ -704,7 +717,7 @@ for player, player_data in PLAYER_RULES.items():
                     s_slot = None
                     for group, s_key in [('p1', 'p1'), ('p1', 'p2'), ('p2', 'p1'), ('p2', 'p2'), ('p3', 'p1'), ('p3', 'p2')]:
                         other = m[group][s_key]
-                        if other and other != player:
+                        if other and other != player and can_play_slot(other, "doppel"):
                             s_slot = (group, s_key)
                             break
                     if d_slot and s_slot:
@@ -724,7 +737,7 @@ for player, player_data in PLAYER_RULES.items():
                     d_slot = None
                     for t, idx in [('team1', 0), ('team1', 1), ('team2', 0), ('team2', 1)]:
                         other = m["doppel"][t][idx]
-                        if other and other != player:
+                        if other and other != player and can_play_slot(other, "singles"):
                             d_slot = (t, idx)
                             break
                     if s_slot and d_slot:

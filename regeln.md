@@ -54,7 +54,7 @@ Dieses Dokument fasst alle geschäftlichen Regeln, Spielerpräferenzen, Blackout
 - **Urlaub**: In den ersten beiden Novemberwochen (**Spieltag 5 & 6**) abwesend.
 
 ### Marschollek
-- **Slot-Präferenz**: Wunsch nach ca. 90% Doppel (`ratio: 0.9`).
+- **Slot-Präferenz**: Wunsch nach ca. 20% Doppel (`ratio: 0.2`).
 - **Blackout-Tage**: 13.10.26 (Stg 2), 20.10.26 (Stg 3), 03.11.26 (Stg 5), 08.12.26 (Stg 10), 19.01.27 (Stg 16), 16.03.27 (Stg 24).
 
 ### Kissner
