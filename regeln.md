@@ -31,12 +31,10 @@ Dieses Dokument fasst alle geschäftlichen Regeln, Spielerpräferenzen, Blackout
 
 ### Hansmann
 - **Slot-Präferenz**: Wunsch nach ca. 70% Einzel / 30% Doppel (`ratio: 0.3`).
-- **Zeitpräferenz**: Überwiegend 19:00 oder 20:00 Uhr.
 - **Blackout-Tage**: Kann an **Spieltag 9** (01.12.2026) nicht teilnehmen.
 
 ### Dedores
 - **Slot-Präferenz**: Spielt ausschließlich **Einzel** (0% Doppel, `ratio: 0.0`).
-- **Zeitpräferenz**: Überwiegend 19:00 oder 20:00 Uhr.
 - **Blackout-Tage**: 20.10.26 (Stg 3), 27.10.26 (Stg 4), 24.11.26 (Stg 8), 29.12.26 (Stg 13).
 
 ### Hinz
@@ -51,7 +49,6 @@ Dieses Dokument fasst alle geschäftlichen Regeln, Spielerpräferenzen, Blackout
 
 ### Prodehl
 - **Slot-Präferenz**: Wunsch nach ca. 50% Doppel / 50% Einzel (`ratio: 0.5`).
-- **Zeitpräferenz**: Überwiegend 19:00 oder 20:00 Uhr.
 - **Urlaub**: In den ersten beiden Novemberwochen (**Spieltag 5 & 6**) abwesend.
 
 ### Marschollek
@@ -68,12 +65,10 @@ Dieses Dokument fasst alle geschäftlichen Regeln, Spielerpräferenzen, Blackout
 ### Trojanski
 - **Frequenz**: 2-Wochen-Rhythmus (mindestens 1 Spieltag Pause zwischen Einsätzen).
 - **Slot-Präferenz**: Spielt ausschließlich **Einzel** (0% Doppel, `ratio: 0.0`).
-- **Zeitpräferenz**: Überwiegend 19:00 oder 20:00 Uhr.
 - **Blackout-Tage**: 13.10.26 (Stg 2), 03.11.26 (Stg 5), 08.12.26 (Stg 10).
 
 ### Kuhlhoff
 - **Slot-Präferenz**: Spielt ausschließlich **Einzel** (0% Doppel, `ratio: 0.0`).
-- **Zeitpräferenz**: Überwiegend 19:00 oder 20:00 Uhr.
 - **Blackout-Tage**: 10.11.26 (Stg 6), 17.11.26 (Stg 7), 24.11.26 (Stg 8), 08.12.26 (Stg 10), 29.12.26 (Stg 13).
 
 ### van de Loo

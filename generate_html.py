@@ -28,13 +28,6 @@ def get_matchday_score(test_slots, singles_keys, doppel_keys):
         if len(pair) == 2:
             score += global_pair_counts[pair]
 
-    # Penalty for time preference: Hansmann, Trojanski, Dedores, Kuhlhoff, Prodehl prefer 19:00 or 20:00 (avoid p3 / 21:00)
-    time_preferred_players = {"Hansmann", "Trojanski", "Dedores", "Kuhlhoff", "Prodehl"}
-    for sk in ['p3_1', 'p3_2']:
-        p = test_slots.get(sk)
-        if p in time_preferred_players:
-            score += 100
-
     return score
 
 def register_matchday_pairs(test_slots, singles_keys, doppel_keys):
@@ -78,10 +71,6 @@ PLAYER_RULES = {
                 "description": "Möchte ca. 70% Einzel spielen (30% Doppel)."
             },
             {
-                "id": "time_preference",
-                "description": "Bevorzugte Spielzeit: Überwiegend 19:00 oder 20:00 Uhr."
-            },
-            {
                 "id": "blackout_spieltage",
                 "spieltage": [9],
                 "description": "Kann an Spieltag 9 nicht teilnehmen."
@@ -95,10 +84,6 @@ PLAYER_RULES = {
                 "target": "doppel_pref",
                 "ratio": 0.0,
                 "description": "Spielt ausschließlich Einzel (0% Doppel)."
-            },
-            {
-                "id": "time_preference",
-                "description": "Bevorzugte Spielzeit: Überwiegend 19:00 oder 20:00 Uhr."
             },
             {
                 "id": "blackout_spieltage",
@@ -139,10 +124,6 @@ PLAYER_RULES = {
                 "target": "doppel_pref",
                 "ratio": 0.5,
                 "description": "Möchte ca. 50% Doppel und 50% Einzel spielen."
-            },
-            {
-                "id": "time_preference",
-                "description": "Bevorzugte Spielzeit: Überwiegend 19:00 oder 20:00 Uhr."
             },
             {
                 "id": "blackout_spieltage",
@@ -205,10 +186,6 @@ PLAYER_RULES = {
                 "description": "Spielt ausschließlich Einzel (0% Doppel)."
             },
             {
-                "id": "time_preference",
-                "description": "Bevorzugte Spielzeit: Überwiegend 19:00 oder 20:00 Uhr."
-            },
-            {
                 "id": "blackout_spieltage",
                 "spieltage": [2, 5, 10],
                 "description": "Kann an folgenden Tagen nicht teilnehmen: 13.10.26 (Stg 2), 03.11.26 (Stg 5), 08.12.26 (Stg 10)."
@@ -227,10 +204,6 @@ PLAYER_RULES = {
                 "target": "doppel_pref",
                 "ratio": 0.0,
                 "description": "Spielt ausschließlich Einzel (0% Doppel)."
-            },
-            {
-                "id": "time_preference",
-                "description": "Bevorzugte Spielzeit: Überwiegend 19:00 oder 20:00 Uhr."
             }
         ]
     },
