@@ -976,7 +976,7 @@ html_template = """<!DOCTYPE html>
             <table class="w-full text-left border-collapse text-xs">
                 <thead>
                     <tr class="bg-gray-100 text-gray-600 uppercase text-[10px] tracking-wider border-b border-gray-200">
-                        <th class="py-2 px-1.5 whitespace-nowrap">Datum</th>
+                        <th class="py-2 px-1.5 whitespace-nowrap w-24 md:w-36">Datum</th>
                         <th class="py-2 px-1.5">19:00 Uhr</th>
                         <th class="py-2 px-1.5">20:00 Uhr</th>
                         <th class="py-2 px-1.5">21:00 Uhr</th>
@@ -990,7 +990,7 @@ html_template = """<!DOCTYPE html>
                     <tr v-for="(m, idx) in displayedMatches" :key="m.spieltag"
                         :id="isNextUpcoming(m, idx) ? 'next-match-target' : null"
                         :class="getRowClass(m, idx)">
-                        <td class="py-2 px-1.5" :class="m.status === 'Abgeschlossen' ? 'text-gray-400' : 'text-gray-600'">
+                        <td class="py-2 px-1.5 whitespace-nowrap" :class="m.status === 'Abgeschlossen' ? 'text-gray-400' : 'text-gray-600'">
                             <span class="md:hidden">[[ formatShortDate(m.date) ]]</span>
                             <span class="hidden md:inline"><span class="font-bold">#[[ m.spieltag ]]</span> · [[ formatFullDate(m.date) ]]</span>
                             <span v-if="m.status === 'Reserviert für alle'" class="ml-1 inline-flex items-center px-1 py-0.5 rounded text-[9px] font-semibold bg-amber-100 text-amber-800">
@@ -1258,12 +1258,15 @@ html_template = """<!DOCTYPE html>
                     const colors = playerColors[player] || { bg: '#eee', text: '#333', border: '#ccc' };
                     const isSelected = currentFilter.value === player;
 
+                    const shortName = player.length > 4 ? player.substring(0, 4) + '...' : player;
+                    const innerHtml = `<span class="md:hidden">${shortName}</span><span class="hidden md:inline">${player}</span>`;
+
                     if (isSelected) {
-                        return `<span class="px-2.5 py-1 rounded text-xs font-extrabold inline-block shadow-sm whitespace-nowrap scale-105" style="background-color: ${colors.border}; color: #ffffff;">${player}</span>`;
+                        return `<span class="px-2.5 py-1 rounded text-xs font-extrabold inline-block shadow-sm whitespace-nowrap scale-105" style="background-color: ${colors.border}; color: #ffffff;">${innerHtml}</span>`;
                     } else if (isCompleted) {
-                        return `<span class="px-2 py-0.5 rounded text-xs font-medium inline-block border whitespace-nowrap opacity-40 grayscale-[20%]" style="background-color: ${colors.bg}; color: ${colors.text}; border-color: ${colors.border};">${player}</span>`;
+                        return `<span class="px-2 py-0.5 rounded text-xs font-medium inline-block border whitespace-nowrap opacity-40 grayscale-[20%]" style="background-color: ${colors.bg}; color: ${colors.text}; border-color: ${colors.border};">${innerHtml}</span>`;
                     } else {
-                        return `<span class="px-2 py-0.5 rounded text-xs font-bold inline-block border shadow-sm whitespace-nowrap" style="background-color: ${colors.bg}; color: ${colors.text}; border-color: ${colors.border};">${player}</span>`;
+                        return `<span class="px-2 py-0.5 rounded text-xs font-bold inline-block border shadow-sm whitespace-nowrap" style="background-color: ${colors.bg}; color: ${colors.text}; border-color: ${colors.border};">${innerHtml}</span>`;
                     }
                 }
 
