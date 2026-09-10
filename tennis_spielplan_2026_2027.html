@@ -249,30 +249,34 @@
                     ]).filter(p => p && p !== 'vs'))].sort();
                 });
 
-                const palette = [
-                    { bg: '#fecaca', text: '#111827', border: '#f87171' }, // 1. Soft Red
-                    { bg: '#bfdbfe', text: '#111827', border: '#60a5fa' }, // 2. Soft Blue
-                    { bg: '#fef08a', text: '#111827', border: '#facc15' }, // 3. Soft Yellow
-                    { bg: '#bbf7d0', text: '#111827', border: '#4ade80' }, // 4. Soft Green
-                    { bg: '#fed7aa', text: '#111827', border: '#fb923c' }, // 5. Soft Orange
-                    { bg: '#e9d5ff', text: '#111827', border: '#c084fc' }, // 6. Soft Purple
-                    { bg: '#a5f3fc', text: '#111827', border: '#22d3ee' }, // 7. Soft Cyan
-                    { bg: '#fbcfe8', text: '#111827', border: '#f472b6' }, // 8. Soft Pink
-                    { bg: '#c7d2fe', text: '#111827', border: '#818cf8' }, // 9. Soft Indigo
-                    { bg: '#d9f99d', text: '#111827', border: '#a3e635' }, // 10. Soft Lime
-                    { bg: '#99f6e4', text: '#111827', border: '#2dd4bf' }, // 11. Soft Teal
-                    { bg: '#fecdd3', text: '#111827', border: '#fb7185' }, // 12. Soft Rose
-                    { bg: '#fde68a', text: '#111827', border: '#fbbf24' }, // 13. Soft Amber
-                    { bg: '#cbd5e1', text: '#111827', border: '#94a3b8' }, // 14. Soft Slate
-                    { bg: '#ddd6fe', text: '#111827', border: '#a78bfa' }, // 15. Soft Violet
-                    { bg: '#a7f3d0', text: '#111827', border: '#34d399' }, // 16. Soft Emerald
-                    { bg: '#bae6fd', text: '#111827', border: '#38bdf8' }, // 17. Soft Sky
-                    { bg: '#f5d0fe', text: '#111827', border: '#e879f9' }, // 18. Soft Fuchsia
-                ];
+                const explicitPlayerColors = {
+                    "Beumer": { bg: '#bfdbfe', text: '#111827', border: '#60a5fa' },   // Soft Blue
+                    "Dedores": { bg: '#fecaca', text: '#111827', border: '#f87171' },  // Soft Red
+                    "Hansmann": { bg: '#fef08a', text: '#111827', border: '#facc15' }, // Soft Yellow
+                    "Heyn": { bg: '#bbf7d0', text: '#111827', border: '#4ade80' },     // Soft Green
+                    "Hinz": { bg: '#fed7aa', text: '#111827', border: '#fb923c' },     // Soft Orange
+                    "Kissner": { bg: '#e9d5ff', text: '#111827', border: '#c084fc' },  // Soft Purple
+                    "Kuhlhoff": { bg: '#a5f3fc', text: '#111827', border: '#22d3ee' }, // Soft Cyan
+                    "Marschollek": { bg: '#fbcfe8', text: '#111827', border: '#f472b6' }, // Soft Pink
+                    "Mönning": { bg: '#c7d2fe', text: '#111827', border: '#818cf8' },  // Soft Indigo
+                    "Nolte": { bg: '#d9f99d', text: '#111827', border: '#a3e635' },    // Soft Lime
+                    "Prodehl": { bg: '#99f6e4', text: '#111827', border: '#2dd4bf' },  // Soft Teal
+                    "Redieker": { bg: '#fecdd3', text: '#111827', border: '#fb7185' }, // Soft Rose
+                    "Rumpf": { bg: '#fed7aa', text: '#111827', border: '#f97316' },    // Distinct Deep Orange/Amber for Rumpf
+                    "Trojanski": { bg: '#cbd5e1', text: '#111827', border: '#94a3b8' }, // Soft Slate
+                    "Weber": { bg: '#ddd6fe', text: '#111827', border: '#a78bfa' },    // Soft Violet
+                    "Wojtanowtisch": { bg: '#a7f3d0', text: '#111827', border: '#34d399' }, // Soft Emerald
+                    "van de Loo": { bg: '#bae6fd', text: '#111827', border: '#38bdf8' }  // Soft Sky
+                };
 
                 const playerColors = {};
-                allPlayers.value.forEach((player, index) => {
-                    playerColors[player] = palette[index % palette.length];
+                allPlayers.value.forEach((player) => {
+                    if (explicitPlayerColors[player]) {
+                        playerColors[player] = explicitPlayerColors[player];
+                    } else {
+                        // Fallback palette
+                        playerColors[player] = { bg: '#e2e8f0', text: '#111827', border: '#64748b' };
+                    }
                 });
 
                 const filteredMatches = computed(() => {
