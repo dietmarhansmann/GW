@@ -58,6 +58,16 @@ def register_matchday_pairs(test_slots, singles_keys, doppel_keys):
 # Diese Regeln werden aktiv auf die dynamische Generierung der Tabelle angewandt.
 # =========================================================================
 PLAYER_RULES = {
+    "Mönning": {
+        "rules": [
+            {
+                "id": "slot_preference_monning",
+                "target": "doppel_pref",
+                "ratio": 0.0,
+                "description": "Spielt ausschließlich Einzel (0% Doppel)."
+            }
+        ]
+    },
     "Hansmann": {
         "rules": [
             {
