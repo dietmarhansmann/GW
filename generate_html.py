@@ -949,8 +949,7 @@ html_template = """<!DOCTYPE html>
                         class="inline-flex items-center rounded border transition">
                         <button @click="setFilter(player)"
                             :style="{ color: currentFilter === player ? '#ffffff' : '#111827' }"
-                            class="px-2.5 py-1 text-xs font-bold flex items-center gap-1.5 focus:outline-none">
-                            <span class="w-2 h-2 rounded-full inline-block" :style="{ backgroundColor: currentFilter === player ? '#ffffff' : (playerColors[player] ? playerColors[player].border : '#111') }"></span>
+                            class="px-2.5 py-1 text-xs font-bold flex items-center gap-1 focus:outline-none">
                             [[ player ]]
                         </button>
                         <button @click.stop="downloadPlayerIcs(player)"
@@ -990,10 +989,13 @@ html_template = """<!DOCTYPE html>
                     <tr v-for="(m, idx) in displayedMatches" :key="m.spieltag"
                         :id="isNextUpcoming(m, idx) ? 'next-match-target' : null"
                         :class="getRowClass(m, idx)">
-                        <td class="py-2 px-1 whitespace-nowrap" :class="m.status === 'Abgeschlossen' ? 'text-gray-400' : 'text-gray-600'">
+                        <td class="py-2 px-1" :class="m.status === 'Abgeschlossen' ? 'text-gray-400' : 'text-gray-600'">
                             <span class="md:hidden">[[ formatShortDate(m.date) ]]</span>
-                            <span class="hidden md:inline"><span class="font-bold">#[[ m.spieltag ]]</span> · [[ formatFullDate(m.date) ]]</span>
-                            <span v-if="m.status === 'Reserviert für alle'" class="ml-1 inline-flex items-center px-1 py-0.5 rounded text-[9px] font-semibold bg-amber-100 text-amber-800">
+                            <div class="hidden md:block leading-tight">
+                                <span class="font-bold text-[10px]">#[[ m.spieltag ]]</span>
+                                <div class="text-[11px]">[[ formatFullDate(m.date) ]]</div>
+                            </div>
+                            <span v-if="m.status === 'Reserviert für alle'" class="mt-0.5 inline-flex items-center px-1 py-0.5 rounded text-[9px] font-semibold bg-amber-100 text-amber-800">
                                 Reserviert für alle
                             </span>
                         </td>
@@ -1174,11 +1176,24 @@ html_template = """<!DOCTYPE html>
                 });
 
                 const displayedMatches = computed(() => {
+                    let matches = matchesData;
                     if (!showPastMatches.value) {
-                        return filteredMatches.value.filter(m => m.status !== 'Abgeschlossen');
+                        matches = matches.filter(m => m.status !== 'Abgeschlossen');
                     }
-                    return filteredMatches.value;
+                    return matches;
                 });
+
+                function matchHasPlayer(m, player) {
+                    if (player === 'ALL') return true;
+                    const playersInMatch = [
+                        m.p1.p1, m.p1.p2,
+                        m.p2.p1, m.p2.p2,
+                        m.p3.p1, m.p3.p2,
+                        ...m.doppel.team1,
+                        ...m.doppel.team2
+                    ];
+                    return playersInMatch.includes(player);
+                }
 
                 const nextMatch = computed(() => {
                     const todayStr = new Date().toISOString().split('T')[0];
@@ -1217,13 +1232,19 @@ html_template = """<!DOCTYPE html>
                 function getRowClass(m, idx) {
                     const isCompleted = m.status === 'Abgeschlossen';
                     const isNext = isNextUpcoming(m, idx);
+                    const hasPlayer = matchHasPlayer(m, currentFilter.value);
+
+                    let base = '';
+                    if (!hasPlayer && currentFilter.value !== 'ALL') {
+                        base = 'opacity-30 grayscale-[30%] ';
+                    }
 
                     if (isNext) {
-                        return 'bg-emerald-50/90 border-l-4 border-emerald-600 font-medium hover:bg-emerald-100/60 transition';
+                        return base + 'bg-emerald-50/90 border-l-4 border-emerald-600 font-medium hover:bg-emerald-100/60 transition';
                     } else if (isCompleted) {
-                        return 'bg-gray-50/70 text-gray-400 hover:bg-gray-100/80 transition';
+                        return base + 'bg-gray-50/70 text-gray-400 hover:bg-gray-100/80 transition';
                     } else {
-                        return idx % 2 === 0 ? 'bg-white hover:bg-emerald-50/40 transition' : 'bg-gray-100/90 hover:bg-emerald-50/40 transition';
+                        return base + (idx % 2 === 0 ? 'bg-white hover:bg-emerald-50/40 transition' : 'bg-gray-100/90 hover:bg-emerald-50/40 transition');
                     }
                 }
 
@@ -1262,7 +1283,7 @@ html_template = """<!DOCTYPE html>
                     const innerHtml = `<span class="md:hidden">${shortName}</span><span class="hidden md:inline">${player}</span>`;
 
                     if (isSelected) {
-                        return `<span class="px-2.5 py-1 rounded text-xs font-extrabold inline-block shadow-sm whitespace-nowrap scale-105" style="background-color: ${colors.border}; color: #ffffff;">${innerHtml}</span>`;
+                        return `<span class="px-2 py-0.5 rounded text-xs font-extrabold inline-block border shadow-sm whitespace-nowrap" style="background-color: ${colors.border}; color: #ffffff; border-color: ${colors.border};">${innerHtml}</span>`;
                     } else if (isCompleted) {
                         return `<span class="px-2 py-0.5 rounded text-xs font-medium inline-block border whitespace-nowrap opacity-40 grayscale-[20%]" style="background-color: ${colors.bg}; color: ${colors.text}; border-color: ${colors.border};">${innerHtml}</span>`;
                     } else {
