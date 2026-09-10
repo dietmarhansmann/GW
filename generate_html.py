@@ -1,6 +1,7 @@
 import openpyxl
 import json
 import random
+random.seed(42)
 from collections import defaultdict
 
 wb = openpyxl.load_workbook('Tennis_Spielplan_Google_Drive_Native_Fix.xlsx', data_only=True)
