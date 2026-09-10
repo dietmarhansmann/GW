@@ -20,7 +20,7 @@
             </div>
             <div>
                 <span class="text-xs bg-emerald-900/80 text-emerald-100 px-2.5 py-1 rounded font-medium border border-emerald-700">
-                    Stand: 10.09.2026 23:35
+                    Stand: 10.09.2026 23:38
                 </span>
             </div>
         </header>
@@ -94,10 +94,10 @@
 
         <!-- Ultra-Compact Table -->
         <div class="bg-white border border-gray-200 rounded-lg shadow-sm overflow-x-auto mb-2.5">
-            <table class="w-full text-left border-collapse text-xs">
+            <table class="w-full text-left border-collapse text-xs table-auto">
                 <thead>
                     <tr class="bg-gray-100 text-gray-600 uppercase text-[10px] tracking-wider border-b border-gray-200">
-                        <th class="py-2 px-1.5 whitespace-nowrap w-24 md:w-36">Datum</th>
+                        <th class="py-2 px-1 whitespace-nowrap w-1">Datum</th>
                         <th class="py-2 px-1.5">19:00 Uhr</th>
                         <th class="py-2 px-1.5">20:00 Uhr</th>
                         <th class="py-2 px-1.5">21:00 Uhr</th>
@@ -111,7 +111,7 @@
                     <tr v-for="(m, idx) in displayedMatches" :key="m.spieltag"
                         :id="isNextUpcoming(m, idx) ? 'next-match-target' : null"
                         :class="getRowClass(m, idx)">
-                        <td class="py-2 px-1.5 whitespace-nowrap" :class="m.status === 'Abgeschlossen' ? 'text-gray-400' : 'text-gray-600'">
+                        <td class="py-2 px-1 whitespace-nowrap" :class="m.status === 'Abgeschlossen' ? 'text-gray-400' : 'text-gray-600'">
                             <span class="md:hidden">[[ formatShortDate(m.date) ]]</span>
                             <span class="hidden md:inline"><span class="font-bold">#[[ m.spieltag ]]</span> · [[ formatFullDate(m.date) ]]</span>
                             <span v-if="m.status === 'Reserviert für alle'" class="ml-1 inline-flex items-center px-1 py-0.5 rounded text-[9px] font-semibold bg-amber-100 text-amber-800">
