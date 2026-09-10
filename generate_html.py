@@ -180,6 +180,14 @@ PLAYER_RULES = {
             }
         ]
     },
+    "Knust": {
+        "rules": [
+            {
+                "id": "info_knust",
+                "description": "Nimmt nicht am Spielbetrieb teil (nur in der Statistik-Tabelle/Übersicht geführt)."
+            }
+        ]
+    },
     "Heyn": {
         "rules": [
             {
@@ -244,6 +252,16 @@ PLAYER_RULES = {
                 "description": "Spielt ausschließlich Einzel (0% Doppel)."
             }
         ]
+    },
+    "Wojtanowitsch": {
+        "rules": [
+            {
+                "id": "slot_preference_wojtanowitsch",
+                "target": "doppel_pref",
+                "ratio": 0.0,
+                "description": "Spielt ausschließlich Einzel (0% Doppel)."
+            }
+        ]
     }
 }
 
@@ -271,8 +289,6 @@ for r in raw_rows:
                 all_excel_players.add(val)
 
 all_excel_players.add("Kissner")
-if "Knust" in all_excel_players:
-    all_excel_players.remove("Knust")
 if "Höttinger" in all_excel_players:
     all_excel_players.remove("Höttinger")
 player_pool = sorted(list(all_excel_players))
@@ -368,6 +384,8 @@ for r in raw_rows:
                 return True
 
             for p in player_pool:
+                if p == "Knust":
+                    continue
                 if p not in occupied_today and p not in exclude_set:
                     if check_can_play(p):
                         return p
@@ -375,6 +393,8 @@ for r in raw_rows:
             best_p = None
             max_gap_seen = -1
             for p in player_pool:
+                if p == "Knust":
+                    continue
                 if p not in occupied_today and p not in exclude_set:
                     if check_can_play(p):
                         last_st = player_last_played.get(p, -99)
@@ -386,6 +406,8 @@ for r in raw_rows:
                 return best_p
 
             for p in player_pool:
+                if p == "Knust":
+                    continue
                 if p not in occupied_today and p not in exclude_set:
                     return p
             return player_pool[0]
@@ -687,7 +709,7 @@ for r in raw_rows:
             'status': status
         })
 
-players = sorted(list(players_set))
+players = sorted(list(players_set.union(PLAYER_RULES.keys()).union(player_pool)))
 
 # Post-pass ratio balancing for players with ratio rules
 for player, player_data in PLAYER_RULES.items():
@@ -815,7 +837,7 @@ for m in matches:
                         errors_found += 1
 
 if errors_found == 0:
-    print("✅ Alle Regeln wurden erfolgreich validiert! Keine Fehler gefunden.")
+    print("✅ Alle   wurden erfolgreich validiert! Keine Fehler gefunden.")
 else:
     print(f"⚠️ {errors_found} Regelverstöße festgestellt!")
     import sys
@@ -883,7 +905,7 @@ html_template = """<!DOCTYPE html>
             <div class="flex items-center gap-2.5">
                 <div>
                     <div class="font-bold text-xs uppercase tracking-wider text-emerald-900">
-                        Nächster Spieltag: [[ formatDate(nextMatch.date) ]] (Spieltag [[ nextMatch.spieltag ]])
+                        Nächster Spieltag: [[ formatFullDate(nextMatch.date) ]] (Spieltag [[ nextMatch.spieltag ]])
                     </div>
                     <div class="text-[11px] text-emerald-800 mt-1 flex flex-wrap items-center gap-1.5">
                         <span v-for="p in nextMatchPlayers" :key="p" @click="setFilter(p)" class="cursor-pointer">
@@ -1213,9 +1235,7 @@ html_template = """<!DOCTYPE html>
                     if (!dateStr) return '';
                     const parts = dateStr.split('-');
                     if (parts.length === 3) {
-                        const day = parseInt(parts[2], 10);
-                        const month = parseInt(parts[1], 10);
-                        return `${day}.${month}.`;
+                        return `${parts[2]}.${parts[1]}`;
                     }
                     return dateStr;
                 }

@@ -18,11 +18,12 @@ Dieses Dokument fasst alle geschäftlichen Regeln, Spielerpräferenzen, Blackout
 ## 2. Kader & Spieler-Pool
 - **Basis**: Einlesen der Rohdaten aus der Excel-Datei (`Tennis_Spielplan_Google_Drive_Native_Fix.xlsx`).
 - **Alle in der Excel-Quelle enthaltenen Spieler (Rohdaten)**:
-  - Beumer, Dedores, Hansmann, Heyn, Hinz, Höttinger, Knust, Kuhlhoff, Marschollek, Mönning, Nolte, Prodehl, Redieker, Rumpf, Trojanski, Weber, Wojtanowtisch, van de Loo.
+  - Beumer, Dedores, Hansmann, Heyn, Hinz, Höttinger, Knust, Kuhlhoff, Marschollek, Mönning, Nolte, Prodehl, Redieker, Rumpf, Trojanski, Weber, Wojtanowitsch, van de Loo.
 - **Bereinigung / Roster-Anpassungen**:
-  - Entfernte Spieler: *Knust*, *Höttinger*.
+  - Entfernte Spieler: *Höttinger*.
+  - Übersicht-only Spieler: *Knust* (wird in der Statistik-Tabelle/Übersicht geführt, nimmt jedoch an keinen Spielen teil).
   - Hinzugefügte Spieler: *Kissner*.
-  - Aktiver bereinigter Spieler-Pool (16 Spieler): Beumer, Dedores, Hansmann, Heyn, Hinz, Kissner, Kuhlhoff, Marschollek, Mönning, Nolte, Prodehl, Redieker, Rumpf, Trojanski, Weber, Wojtanowtisch, van de Loo.
+  - Aktiver bereinigter Spieler-Pool: Beumer, Dedores, Hansmann, Heyn, Hinz, Kissner, Knust, Kuhlhoff, Marschollek, Mönning, Nolte, Prodehl, Redieker, Rumpf, Trojanski, Weber, Wojtanowitsch, van de Loo.
 - **Eindeutigkeit**: Pro Spielabend nehmen exakt 10 unique Spieler teil (keine Doppelbelegungen pro Spieler an demselben Abend).
 
 ---
@@ -75,6 +76,9 @@ Dieses Dokument fasst alle geschäftlichen Regeln, Spielerpräferenzen, Blackout
 - **Frequenz**: Einmal im Monat (mindestens 3 Spieltage Pause / 4 Wochen Abstand).
 - **Slot-Präferenz**: Spielt ausschließlich **Einzel** (0% Doppel, `ratio: 0.0`).
 
+### Wojtanowitsch
+- **Slot-Präferenz**: Spielt ausschließlich **Einzel** (0% Doppel, `ratio: 0.0`).
+
 ---
 
 ## 4. Kostenberechnung & Spielerstatistik
@@ -111,7 +115,7 @@ Das Python-Skript `generate_html.py` ist der zentrale Generator für den interak
 1. **Automatisches Einlesen**: Alle in den Spalten befindlichen Spielernamen werden gesammelt (`all_excel_players`).
 2. **Manuelle Modifikationen**:
    - Hinzufügen von *Kissner*.
-   - Vollständiger Ausschluss/Bereinigung von inaktiven oder ausgeschiedenen Spielern (*Knust*, *Höttinger*).
+   - Vollständiger Ausschluss/Bereinigung von inaktiven oder ausgeschiedenen Spielern (*Höttinger*).
 3. **Spieler-Pool**: Sortierte Liste aller bereinigten aktiven Spieler als Substitutionsbasis.
 
 ### C. Regel-Engine & Status-Tracking pro Spieltag
