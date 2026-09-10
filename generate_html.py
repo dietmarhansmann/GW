@@ -72,6 +72,12 @@ PLAYER_RULES = {
     "Hansmann": {
         "rules": [
             {
+                "id": "slot_preference_hansmann",
+                "target": "doppel_pref",
+                "ratio": 0.3,
+                "description": "Möchte ca. 70% Einzel spielen (30% Doppel)."
+            },
+            {
                 "id": "time_preference",
                 "description": "Bevorzugte Spielzeit: Überwiegend 19:00 oder 20:00 Uhr."
             },

@@ -30,6 +30,7 @@ Dieses Dokument fasst alle geschäftlichen Regeln, Spielerpräferenzen, Blackout
 ## 3. Verschachteltes Regelwerk pro Spieler (`PLAYER_RULES`)
 
 ### Hansmann
+- **Slot-Präferenz**: Wunsch nach ca. 70% Einzel / 30% Doppel (`ratio: 0.3`).
 - **Zeitpräferenz**: Überwiegend 19:00 oder 20:00 Uhr.
 - **Blackout-Tage**: Kann an **Spieltag 9** (01.12.2026) nicht teilnehmen.
 
