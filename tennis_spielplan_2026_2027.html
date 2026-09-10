@@ -24,13 +24,11 @@
         <!-- Next Match Highlight Banner -->
         <div v-if="nextMatch" class="bg-emerald-50 border border-emerald-300 text-emerald-900 rounded-lg p-3 mb-2.5 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-2">
             <div class="flex items-center gap-2.5">
-                <span class="text-xl">⭐</span>
                 <div>
                     <div class="font-bold text-xs uppercase tracking-wider text-emerald-900">
                         Nächster Spieltag: [[ formatDate(nextMatch.date) ]] (Spieltag [[ nextMatch.spieltag ]])
                     </div>
                     <div class="text-[11px] text-emerald-800 mt-1 flex flex-wrap items-center gap-1.5">
-                        <span>Beteiligte Spieler:</span>
                         <span v-for="p in nextMatchPlayers" :key="p" @click="setFilter(p)" class="cursor-pointer">
                             <span v-html="formatPlayerBadge(p, false)"></span>
                         </span>
@@ -212,9 +210,11 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2">
                 <div v-for="(rulesList, player) in rulesByPlayer" :key="player" class="bg-gray-50 border border-gray-200 rounded p-2.5 text-xs flex flex-col justify-between shadow-2xs">
                     <div>
-                        <div class="font-bold text-gray-900 flex items-center gap-1.5 mb-1 text-sm">
-                            <span class="w-2.5 h-2.5 rounded-full" :style="{ backgroundColor: playerColors[player] ? playerColors[player].text : '#059669' }"></span>
-                            [[ player ]]
+                        <div class="mb-2">
+                            <span :style="{ backgroundColor: playerColors[player] ? playerColors[player].bg : '#eee', borderColor: playerColors[player] ? playerColors[player].border : '#ccc', color: '#111827' }"
+                                class="inline-flex items-center px-2.5 py-0.5 rounded border text-xs font-bold shadow-2xs">
+                                [[ player ]]
+                            </span>
                         </div>
                         <ul class="list-disc list-inside text-gray-600 text-[11px] space-y-1 pl-1">
                             <li v-for="(desc, idx) in rulesList" :key="idx">[[ desc ]]</li>
