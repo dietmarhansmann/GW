@@ -1,5 +1,6 @@
 import openpyxl
 import json
+import datetime
 import random
 random.seed(42)
 from collections import defaultdict
@@ -870,7 +871,11 @@ html_template = """<!DOCTYPE html>
             <div>
                 <h1 class="text-base md:text-lg font-bold tracking-tight">🎾 Tennis-Spielplan Winter 2026/2027</h1>
             </div>
-
+            <div>
+                <span class="text-xs bg-emerald-900/80 text-emerald-100 px-2.5 py-1 rounded font-medium border border-emerald-700">
+                    Stand: /*UPDATE_DATE_PLACEHOLDER*/
+                </span>
+            </div>
         </header>
 
         <!-- Next Match Highlight Banner -->
@@ -1323,6 +1328,7 @@ html_template = """<!DOCTYPE html>
 html_content = html_template.replace('/*JSON_DATA_PLACEHOLDER*/', json.dumps(matches, ensure_ascii=False))
 html_content = html_content.replace('/*RULES_JSON_PLACEHOLDER*/', json.dumps(frontend_rules_by_player, ensure_ascii=False))
 html_content = html_content.replace('/*PLAYER_STATS_JSON_PLACEHOLDER*/', json.dumps(player_stats, ensure_ascii=False))
+html_content = html_content.replace('/*UPDATE_DATE_PLACEHOLDER*/', datetime.datetime.now().strftime('%d.%m.%Y %H:%M'))
 
 with open('tennis_spielplan_2026_2027.html', 'w', encoding='utf-8') as f:
     f.write(html_content)
