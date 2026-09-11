@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kurzanleitung — Tennis-Spielplan Winter 2026/2027</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 antialiased min-h-screen p-4 md:p-8">
+    <div class="max-w-3xl mx-auto bg-white border border-emerald-200 rounded-xl shadow-md p-6 md:p-8">
+        <!-- Header -->
+        <div class="flex justify-between items-center border-b border-gray-200 pb-4 mb-6">
+            <div>
+                <span class="text-xs font-bold uppercase tracking-wider text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded border border-emerald-200">Benutzerhandbuch</span>
+                <h1 class="text-xl md:text-2xl font-bold text-gray-900 mt-2">🎾 Kurzanleitung: Tennis-Spielplan Winter 2026/2027</h1>
+            </div>
+            <a href="index.html" class="bg-emerald-800 hover:bg-emerald-900 text-white text-xs font-semibold px-4 py-2 rounded-lg transition shadow-sm flex items-center gap-1.5 whitespace-nowrap">
+                <span>← Zum Spielplan</span>
+            </a>
+        </div>
+
+        <p class="text-gray-600 text-sm mb-6 leading-relaxed">
+            Willkommen zum interaktiven Tennis-Spielplan! Diese kurze Anleitung zeigt Ihnen, wie Sie alle Funktionen optimal nutzen können, um Spieltermine, Statistiken und Kalender-Exporte im Blick zu behalten.
+        </p>
+
+        <!-- Sections -->
+        <div class="space-y-6 text-sm text-gray-700">
+            <!-- 1. Filtering & Search -->
+            <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                <h2 class="font-bold text-emerald-800 text-base mb-2 flex items-center gap-2">
+                    <span>🔍</span> 1. Spiele nach Spieler filtern & suchen
+                </h2>
+                <ul class="list-disc list-inside space-y-1.5 text-gray-600 text-xs md:text-sm pl-1">
+                    <li><b>Spieler-Filter:</b> Ein Klick auf einen Spielernamen (oder dessen farbiges Badge) in der oberen Legende blendet alle Spieltage aus, an denen dieser Spieler nicht beteiligt ist. Die übrigen Partien werden übersichtlich hervorgehoben.</li>
+                    <li><b>Live-Spielersuche:</b> Nutzen Sie das Eingabefeld <code class="bg-gray-200 px-1 py-0.5 rounded text-gray-800">🔍 Spieler suchen...</code> in der Kopfleiste, um bei vielen Spielern blitzschnell den gewünschten Namen zu finden.</li>
+                    <li><b>Alle-Ansicht:</b> Der schwarze <b class="text-black">„Alle“</b>-Button setzt den Filter jederzeit wieder zurück.</li>
+                </ul>
+            </div>
+
+            <!-- 2. ICS Calendar Export -->
+            <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                <h2 class="font-bold text-emerald-800 text-base mb-2 flex items-center gap-2">
+                    <span>📅</span> 2. Kalender-Export (ICS für Smartphone & PC)
+                </h2>
+                <ul class="list-disc list-inside space-y-1.5 text-gray-600 text-xs md:text-sm pl-1">
+                    <li><b>Persönlicher Kalender:</b> Neben jedem Spielernamen in der Legende befindet sich ein Kalender-Symbol (<code class="bg-gray-200 px-1 py-0.5 rounded">📅</code>). Ein Klick darauf lädt Ihre persönliche Termin-Datei herunter.</li>
+                    <li><b>Import:</b> Die heruntergeladene <code class="bg-gray-200 px-1 py-0.5 rounded">.ics</code>-Datei lässt sich per Doppelklick oder Import in <b>Google Kalender, Apple Kalender, Outlook oder Handy-Kalender</b> übertragen, sodass Sie alle Spielzeiten parat haben.</li>
+                    <li><b>Gesamt-Export:</b> Oben rechts finden Sie den Button <b class="text-emerald-800">„Gesamter Spielplan als ICS“</b> für die gesamte Saison.</li>
+                </ul>
+            </div>
+
+            <!-- 3. Statistics & Costs -->
+            <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                <h2 class="font-bold text-emerald-800 text-base mb-2 flex items-center gap-2">
+                    <span>📊</span> 3. Spieler-Statistik-Matrix & Kosten
+                </h2>
+                <ul class="list-disc list-inside space-y-1.5 text-gray-600 text-xs md:text-sm pl-1">
+                    <li><b>Übersicht:</b> Die untere Tabelle zeigt die genaue Anzahl an Einzel- und Doppelspielen pro Spieler sowie den prozentualen Doppel-Anteil.</li>
+                    <li><b>Spalten sortieren:</b> Ein Klick auf einen Spaltenkopf (z. B. <i>Einzel</i>, <i>Doppel</i>, <i>Kosten</i>) sortiert die Tabelle auf- oder absteigend.</li>
+                    <li><b>CSV-Export:</b> Über den <b class="text-emerald-800">„📥 CSV Export“</b>-Button können Sie die gesamte Statistik-Tabelle für Excel herunterladen.</li>
+                    <li><b>Kostenformel:</b> Neben der Kosten-Überschrift erklärt das Info-Symbol (<code class="bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded font-bold">ℹ️</code>) die Berechnung: <br>
+                        <code class="bg-emerald-50 text-emerald-900 px-2 py-1 rounded inline-block mt-1 font-mono text-xs border border-emerald-200">Kosten = (Einzel × 0.5) + (Doppel × 0.375)</code>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- 4. Dark Mode & Printing -->
+            <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                <h2 class="font-bold text-emerald-800 text-base mb-2 flex items-center gap-2">
+                    <span>🌙</span> 4. Dunkelmodus & Drucken
+                </h2>
+                <ul class="list-disc list-inside space-y-1.5 text-gray-600 text-xs md:text-sm pl-1">
+                    <li><b>Dunkelmodus:</b> Der Umschalter oben rechts (<code class="bg-gray-200 px-1 py-0.5 rounded">🌙 Dunkel</code> / <code class="bg-gray-200 px-1 py-0.5 rounded">☀️ Hell</code>) aktiviert ein augenschonendes Design (wird im Browser gespeichert).</li>
+                    <li><b>Drucken & PDF:</b> Der <b class="text-gray-800">„🖨️ Drucken“</b>-Button bereitet die Seite perfekt für den DIN-A4-Ausdruck oder PDF-Export vor (alle Steuerelemente und Buttons werden dabei automatisch ausgeblendet).</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Footer CTA -->
+        <div class="mt-8 pt-4 border-t border-gray-200 text-center">
+            <a href="index.html" class="inline-block bg-emerald-800 hover:bg-emerald-900 text-white font-semibold text-xs md:text-sm px-6 py-2.5 rounded-lg transition shadow">
+                Zum interaktiven Spielplan wechseln 🎾
+            </a>
+        </div>
+    </div>
+</body>
+</html>

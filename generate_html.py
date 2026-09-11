@@ -921,58 +921,83 @@ for p in players:
 print(f'Generated {len(matches)} matches with nested per-player rules engine.')
 
 html_template = """<!DOCTYPE html>
-<html lang="de">
+<html lang="de" :class="{ 'dark': isDarkMode }">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tennis-Spielplan Wintersaison 2026/2027</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
         body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
+        .dark body, body.dark { background-color: #111827; color: #f3f4f6; }
+        @media print {
+            .no-print { display: none !important; }
+            body { background: white !important; color: black !important; font-size: 10pt; }
+            table { page-break-inside: auto; }
+            tr { page-break-inside: avoid; page-break-after: auto; }
+            .bg-white, .bg-gray-50 { background-color: white !important; border-color: #ccc !important; }
+        }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-800 antialiased min-h-screen p-2 md:p-3">
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 antialiased min-h-screen p-2 md:p-3 transition-colors duration-200">
     <div id="app" class="max-w-[98%] mx-auto">
         <!-- Quick Stats & Global Export Bar -->
-        <div class="bg-white border border-emerald-200 rounded-lg px-3 py-2 mb-2.5 shadow-sm text-xs flex flex-wrap justify-between items-center gap-2">
-            <div class="flex items-center gap-3 text-gray-700 font-medium">
+        <div class="bg-white dark:bg-gray-800 border border-emerald-200 dark:border-emerald-900 rounded-lg px-3 py-2 mb-2.5 shadow-sm text-xs flex flex-wrap justify-between items-center gap-2">
+            <div class="flex items-center gap-3 text-gray-700 dark:text-gray-200 font-medium">
                 <span>📊 <b>13</b> Spieltage (Saison 2026/2027)</span>
-                <span class="text-gray-300">•</span>
+                <span class="text-gray-300 dark:text-gray-600">•</span>
                 <span>👥 <b>[[ allPlayers.length ]]</b> aktive Spieler</span>
-                <span class="text-gray-300">•</span>
-                <span class="text-emerald-800 font-semibold">⭐ Nächster Spieltag: <b>06.10.2026</b> (#1)</span>
+                <span class="text-gray-300 dark:text-gray-600">•</span>
+                <span class="text-emerald-800 dark:text-emerald-400 font-semibold">⭐ Nächster Spieltag: <b>06.10.2026</b> (#1)</span>
             </div>
-            <div>
-                <button @click="downloadAllIcs()" class="bg-emerald-800 hover:bg-emerald-900 text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition border border-emerald-700 flex items-center gap-1.5 shadow-sm">
+            <div class="flex items-center gap-2">
+                <button @click="toggleDarkMode" class="no-print bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 px-2.5 py-1.5 rounded-lg text-xs font-semibold transition border border-gray-300 dark:border-gray-600 flex items-center gap-1 shadow-sm" :title="isDarkMode ? 'Zu Hellmodus wechseln' : 'Zu Dunkelmodus wechseln'">
+                    <span>[[ isDarkMode ? '☀️ Hell' : '🌙 Dunkel' ]]</span>
+                </button>
+                <button @click="downloadAllIcs()" class="no-print bg-emerald-800 hover:bg-emerald-900 text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition border border-emerald-700 flex items-center gap-1.5 shadow-sm">
                     <span>📅 Gesamter Spielplan als ICS</span>
                 </button>
+                <a href="anleitung.html" class="no-print bg-emerald-100 dark:bg-emerald-900/60 hover:bg-emerald-200 text-emerald-800 dark:text-emerald-300 px-2.5 py-1.5 rounded-lg text-xs font-semibold transition border border-emerald-300 dark:border-emerald-700 flex items-center gap-1 shadow-sm" title="Kurzanleitung öffnen">
+                    <span>📖 Anleitung</span>
+                </a>
             </div>
         </div>
 
         <!-- Player Legend & Controls Bar -->
-        <div class="bg-white border border-gray-200 rounded-lg p-2.5 mb-2.5 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-2">
+        <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-2.5 mb-2.5 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-2">
             <div class="flex-1 w-full">
-                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-1.5 gap-1">
-                    <span class="font-bold text-xs uppercase tracking-wider text-gray-700">Klick [NAME] = Spiele filtern | 📅 = Kalender-Download für z.B. Google Kalender:</span>
-                    <span v-if="currentFilter !== 'ALL'" class="text-[11px] text-emerald-700 font-semibold">
-                        Filter aktiv: [[ currentFilter ]] ([[ filteredMatches.length ]] Spieltage)
-                    </span>
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-1.5 gap-2">
+                    <span class="font-bold text-xs uppercase tracking-wider text-gray-700 dark:text-gray-300">Klick [NAME] = Spiele filtern | 📅 = Kalender-Download für z.B. Google Kalender:</span>
+                    <div class="flex items-center gap-2">
+                        <!-- Search input -->
+                        <div class="relative">
+                            <input type="text" v-model="playerSearchQuery" placeholder="🔍 Spieler suchen..." class="bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded px-2.5 py-1 text-xs text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-1 focus:ring-emerald-600 w-36">
+                        </div>
+                        <span v-if="currentFilter !== 'ALL'" class="text-[11px] text-emerald-700 dark:text-emerald-400 font-semibold whitespace-nowrap">
+                            Filter: [[ currentFilter ]] ([[ filteredMatches.length ]] Spieltage)
+                        </span>
+                    </div>
                 </div>
 
                 <div class="flex flex-wrap gap-2 items-center pt-1 pb-0.5">
                     <!-- 'Alle' button -->
                     <button @click="setFilter('ALL')"
-                        :class="currentFilter === 'ALL' ? 'bg-black text-white border-black ring-2 ring-gray-400 scale-105' : 'bg-gray-100 hover:bg-gray-200 text-gray-800 border-gray-300'"
+                        :class="currentFilter === 'ALL' ? 'bg-black dark:bg-white dark:text-gray-900 text-white border-black dark:border-white ring-2 ring-gray-400 scale-105' : 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 border-gray-300 dark:border-gray-600'"
                         class="px-2.5 py-0.5 rounded text-[10px] font-bold transition flex items-center gap-1 border shadow-sm">
                         <span>Alle</span>
                     </button>
 
                     <!-- Player pills -->
-                    <div v-for="player in allPlayers" :key="player"
+                    <div v-for="player in displayedPlayers" :key="player"
                         :style="{ backgroundColor: currentFilter === player ? '#111827' : (playerColors[player] ? playerColors[player].bg : '#eee'), borderColor: playerColors[player] ? playerColors[player].border : '#ccc' }"
-                        :class="currentFilter === player ? 'scale-110 font-black shadow-xl ring-2 ring-emerald-600 ring-offset-1 z-10' : 'hover:opacity-95 shadow-sm border'""
+                        :class="currentFilter === player ? 'scale-110 font-black shadow-xl ring-2 ring-emerald-600 ring-offset-1 z-10' : 'hover:opacity-95 shadow-sm border'"
                         class="inline-flex items-center rounded border transition relative">
                         <button @click="setFilter(player)"
                             :style="{ color: currentFilter === player ? '#ffffff' : '#111827' }"
@@ -989,9 +1014,12 @@ html_template = """<!DOCTYPE html>
                     </div>
                 </div>
             </div>
-            <div>
+            <div class="no-print flex items-center gap-2">
+                <button @click="window.print()" class="bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 px-3 py-1.5 rounded-lg border border-gray-300 dark:border-gray-600 text-xs font-medium transition flex items-center gap-1 shadow-sm" title="Drucken / Als PDF speichern">
+                    <span>🖨️ Drucken</span>
+                </button>
                 <button @click="togglePastMatches"
-                    :class="showPastMatches ? 'bg-emerald-100 hover:bg-emerald-200 text-emerald-800 border-emerald-300' : 'bg-gray-100 hover:bg-gray-200 text-gray-700 border-gray-300'"
+                    :class="showPastMatches ? 'bg-emerald-100 dark:bg-emerald-900/50 hover:bg-emerald-200 text-emerald-800 dark:text-emerald-300 border-emerald-300 dark:border-emerald-700' : 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600'"
                     class="text-xs font-medium px-3 py-1.5 rounded-lg border transition whitespace-nowrap">
                     [[ showPastMatches ? '📁 Vergangene Spiele ausblenden' : '📁 Vergangene Spiele anzeigen' ]]
                 </button>
@@ -999,36 +1027,36 @@ html_template = """<!DOCTYPE html>
         </div>
 
         <!-- Ultra-Compact Table -->
-        <div class="bg-white border border-gray-200 rounded-lg shadow-sm overflow-x-auto mb-2.5">
+        <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm overflow-x-auto mb-2.5">
             <table class="w-full text-left border-collapse text-xs table-auto">
                 <thead>
-                    <tr class="bg-gray-100 text-gray-600 uppercase text-[10px] tracking-wider border-b border-gray-200">
+                    <tr class="bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-400 uppercase text-[10px] tracking-wider border-b border-gray-200 dark:border-gray-700">
                         <th class="py-2 px-1 whitespace-nowrap w-1">Datum</th>
                         <th class="py-2 px-1.5">19:00 Uhr</th>
                         <th class="py-2 px-1.5">20:00 Uhr</th>
                         <th class="py-2 px-1.5">21:00 Uhr</th>
-                        <th class="py-2 px-1.5">Doppel / Einzel <span class="font-normal normal-case text-gray-500">(20:30)</span></th>
+                        <th class="py-2 px-1.5">Doppel / Einzel <span class="font-normal normal-case text-gray-500 dark:text-gray-400">(20:30)</span></th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-200">
+                <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
                     <tr v-if="displayedMatches.length === 0">
-                        <td colspan="5" class="py-6 text-center text-gray-500 text-xs">Keine entsprechenden Spiele gefunden (Vergangene Spiele sind ausgeblendet).</td>
+                        <td colspan="5" class="py-6 text-center text-gray-500 dark:text-gray-400 text-xs">Keine entsprechenden Spiele gefunden (Vergangene Spiele sind ausgeblendet).</td>
                     </tr>
                     <tr v-for="(m, idx) in displayedMatches" :key="m.spieltag"
                         :id="isNextUpcoming(m, idx) ? 'next-match-target' : null"
                         :class="getRowClass(m, idx)">
                         <template v-if="m.status === 'Reserviert für alle'">
-                            <td colspan="5" class="py-3 px-3 text-center bg-amber-50 border-amber-200">
-                                <div class="flex items-center justify-center gap-2 text-amber-900 font-bold text-xs md:text-sm whitespace-nowrap">
+                            <td colspan="5" class="py-3 px-3 text-center bg-amber-50 dark:bg-amber-950/40 border-amber-200 dark:border-amber-900">
+                                <div class="flex items-center justify-center gap-2 text-amber-900 dark:text-amber-300 font-bold text-xs md:text-sm whitespace-nowrap">
                                     <span>🎾 Spieltag #[[ m.spieltag ]] — [[ formatFullDate(m.date) ]]:</span>
-                                    <span class="bg-amber-200 text-amber-900 px-2.5 py-1 rounded-md shadow-sm border border-amber-300 font-extrabold uppercase tracking-wide">
+                                    <span class="bg-amber-200 dark:bg-amber-900 text-amber-900 dark:text-amber-100 px-2.5 py-1 rounded-md shadow-sm border border-amber-300 dark:border-amber-700 font-extrabold uppercase tracking-wide">
                                         Reserviert für alle
                                     </span>
                                 </div>
                             </td>
                         </template>
                         <template v-else>
-                        <td class="py-2 px-1" :class="m.status === 'Abgeschlossen' ? 'text-gray-400' : 'text-gray-600'">
+                        <td class="py-2 px-1" :class="m.status === 'Abgeschlossen' ? 'text-gray-400 dark:text-gray-600' : 'text-gray-600 dark:text-gray-300'">
                             <span class="md:hidden">[[ formatShortDate(m.date) ]]</span>
                             <div class="hidden md:block leading-tight">
                                 <span class="font-bold text-[10px]">#[[ m.spieltag ]]</span>
@@ -1039,7 +1067,7 @@ html_template = """<!DOCTYPE html>
                         <td class="py-2 px-1.5">
                             <div class="flex flex-wrap items-center gap-1">
                                 <span v-html="formatPlayerBadge(m.p1.p1, m.status === 'Abgeschlossen')"></span>
-                                <span v-if="m.p1.p1 && m.p1.p2" class="text-[9px] hidden md:inline" :class="m.status === 'Abgeschlossen' ? 'text-gray-300' : 'text-gray-400'">vs</span>
+                                <span v-if="m.p1.p1 && m.p1.p2" class="text-[9px] hidden md:inline" :class="m.status === 'Abgeschlossen' ? 'text-gray-300 dark:text-gray-700' : 'text-gray-400 dark:text-gray-500'">vs</span>
                                 <span v-html="formatPlayerBadge(m.p1.p2, m.status === 'Abgeschlossen')"></span>
                             </div>
                         </td>
@@ -1047,7 +1075,7 @@ html_template = """<!DOCTYPE html>
                         <td class="py-2 px-1.5">
                             <div class="flex flex-wrap items-center gap-1">
                                 <span v-html="formatPlayerBadge(m.p2.p1, m.status === 'Abgeschlossen')"></span>
-                                <span v-if="m.p2.p1 && m.p2.p2" class="text-[9px] hidden md:inline" :class="m.status === 'Abgeschlossen' ? 'text-gray-300' : 'text-gray-400'">vs</span>
+                                <span v-if="m.p2.p1 && m.p2.p2" class="text-[9px] hidden md:inline" :class="m.status === 'Abgeschlossen' ? 'text-gray-300 dark:text-gray-700' : 'text-gray-400 dark:text-gray-500'">vs</span>
                                 <span v-html="formatPlayerBadge(m.p2.p2, m.status === 'Abgeschlossen')"></span>
                             </div>
                         </td>
@@ -1055,7 +1083,7 @@ html_template = """<!DOCTYPE html>
                         <td class="py-2 px-1.5">
                             <div class="flex flex-wrap items-center gap-1">
                                 <span v-html="formatPlayerBadge(m.p3.p1, m.status === 'Abgeschlossen')"></span>
-                                <span v-if="m.p3.p1 && m.p3.p2" class="text-[9px] hidden md:inline" :class="m.status === 'Abgeschlossen' ? 'text-gray-300' : 'text-gray-400'">vs</span>
+                                <span v-if="m.p3.p1 && m.p3.p2" class="text-[9px] hidden md:inline" :class="m.status === 'Abgeschlossen' ? 'text-gray-300 dark:text-gray-700' : 'text-gray-400 dark:text-gray-500'">vs</span>
                                 <span v-html="formatPlayerBadge(m.p3.p2, m.status === 'Abgeschlossen')"></span>
                             </div>
                         </td>
@@ -1066,7 +1094,7 @@ html_template = """<!DOCTYPE html>
                                     <span v-html="formatPlayerBadge(m.doppel.team1[0], m.status === 'Abgeschlossen')"></span>
                                     <span v-html="formatPlayerBadge(m.doppel.team1[1], m.status === 'Abgeschlossen')"></span>
                                 </span>
-                                <span v-if="(m.doppel.team1[0] || m.doppel.team1[1]) && (m.doppel.team2[0] || m.doppel.team2[1])" class="text-[9px] hidden md:inline" :class="m.status === 'Abgeschlossen' ? 'text-gray-300' : 'text-emerald-700 font-bold'">vs</span>
+                                <span v-if="(m.doppel.team1[0] || m.doppel.team1[1]) && (m.doppel.team2[0] || m.doppel.team2[1])" class="text-[9px] hidden md:inline" :class="m.status === 'Abgeschlossen' ? 'text-gray-300 dark:text-gray-700' : 'text-emerald-700 dark:text-emerald-400 font-bold'">vs</span>
                                 <span class="inline-flex flex-col gap-0.5">
                                     <span v-html="formatPlayerBadge(m.doppel.team2[0], m.status === 'Abgeschlossen')"></span>
                                     <span v-html="formatPlayerBadge(m.doppel.team2[1], m.status === 'Abgeschlossen')"></span>
@@ -1074,7 +1102,7 @@ html_template = """<!DOCTYPE html>
                             </div>
                             <div v-else class="flex flex-wrap items-center gap-1">
                                 <span v-html="formatPlayerBadge(m.doppel.p1, m.status === 'Abgeschlossen')"></span>
-                                <span v-if="m.doppel.p1 && m.doppel.p2" class="text-[9px] hidden md:inline" :class="m.status === 'Abgeschlossen' ? 'text-gray-300' : 'text-gray-400'">vs</span>
+                                <span v-if="m.doppel.p1 && m.doppel.p2" class="text-[9px] hidden md:inline" :class="m.status === 'Abgeschlossen' ? 'text-gray-300 dark:text-gray-700' : 'text-gray-400 dark:text-gray-500'">vs</span>
                                 <span v-html="formatPlayerBadge(m.doppel.p2, m.status === 'Abgeschlossen')"></span>
                             </div>
                         </td>
@@ -1085,12 +1113,17 @@ html_template = """<!DOCTYPE html>
         </div>
 
         <!-- Player Statistics Matrix Section -->
-        <div class="bg-white border border-emerald-200 rounded-lg p-3 mb-2.5 shadow-sm">
-            <div class="flex justify-between items-center mb-2 border-b border-gray-100 pb-1.5">
-                <h3 class="text-xs font-bold uppercase tracking-wider text-emerald-800 flex items-center gap-1.5">
+        <div class="bg-white dark:bg-gray-800 border border-emerald-200 dark:border-emerald-900 rounded-lg p-3 mb-2.5 shadow-sm">
+            <div class="flex justify-between items-center mb-2 border-b border-gray-100 dark:border-gray-700 pb-1.5">
+                <h3 class="text-xs font-bold uppercase tracking-wider text-emerald-800 dark:text-emerald-400 flex items-center gap-1.5">
                     <span>📊 Spieler-Statistik-Matrix (Einzel vs. Doppel)</span>
                 </h3>
-                <span class="text-[10px] text-gray-500 font-medium">Klick auf Spaltenköpfe zum Sortieren</span>
+                <div class="flex items-center gap-2">
+                    <span class="text-[10px] text-gray-500 dark:text-gray-400 font-medium hidden sm:inline">Klick auf Spaltenköpfe zum Sortieren</span>
+                    <button @click="exportStatsCsv()" class="no-print bg-emerald-800 hover:bg-emerald-900 text-white px-2.5 py-1 rounded text-[11px] font-semibold transition border border-emerald-700 flex items-center gap-1 shadow-xs" title="Statistik als CSV herunterladen">
+                        <span>📥 CSV Export</span>
+                    </button>
+                </div>
             </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse text-xs">
@@ -1101,23 +1134,29 @@ html_template = """<!DOCTYPE html>
                             <th @click="sortBy('doppel')" class="p-2 text-center font-semibold cursor-pointer hover:bg-emerald-700">Doppel [[ sortColumn === 'doppel' ? (sortDirection === 'asc' ? '▲' : '▼') : '↕' ]]</th>
                             <th @click="sortBy('total')" class="p-2 text-center font-semibold cursor-pointer hover:bg-emerald-700">Gesamt Spiele [[ sortColumn === 'total' ? (sortDirection === 'asc' ? '▲' : '▼') : '↕' ]]</th>
                             <th @click="sortBy('ratio')" class="p-2 text-center font-semibold cursor-pointer hover:bg-emerald-700">Doppel-Anteil [[ sortColumn === 'ratio' ? (sortDirection === 'asc' ? '▲' : '▼') : '↕' ]]</th>
-                            <th @click="sortBy('kosten')" class="p-2 text-center font-semibold cursor-pointer hover:bg-emerald-700" title="Kosten = (Einzel × 0.5) + (Doppel × 0.375)">Kosten ℹ️ [[ sortColumn === 'kosten' ? (sortDirection === 'asc' ? '▲' : '▼') : '↕' ]]</th>
+                            <th @click="sortBy('kosten')" class="p-2 text-center font-semibold cursor-pointer hover:bg-emerald-700 relative group" title="Klicken für Kostenformel-Details">
+                                <span class="inline-flex items-center justify-center gap-1">
+                                    <span>Kosten</span>
+                                    <span @click.stop="showCostModal = true" class="text-[10px] bg-emerald-700 hover:bg-emerald-600 px-1.5 py-0.5 rounded cursor-pointer border border-emerald-600">ℹ️</span>
+                                </span>
+                                [[ sortColumn === 'kosten' ? (sortDirection === 'asc' ? '▲' : '▼') : '↕' ]]
+                            </th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr v-for="stat in sortedPlayerStats" :key="stat.name" class="border-b border-gray-100 hover:bg-emerald-50/50">
+                    <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+                        <tr v-for="stat in sortedPlayerStats" :key="stat.name" class="border-b border-gray-100 dark:border-gray-700 hover:bg-emerald-50/50 dark:hover:bg-emerald-950/30">
                             <td class="p-2 font-medium">
                                 <span v-html="formatPlayerBadge(stat.name, false)"></span>
                             </td>
-                            <td class="p-2 text-center font-semibold text-gray-700">[[ stat.singles ]]</td>
-                            <td class="p-2 text-center font-semibold text-emerald-700">[[ stat.doppel ]]</td>
-                            <td class="p-2 text-center font-bold text-gray-900">[[ stat.total ]]</td>
+                            <td class="p-2 text-center font-semibold text-gray-700 dark:text-gray-300">[[ stat.singles ]]</td>
+                            <td class="p-2 text-center font-semibold text-emerald-700 dark:text-emerald-400">[[ stat.doppel ]]</td>
+                            <td class="p-2 text-center font-bold text-gray-900 dark:text-gray-100">[[ stat.total ]]</td>
                             <td class="p-2 text-center">
-                                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-gray-100 text-gray-800">
+                                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200">
                                     [[ stat.ratio ]]%
                                 </span>
                             </td>
-                            <td class="p-2 text-center font-bold text-emerald-800">[[ stat.kosten ]]</td>
+                            <td class="p-2 text-center font-bold text-emerald-800 dark:text-emerald-400">[[ stat.kosten ]]</td>
                         </tr>
                     </tbody>
                 </table>
@@ -1125,14 +1164,14 @@ html_template = """<!DOCTYPE html>
         </div>
 
         <!-- Rules Section -->
-        <div class="bg-white border border-emerald-200 rounded-lg p-3 shadow-sm">
-            <div class="flex justify-between items-center mb-2 border-b border-gray-100 pb-1.5">
-                <h3 class="text-xs font-bold uppercase tracking-wider text-emerald-800 flex items-center gap-1.5">
+        <div class="bg-white dark:bg-gray-800 border border-emerald-200 dark:border-emerald-900 rounded-lg p-3 shadow-sm">
+            <div class="flex justify-between items-center mb-2 border-b border-gray-100 dark:border-gray-700 pb-1.5">
+                <h3 class="text-xs font-bold uppercase tracking-wider text-emerald-800 dark:text-emerald-400 flex items-center gap-1.5">
                     <span>📋 Aktive Spielerregeln & Abwesenheiten</span>
                 </h3>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2">
-                <div v-for="(rulesList, player) in rulesByPlayer" :key="player" class="bg-gray-50 border border-gray-200 rounded p-2.5 text-xs flex flex-col justify-between shadow-2xs">
+                <div v-for="(rulesList, player) in rulesByPlayer" :key="player" class="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded p-2.5 text-xs flex flex-col justify-between shadow-2xs">
                     <div>
                         <div class="mb-2">
                             <span :style="{ backgroundColor: playerColors[player] ? playerColors[player].bg : '#eee', borderColor: playerColors[player] ? playerColors[player].border : '#ccc', color: '#111827' }"
@@ -1140,7 +1179,7 @@ html_template = """<!DOCTYPE html>
                                 [[ player ]]
                             </span>
                         </div>
-                        <ul class="list-disc list-inside text-gray-600 text-[11px] space-y-1 pl-1">
+                        <ul class="list-disc list-inside text-gray-600 dark:text-gray-300 text-[11px] space-y-1 pl-1">
                             <li v-for="(desc, idx) in rulesList" :key="idx">[[ desc ]]</li>
                         </ul>
                     </div>
@@ -1149,8 +1188,33 @@ html_template = """<!DOCTYPE html>
         </div>
 
         <!-- Footer / Stand timestamp -->
-        <div class="mt-3 mb-2 text-center text-xs text-gray-500 py-2 border-t border-gray-200">
+        <div class="mt-3 mb-2 text-center text-xs text-gray-500 dark:text-gray-400 py-2 border-t border-gray-200 dark:border-gray-800">
             Stand: /*UPDATE_DATE_PLACEHOLDER*/
+        </div>
+
+        <!-- Cost Formula Modal -->
+        <div v-if="showCostModal" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-3" @click="showCostModal = false">
+            <div class="bg-white dark:bg-gray-800 border border-emerald-300 dark:border-emerald-800 rounded-lg max-w-md w-full p-4 shadow-xl text-xs" @click.stop>
+                <div class="flex justify-between items-center mb-3 border-b border-gray-100 dark:border-gray-700 pb-2">
+                    <h4 class="font-bold text-emerald-800 dark:text-emerald-400 text-sm">ℹ️ Erläuterung der Kostenberechnung</h4>
+                    <button @click="showCostModal = false" class="text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 font-bold text-base px-1">✕</button>
+                </div>
+                <p class="text-gray-700 dark:text-gray-300 mb-3 leading-relaxed">
+                    Die Kosten pro Spieler basieren auf der Anzahl der absolvierten Einzel- und Doppelspiele über alle Spieltage hinweg:
+                </p>
+                <div class="bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-900 rounded p-3 text-center font-mono text-emerald-900 dark:text-emerald-200 font-bold mb-3">
+                    Kosten = (Einzel × 0.5) + (Doppel × 0.375)
+                </div>
+                <ul class="list-disc list-inside text-gray-600 dark:text-gray-400 space-y-1 mb-4">
+                    Ein Einzelspiel (2 Spieler pro Platz) schlägt mit <b>0,5 Einheiten</b> zu Buche.
+                    Ein Doppelspiel (4 Spieler pro Platz) schlägt mit insgesamt 1,5 Einheiten zu Buche, was aufgeteilt pro Spieler <b>0,375 Einheiten</b> (1,5 / 4) ergibt.
+                </ul>
+                <div class="text-right">
+                    <button @click="showCostModal = false" class="bg-emerald-800 hover:bg-emerald-900 text-white px-3 py-1.5 rounded font-semibold transition">
+                        Verstanden
+                    </button>
+                </div>
+            </div>
         </div>
 
     </div>
@@ -1167,6 +1231,14 @@ html_template = """<!DOCTYPE html>
                 const currentFilter = ref('ALL');
                 const showPastMatches = ref(false);
                 const rulesByPlayer = ref(playerRules);
+                const isDarkMode = ref(localStorage.getItem('gw_tennis_dark') === 'true');
+                const playerSearchQuery = ref('');
+                const showCostModal = ref(false);
+
+                function toggleDarkMode() {
+                    isDarkMode.value = !isDarkMode.value;
+                    localStorage.setItem('gw_tennis_dark', isDarkMode.value);
+                }
 
                 function getMatchPlayers(m) {
                     const players = [
@@ -1186,6 +1258,12 @@ html_template = """<!DOCTYPE html>
 
                 const allPlayers = computed(() => {
                     return [...new Set(matchesData.flatMap(m => getMatchPlayers(m)))].sort();
+                });
+
+                const displayedPlayers = computed(() => {
+                    if (!playerSearchQuery.value) return allPlayers.value;
+                    const q = playerSearchQuery.value.toLowerCase();
+                    return allPlayers.value.filter(p => p.toLowerCase().includes(q));
                 });
 
                 const explicitPlayerColors = {
@@ -1250,238 +1328,210 @@ html_template = """<!DOCTYPE html>
 
                 const nextUpcomingIndex = computed(() => {
                     const todayStr = new Date().toISOString().split('T')[0];
-                    let idx = displayedMatches.value.findIndex(m => m.date >= todayStr);
-                    if (idx === -1 && displayedMatches.value.length > 0) {
-                        idx = 0;
-                    }
-                    return idx;
+                    return displayedMatches.value.findIndex(m => m.date >= todayStr && m.status !== 'Abgeschlossen');
                 });
 
                 function isNextUpcoming(m, idx) {
-                    if (currentFilter.value !== 'ALL' || showPastMatches.value) return false;
-                    const firstFuture = nextUpcomingIndex.value;
-                    return firstFuture !== -1 && idx === firstFuture && m.status !== 'Abgeschlossen';
+                    if (currentFilter.value !== 'ALL') return false;
+                    return idx === nextUpcomingIndex.value;
+                }
+
+                function formatShortDate(dateStr) {
+                    const parts = dateStr.split('-');
+                    if (parts.length === 3) return `${parts[2]}.${parts[1]}.`;
+                    return dateStr;
+                }
+
+                function formatFullDate(dateStr) {
+                    try {
+                        const d = new Date(dateStr);
+                        return d.toLocaleDateString('de-DE', { weekday: 'short', day: '2-digit', month: '2-digit', year: 'numeric' });
+                    } catch (e) {
+                        return dateStr;
+                    }
+                }
+
+                function formatPlayerBadge(player, isFinished) {
+                    if (!player || player === 'vs') return '';
+                    const isFiltered = currentFilter.value === player;
+                    const colors = playerColors[player] || { bg: '#e2e8f0', text: '#111827', border: '#cbd5e1' };
+
+                    let opacityClass = '';
+                    if (currentFilter.value !== 'ALL' && !isFiltered) {
+                        opacityClass = 'opacity-30';
+                    }
+
+                    const isNext = nextMatchPlayers.value.includes(player);
+                    const starHtml = isNext ? ' <span title="Am nächsten Spieltag im Einsatz">⭐</span>' : '';
+
+                    return `<span style="background-color: ${colors.bg}; border-color: ${colors.border}; color: ${colors.text};" class="inline-flex items-center px-1.5 py-0.5 rounded border text-[11px] font-semibold shadow-2xs transition ${opacityClass}">
+                        ${player}${starHtml}
+                    </span>`;
                 }
 
                 function getRowClass(m, idx) {
-                    const isCompleted = m.status === 'Abgeschlossen';
-                    const isNext = isNextUpcoming(m, idx);
-                    const hasPlayer = matchHasPlayer(m, currentFilter.value);
-
-                    let base = '';
-                    if (!hasPlayer && currentFilter.value !== 'ALL') {
-                        base = 'opacity-30 grayscale-[30%] ';
+                    if (m.status === 'Abgeschlossen') {
+                        let base = 'bg-gray-50 dark:bg-gray-900/50 text-gray-400 dark:text-gray-600 transition';
+                        if (currentFilter.value !== 'ALL' && !getMatchPlayers(m).includes(currentFilter.value)) {
+                            base += ' opacity-25';
+                        }
+                        return base;
                     }
-
-                    if (isNext) {
-                        return base + 'bg-emerald-50/90 border-l-4 border-emerald-600 font-medium hover:bg-emerald-100/60 transition';
-                    } else if (isCompleted) {
-                        return base + 'bg-gray-50/70 text-gray-400 hover:bg-gray-100/80 transition';
-                    } else {
-                        return base + (idx % 2 === 0 ? 'bg-white hover:bg-emerald-50/40 transition' : 'bg-gray-100/90 hover:bg-emerald-50/40 transition');
+                    let base = 'hover:bg-gray-50 dark:hover:bg-gray-800 transition';
+                    if (isNextUpcoming(m, idx) && currentFilter.value === 'ALL') {
+                        base += ' bg-emerald-50/70 dark:bg-emerald-950/40 border-l-4 border-emerald-600';
                     }
+                    if (currentFilter.value !== 'ALL' && !getMatchPlayers(m).includes(currentFilter.value)) {
+                        base += ' opacity-25';
+                    }
+                    return base;
                 }
 
                 function setFilter(player) {
-                    currentFilter.value = (currentFilter.value === player) ? 'ALL' : player;
+                    currentFilter.value = player;
                 }
 
                 function togglePastMatches() {
                     showPastMatches.value = !showPastMatches.value;
                 }
 
-                function formatShortDate(dateStr) {
-                    if (!dateStr) return '';
-                    const parts = dateStr.split('-');
-                    if (parts.length === 3) {
-                        return `${parts[2]}.${parts[1]}`;
-                    }
-                    return dateStr;
-                }
+                const sortColumn = ref('kosten');
+                const sortDirection = ref('desc');
 
-                function formatFullDate(dateStr) {
-                    if (!dateStr) return '';
-                    const parts = dateStr.split('-');
-                    if (parts.length === 3) {
-                        return `${parts[2]}.${parts[1]}.${parts[0]}`;
-                    }
-                    return dateStr;
-                }
-
-                function formatPlayerBadge(player, isCompleted) {
-                    if (!player || player === 'vs') return '';
-                    const colors = playerColors[player] || { bg: '#eee', text: '#333', border: '#ccc' };
-                    const isSelected = currentFilter.value === player;
-
-                    const shortName = player.length > 4 ? player.substring(0, 4) + '...' : player;
-                    const innerHtml = `<span class="md:hidden">${shortName}</span><span class="hidden md:inline">${player}</span>`;
-
-                    if (isSelected) {
-                        return `<span class="px-2.5 py-0.5 rounded text-xs font-black inline-block border shadow-md whitespace-nowrap ring-2 ring-emerald-600 ring-offset-1" style="background-color: #111827; color: #ffffff; border-color: ${colors.border};">${innerHtml}</span>`;
-                    } else if (isCompleted) {
-                        return `<span class="px-2 py-0.5 rounded text-xs font-medium inline-block border whitespace-nowrap opacity-40 grayscale-[20%]" style="background-color: ${colors.bg}; color: ${colors.text}; border-color: ${colors.border};">${innerHtml}</span>`;
+                function sortBy(column) {
+                    if (sortColumn.value === column) {
+                        sortDirection.value = sortDirection.value === 'asc' ? 'desc' : 'asc';
                     } else {
-                        return `<span class="px-2 py-0.5 rounded text-xs font-bold inline-block border shadow-sm whitespace-nowrap" style="background-color: ${colors.bg}; color: ${colors.text}; border-color: ${colors.border};">${innerHtml}</span>`;
+                        sortColumn.value = column;
+                        sortDirection.value = column === 'name' ? 'asc' : 'desc';
                     }
                 }
 
-                function downloadPlayerIcs(playerName) {
-                    let icsContent = "BEGIN:VCALENDAR\\nVERSION:2.0\\nPRODID:-//Tennis Spielplan 2026/2027//DE\\nCALSCALE:GREGORIAN\\nMETHOD:PUBLISH\\n";
+                const sortedPlayerStats = computed(() => {
+                    const statsArr = Object.keys(playerStats).map(name => ({
+                        name,
+                        ...playerStats[name]
+                    }));
 
-                    matchesData.forEach(m => {
-                        let matchTime = null;
-                        let courtName = "";
+                    return statsArr.sort((a, b) => {
+                        let valA = a[sortColumn.value];
+                        let valB = b[sortColumn.value];
 
-                        const p1List = [m.p1.p1, m.p1.p2];
-                        const p2List = [m.p2.p1, m.p2.p2];
-                        const p3List = [m.p3.p1, m.p3.p2];
-                        const c2List = (m.court2_type === 'singles') ? [m.doppel.p1, m.doppel.p2] : [...(m.doppel.team1 || []), ...(m.doppel.team2 || [])];
-
-                        if (p1List.includes(playerName)) { matchTime = m.p1.time; courtName = "19:00 Uhr"; }
-                        else if (p2List.includes(playerName)) { matchTime = m.p2.time; courtName = "20:00 Uhr"; }
-                        else if (p3List.includes(playerName)) { matchTime = m.p3.time; courtName = "21:00 Uhr"; }
-                        else if (c2List.includes(playerName)) {
-                            matchTime = m.doppel.time;
-                            courtName = (m.court2_type === 'singles') ? "Einzel (20:30 Uhr)" : "Doppel (20:30 Uhr)";
-                        }
-
-                        if (matchTime && m.date) {
-                            const dateStr = m.date.replace(/-/g, '');
-                            const timeClean = matchTime.replace(':', '') + '00';
-                            let [hours, mins] = matchTime.split(':').map(Number);
-                            hours += 1;
-                            mins += 30;
-                            if (mins >= 60) { hours += 1; mins -= 60; }
-                            const endTimeStr = String(hours).padStart(2, '0') + String(mins).padStart(2, '0') + '00';
-
-                            let matchDetails = `19:00: ${m.p1.p1} vs ${m.p1.p2} | 20:00: ${m.p2.p1} vs ${m.p2.p2} | 21:00: ${m.p3.p1} vs ${m.p3.p2}`;
-
-                            icsContent += "BEGIN:VEVENT\\n";
-                            icsContent += `UID:spieltag-${m.spieltag}-${playerName.replace(/\\s+/g, '')}@tennis.local\\n`;
-                            icsContent += `DTSTAMP:${dateStr}T${timeClean}Z\\n`;
-                            icsContent += `DTSTART:${dateStr}T${timeClean}Z\\n`;
-                            icsContent += `DTEND:${dateStr}T${endTimeStr}Z\\n`;
-                            icsContent += `SUMMARY:Tennis-Training (${courtName}, Spieltag ${m.spieltag})\\n`;
-                            icsContent += `DESCRIPTION:Deine Begegnungen:\\n${matchDetails}\\n`;
-                            icsContent += "END:VEVENT\\n";
+                        if (typeof valA === 'string') {
+                            valA = valA.toLowerCase();
+                            valB = valB.toLowerCase();
+                            if (valA < valB) return sortDirection.value === 'asc' ? -1 : 1;
+                            if (valA > valB) return sortDirection.value === 'asc' ? 1 : -1;
+                            return 0;
+                        } else {
+                            return sortDirection.value === 'asc' ? valA - valB : valB - valA;
                         }
                     });
+                });
 
-                    icsContent += "END:VCALENDAR";
+                function exportStatsCsv() {
+                    let csv = "Spieler;Einzel;Doppel;Gesamt Spiele;Doppel-Anteil (%);Kosten\n";
+                    sortedPlayerStats.value.forEach(s => {
+                        csv += `${s.name};${s.singles};${s.doppel};${s.total};${s.ratio}%;${s.kosten}\n`;
+                    });
+                    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                    const link = document.createElement("a");
+                    link.href = URL.createObjectURL(blob);
+                    link.setAttribute("download", "tennis_spielplan_statistik_2026_2027.csv");
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }
 
-                    const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
-                    const link = document.createElement('a');
-                    link.href = window.URL.createObjectURL(blob);
-                    link.download = `Tennis_Spielplan_${playerName.replace(/__+/g, '_')}.ics`;
+                function downloadPlayerIcs(player) {
+                    let ics = "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//Tennis Spielplan 2026//DE\n";
+                    matchesData.forEach(m => {
+                        const players = getMatchPlayers(m);
+                        if (players.includes(player) && m.status !== 'Reserviert für alle') {
+                            const dateClean = m.date.replace(/-/g, '');
+                            ics += "BEGIN:VEVENT\n";
+                            ics += `SUMMARY:Tennis Spieltag #${m.spieltag} (${player})\n`;
+                            ics += `DTSTART;VALUE=DATE:${dateClean}\n`;
+                            ics += `DTEND;VALUE=DATE:${dateClean}\n`;
+                            ics += `DESCRIPTION:Tennis Match am Spieltag #${m.spieltag}\n`;
+                            ics += "END:VEVENT\n";
+                        }
+                    });
+                    ics += "END:VCALENDAR";
+                    const blob = new Blob([ics.replace(/\\n/g, '\r\n')], { type: 'text/calendar;charset=utf-8;' });
+                    const link = document.createElement("a");
+                    link.href = URL.createObjectURL(blob);
+                    link.setAttribute("download", `tennis_spielplan_${player.toLowerCase().replace(/\s+/g, '_')}.ics`);
                     document.body.appendChild(link);
                     link.click();
                     document.body.removeChild(link);
                 }
 
                 function downloadAllIcs() {
-                    let icsContent = "BEGIN:VCALENDAR\\nVERSION:2.0\\nPRODID:-//Tennis Spielplan Gesamtsaison 2026/2027//DE\\nCALSCALE:GREGORIAN\\nMETHOD:PUBLISH\\n";
+                    let ics = "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//Tennis Spielplan 2026//DE\n";
                     matchesData.forEach(m => {
-                        if (m.status === 'Reserviert für alle' || !m.date) return;
-                        const dateStr = m.date.replace(/-/g, '');
-                        const timeClean = '190000';
-                        const endTimeStr = '223000';
-                        let matchDetails = `19:00: ${m.p1.p1} vs ${m.p1.p2} | 20:00: ${m.p2.p1} vs ${m.p2.p2} | 21:00: ${m.p3.p1} vs ${m.p3.p2}`;
-                        icsContent += "BEGIN:VEVENT\\n";
-                        icsContent += `UID:spieltag-${m.spieltag}-gesamt@tennis.local\\n`;
-                        icsContent += `DTSTAMP:${dateStr}T${timeClean}Z\\n`;
-                        icsContent += `DTSTART:${dateStr}T${timeClean}Z\\n`;
-                        icsContent += `DTEND:${dateStr}T${endTimeStr}Z\\n`;
-                        icsContent += `SUMMARY:Tennis-Abend Spieltag ${m.spieltag} (Wintersaison)\\n`;
-                        icsContent += `DESCRIPTION:Spieltag ${m.spieltag} am ${m.date}\\n${matchDetails}\\n`;
-                        icsContent += "END:VEVENT\\n";
+                        if (m.status !== 'Reserviert für alle') {
+                            const dateClean = m.date.replace(/-/g, '');
+                            ics += "BEGIN:VEVENT\n";
+                            ics += `SUMMARY:Tennis Spieltag #${m.spieltag}\n`;
+                            ics += `DTSTART;VALUE=DATE:${dateClean}\n`;
+                            ics += `DTEND;VALUE=DATE:${dateClean}\n`;
+                            ics += `DESCRIPTION:Tennis Spieltag #${m.spieltag} - Alle Spiele\n`;
+                            ics += "END:VEVENT\n";
+                        }
                     });
-                    icsContent += "END:VCALENDAR";
-
-                    const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
-                    const link = document.createElement('a');
-                    link.href = window.URL.createObjectURL(blob);
-                    link.download = "Tennis_Gesamter_Spielplan_2026_2027.ics";
+                    ics += "END:VCALENDAR";
+                    const blob = new Blob([ics.replace(/\\n/g, '\r\n')], { type: 'text/calendar;charset=utf-8;' });
+                    const link = document.createElement("a");
+                    link.href = URL.createObjectURL(blob);
+                    link.setAttribute("download", "tennis_spielplan_gesamtsaison_2026_2027.ics");
                     document.body.appendChild(link);
                     link.click();
                     document.body.removeChild(link);
                 }
 
-                const sortColumn = ref('total');
-                const sortDirection = ref('desc');
-
-                function sortBy(col) {
-                    if (sortColumn.value === col) {
-                        sortDirection.value = sortDirection.value === 'asc' ? 'desc' : 'asc';
-                    } else {
-                        sortColumn.value = col;
-                        sortDirection.value = ['name', 'ratio'].includes(col) ? 'asc' : 'desc';
-                    }
-                }
-
-                const sortedPlayerStats = computed(() => {
-                    const entries = Object.entries(playerStats).map(([name, stats]) => ({ name, ...stats }));
-                    entries.sort((a, b) => {
-                        let valA = (sortColumn.value === 'name') ? a.name : a[sortColumn.value];
-                        let valB = (sortColumn.value === 'name') ? b.name : b[sortColumn.value];
-                        if (valA < valB) return sortDirection.value === 'asc' ? -1 : 1;
-                        if (valA > valB) return sortDirection.value === 'asc' ? 1 : -1;
-                        return 0;
-                    });
-                    return entries;
-                });
-
                 onMounted(() => {
-                    if (currentFilter.value === 'ALL' && !showPastMatches.value) {
-                        setTimeout(() => {
-                            const target = document.getElementById('next-match-target');
-                            if (target) {
-                                target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                            }
-                        }, 150);
-                    }
+                    nextTick(() => {
+                        const el = document.getElementById('next-match-target');
+                        if (el) {
+                            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }
+                    });
                 });
 
                 return {
+                    matchesData,
                     currentFilter,
                     showPastMatches,
                     rulesByPlayer,
-                    playerStats,
                     allPlayers,
+                    displayedPlayers,
+                    playerSearchQuery,
                     playerColors,
                     filteredMatches,
                     displayedMatches,
-                    nextMatch,
                     nextMatchPlayers,
+                    isDarkMode,
+                    toggleDarkMode,
                     isNextUpcoming,
-                    getRowClass,
-                    setFilter,
-                    togglePastMatches,
                     formatShortDate,
                     formatFullDate,
                     formatPlayerBadge,
-                    downloadPlayerIcs,
-                    downloadAllIcs,
+                    getRowClass,
+                    setFilter,
+                    togglePastMatches,
                     sortColumn,
                     sortDirection,
+                    sortBy,
                     sortedPlayerStats,
-                    sortBy
+                    exportStatsCsv,
+                    downloadPlayerIcs,
+                    downloadAllIcs,
+                    showCostModal
                 };
-            },
-            compilerOptions: {
-                delimiters: ['[[', ']]']
             }
         }).mount('#app');
     </script>
 </body>
 </html>
 """
-
-html_content = html_template.replace('/*JSON_DATA_PLACEHOLDER*/', json.dumps(matches, ensure_ascii=False))
-html_content = html_content.replace('/*RULES_JSON_PLACEHOLDER*/', json.dumps(frontend_rules_by_player, ensure_ascii=False))
-html_content = html_content.replace('/*PLAYER_STATS_JSON_PLACEHOLDER*/', json.dumps(player_stats, ensure_ascii=False))
-html_content = html_content.replace('/*UPDATE_DATE_PLACEHOLDER*/', datetime.datetime.now().strftime('%d.%m.%Y %H:%M'))
-
-with open('index.html', 'w', encoding='utf-8') as f:
-    f.write(html_content)
-
-print('Successfully structured PLAYER_RULES with nested "rules" key and regenerated index.html!')
