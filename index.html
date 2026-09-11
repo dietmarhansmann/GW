@@ -20,33 +20,22 @@
             </div>
             <div>
                 <span class="text-xs bg-emerald-900/80 text-emerald-100 px-2.5 py-1 rounded font-medium border border-emerald-700">
-                    Stand: 11.09.2026 10:18
+                    Stand: 11.09.2026 10:45
                 </span>
             </div>
         </header>
 
-        <!-- Next Match Highlight Banner -->
-        <div v-if="nextMatch" class="bg-emerald-50 border border-emerald-300 text-emerald-900 rounded-lg p-3 mb-2.5 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-2">
-            <div class="font-bold text-xs uppercase tracking-wider text-emerald-900">
-                Nächster Spieltag: [[ formatFullDate(nextMatch.date) ]] (Spieltag [[ nextMatch.spieltag ]]) mit ...
-            </div>
-            <div class="text-[11px] text-emerald-800 flex flex-wrap items-center gap-1.5">
-                <span v-for="p in nextMatchPlayers" :key="p" @click="setFilter(p)" class="cursor-pointer">
-                    <span v-html="formatPlayerBadge(p, false)"></span>
-                </span>
-            </div>
-        </div>
-
         <!-- Player Legend & Controls Bar -->
         <div class="bg-white border border-gray-200 rounded-lg p-2.5 mb-2.5 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-2">
             <div class="flex-1 w-full">
-                <div class="flex justify-between items-center mb-1.5">
-                    <span class="font-bold text-xs uppercase tracking-wider text-gray-700">Spieler (Klick = Spiele filtern | 📅 = Kalender-Download für z.B. Google Kalender):</span>
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-1.5 gap-1">
+                    <span class="font-bold text-xs uppercase tracking-wider text-gray-700">⭐ #1 = 06.10.2026 = Nächster Spieltag | Klick = Spiele filtern | 📅 = Kalender-Download für z.B. Google Kalender:</span>
                     <span v-if="currentFilter !== 'ALL'" class="text-[11px] text-emerald-700 font-semibold">
                         Filter aktiv: [[ currentFilter ]] ([[ filteredMatches.length ]] Spieltage)
                     </span>
                 </div>
-                <div class="flex flex-wrap gap-1 items-center">
+
+                <div class="flex flex-wrap gap-2 items-center pt-1 pb-0.5">
                     <!-- 'Alle' button -->
                     <button @click="setFilter('ALL')"
                         :class="currentFilter === 'ALL' ? 'bg-black text-white border-black ring-2 ring-gray-400 scale-105' : 'bg-gray-100 hover:bg-gray-200 text-gray-800 border-gray-300'"
@@ -57,12 +46,13 @@
                     <!-- Player pills -->
                     <div v-for="player in allPlayers" :key="player"
                         :style="{ backgroundColor: currentFilter === player ? '#111827' : (playerColors[player] ? playerColors[player].bg : '#eee'), borderColor: playerColors[player] ? playerColors[player].border : '#ccc' }"
-                        :class="currentFilter === player ? 'scale-110 font-black shadow-xl ring-2 ring-emerald-600 ring-offset-1 z-10' : 'hover:opacity-95 shadow-sm border'"
-                        class="inline-flex items-center rounded border transition">
+                        :class="currentFilter === player ? 'scale-110 font-black shadow-xl ring-2 ring-emerald-600 ring-offset-1 z-10' : 'hover:opacity-95 shadow-sm border'""
+                        class="inline-flex items-center rounded border transition relative">
                         <button @click="setFilter(player)"
                             :style="{ color: currentFilter === player ? '#ffffff' : '#111827' }"
-                            class="px-2.5 py-1 text-xs font-bold flex items-center gap-1 focus:outline-none">
-                            [[ player ]]
+                            class="px-2 py-1 text-xs font-bold flex items-center gap-1 focus:outline-none">
+                            <span>[[ player ]]</span>
+                            <span v-if="nextMatchPlayers.includes(player)" title="Am nächsten Spieltag im Einsatz">⭐</span>
                         </button>
                         <button @click.stop="downloadPlayerIcs(player)"
                             :style="{ borderColor: playerColors[player] ? playerColors[player].border : '#ccc', color: currentFilter === player ? '#ffffff' : '#111827' }"
@@ -91,7 +81,7 @@
                         <th class="py-2 px-1.5">19:00 Uhr</th>
                         <th class="py-2 px-1.5">20:00 Uhr</th>
                         <th class="py-2 px-1.5">21:00 Uhr</th>
-                        <th class="py-2 px-1.5">Doppel <span class="font-normal normal-case text-gray-500">(20:30)</span></th>
+                        <th class="py-2 px-1.5">Doppel / Einzel <span class="font-normal normal-case text-gray-500">(20:30)</span></th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200">
@@ -135,9 +125,9 @@
                                 <span v-html="formatPlayerBadge(m.p3.p2, m.status === 'Abgeschlossen')"></span>
                             </div>
                         </td>
-                        <!-- Platz 2 - Doppel (20:30) -->
+                        <!-- Platz 2 - Doppel / Einzel (20:30) -->
                         <td class="py-2 px-1.5">
-                            <div class="flex flex-wrap items-center gap-1">
+                            <div v-if="m.court2_type !== 'singles'" class="flex flex-wrap items-center gap-1">
                                 <span class="inline-flex flex-col gap-0.5">
                                     <span v-html="formatPlayerBadge(m.doppel.team1[0], m.status === 'Abgeschlossen')"></span>
                                     <span v-html="formatPlayerBadge(m.doppel.team1[1], m.status === 'Abgeschlossen')"></span>
@@ -147,6 +137,11 @@
                                     <span v-html="formatPlayerBadge(m.doppel.team2[0], m.status === 'Abgeschlossen')"></span>
                                     <span v-html="formatPlayerBadge(m.doppel.team2[1], m.status === 'Abgeschlossen')"></span>
                                 </span>
+                            </div>
+                            <div v-else class="flex flex-wrap items-center gap-1">
+                                <span v-html="formatPlayerBadge(m.doppel.p1, m.status === 'Abgeschlossen')"></span>
+                                <span v-if="m.doppel.p1 && m.doppel.p2" class="text-[9px] hidden md:inline" :class="m.status === 'Abgeschlossen' ? 'text-gray-300' : 'text-gray-400'">vs</span>
+                                <span v-html="formatPlayerBadge(m.doppel.p2, m.status === 'Abgeschlossen')"></span>
                             </div>
                         </td>
                     </tr>
@@ -221,9 +216,9 @@
     </div>
 
     <script>
-        const matchesData = [{"spieltag": 1, "date": "2026-10-06", "p1": {"p1": "Prodehl", "p2": "Dedores", "time": "19:00"}, "p2": {"p1": "Wojtanowitsch", "p2": "Kuhlhoff", "time": "20:00"}, "p3": {"p1": "Heyn", "p2": "Nolte", "time": "21:00"}, "doppel": {"team1": ["Beumer", "Weber"], "team2": ["Hansmann", "Marschollek"], "time": "20:30"}, "status": "Geplant"}, {"spieltag": 2, "date": "2026-10-13", "p1": {"p1": "Weber", "p2": "Kuhlhoff", "time": "19:00"}, "p2": {"p1": "van de Loo", "p2": "Beumer", "time": "20:00"}, "p3": {"p1": "Wojtanowitsch", "p2": "Hansmann", "time": "21:00"}, "doppel": {"team1": ["Prodehl", "Redieker"], "team2": ["Nolte", "Rumpf"], "time": "20:30"}, "status": "Geplant"}, {"spieltag": 3, "date": "2026-10-20", "p1": {"p1": "Heyn", "p2": "Wojtanowitsch", "time": "19:00"}, "p2": {"p1": "Mönning", "p2": "Nolte", "time": "20:00"}, "p3": {"p1": "Kuhlhoff", "p2": "Beumer", "time": "21:00"}, "doppel": {"team1": ["Rumpf", "Weber"], "team2": ["Hansmann", "Prodehl"], "time": "20:30"}, "status": "Geplant"}, {"spieltag": 4, "date": "2026-10-27", "p1": {"p1": "Wojtanowitsch", "p2": "Nolte", "time": "19:00"}, "p2": {"p1": "Trojanski", "p2": "Hansmann", "time": "20:00"}, "p3": {"p1": "Kuhlhoff", "p2": "Weber", "time": "21:00"}, "doppel": {"team1": ["Marschollek", "Redieker"], "team2": ["Beumer", "Prodehl"], "time": "20:30"}, "status": "Geplant"}, {"spieltag": 5, "date": "2026-11-03", "p1": {"p1": "Hansmann", "p2": "Kuhlhoff", "time": "19:00"}, "p2": {"p1": "Dedores", "p2": "Kissner", "time": "20:00"}, "p3": {"p1": "Mönning", "p2": "Wojtanowitsch", "time": "21:00"}, "doppel": {"team1": ["Beumer", "Nolte"], "team2": ["Redieker", "Rumpf"], "time": "20:30"}, "status": "Geplant"}, {"spieltag": 6, "date": "2026-11-10", "p1": {"p1": "Wojtanowitsch", "p2": "Mönning", "time": "19:00"}, "p2": {"p1": "van de Loo", "p2": "Hansmann", "time": "20:00"}, "p3": {"p1": "Trojanski", "p2": "Dedores", "time": "21:00"}, "doppel": {"team1": ["Beumer", "Nolte"], "team2": ["Rumpf", "Weber"], "time": "20:30"}, "status": "Geplant"}, {"spieltag": 7, "date": "2026-11-17", "p1": {"p1": "Kissner", "p2": "Rumpf", "time": "19:00"}, "p2": {"p1": "Hansmann", "p2": "Wojtanowitsch", "time": "20:00"}, "p3": {"p1": "Mönning", "p2": "Dedores", "time": "21:00"}, "doppel": {"team1": ["Marschollek", "Heyn"], "team2": ["Beumer", "Redieker"], "time": "20:30"}, "status": "Geplant"}, {"spieltag": 8, "date": "2026-11-24", "p1": {"p1": "Mönning", "p2": "Hansmann", "time": "19:00"}, "p2": {"p1": "Rumpf", "p2": "Wojtanowitsch", "time": "20:00"}, "p3": {"p1": "Beumer", "p2": "Kissner", "time": "21:00"}, "doppel": {"team1": ["Redieker", "Marschollek"], "team2": ["Nolte", "Heyn"], "time": "20:30"}, "status": "Geplant"}, {"spieltag": 9, "date": "2026-12-01", "p1": {"p1": "Beumer", "p2": "Dedores", "time": "19:00"}, "p2": {"p1": "Kuhlhoff", "p2": "Mönning", "time": "20:00"}, "p3": {"p1": "Wojtanowitsch", "p2": "Heyn", "time": "21:00"}, "doppel": {"team1": ["Nolte", "Prodehl"], "team2": ["Marschollek", "Redieker"], "time": "20:30"}, "status": "Geplant"}, {"spieltag": 10, "date": "2026-12-08", "p1": {"p1": "Wojtanowitsch", "p2": "Hansmann", "time": "19:00"}, "p2": {"p1": "Dedores", "p2": "Redieker", "time": "20:00"}, "p3": {"p1": "Prodehl", "p2": "Mönning", "time": "21:00"}, "doppel": {"team1": ["Nolte", "Weber"], "team2": ["Rumpf", "Beumer"], "time": "20:30"}, "status": "Geplant"}, {"spieltag": 11, "date": "2026-12-15", "p1": {"p1": "Beumer", "p2": "van de Loo", "time": "19:00"}, "p2": {"p1": "Weber", "p2": "Prodehl", "time": "20:00"}, "p3": {"p1": "Kuhlhoff", "p2": "Wojtanowitsch", "time": "21:00"}, "doppel": {"team1": ["Nolte", "Heyn"], "team2": ["Marschollek", "Hansmann"], "time": "20:30"}, "status": "Geplant"}, {"spieltag": 12, "date": "2026-12-22", "p1": {"p1": "Kuhlhoff", "p2": "Nolte", "time": "19:00"}, "p2": {"p1": "Wojtanowitsch", "p2": "Weber", "time": "20:00"}, "p3": {"p1": "Mönning", "p2": "Marschollek", "time": "21:00"}, "doppel": {"team1": ["Rumpf", "Hansmann"], "team2": ["Prodehl", "Beumer"], "time": "20:30"}, "status": "Geplant"}, {"spieltag": 13, "date": "2026-12-29", "p1": {"p1": "", "p2": "", "time": "19:00"}, "p2": {"p1": "", "p2": "", "time": "20:00"}, "p3": {"p1": "", "p2": "", "time": "21:00"}, "doppel": {"team1": ["", ""], "team2": ["", ""], "time": "20:30"}, "status": "Reserviert für alle"}];
+        const matchesData = [{"spieltag": 1, "date": "2026-10-06", "court2_type": "doppel", "p1": {"p1": "Prodehl", "p2": "Dedores", "time": "19:00"}, "p2": {"p1": "Wojtanowitsch", "p2": "Kuhlhoff", "time": "20:00"}, "p3": {"p1": "Heyn", "p2": "Nolte", "time": "21:00"}, "doppel": {"team1": ["Marschollek", "Weber"], "team2": ["Beumer", "Hansmann"], "time": "20:30"}, "status": "Geplant"}, {"spieltag": 2, "date": "2026-10-13", "court2_type": "singles", "p1": {"p1": "Kuhlhoff", "p2": "Hansmann", "time": "19:00"}, "p2": {"p1": "Dedores", "p2": "Beumer", "time": "20:00"}, "p3": {"p1": "Weber", "p2": "Wojtanowitsch", "time": "21:00"}, "doppel": {"p1": "Prodehl", "p2": "Nolte", "time": "20:30"}, "status": "Geplant"}, {"spieltag": 3, "date": "2026-10-20", "court2_type": "doppel", "p1": {"p1": "Rumpf", "p2": "Wojtanowitsch", "time": "19:00"}, "p2": {"p1": "Weber", "p2": "van de Loo", "time": "20:00"}, "p3": {"p1": "Beumer", "p2": "Mönning", "time": "21:00"}, "doppel": {"team1": ["Prodehl", "Hansmann"], "team2": ["Nolte", "Heyn"], "time": "20:30"}, "status": "Geplant"}, {"spieltag": 4, "date": "2026-10-27", "court2_type": "singles", "p1": {"p1": "Wojtanowitsch", "p2": "Beumer", "time": "19:00"}, "p2": {"p1": "Trojanski", "p2": "Prodehl", "time": "20:00"}, "p3": {"p1": "Hansmann", "p2": "Kissner", "time": "21:00"}, "doppel": {"p1": "Nolte", "p2": "Weber", "time": "20:30"}, "status": "Geplant"}, {"spieltag": 5, "date": "2026-11-03", "court2_type": "doppel", "p1": {"p1": "Mönning", "p2": "Redieker", "time": "19:00"}, "p2": {"p1": "Kissner", "p2": "Wojtanowitsch", "time": "20:00"}, "p3": {"p1": "Kuhlhoff", "p2": "Dedores", "time": "21:00"}, "doppel": {"team1": ["Nolte", "Beumer"], "team2": ["Hansmann", "Rumpf"], "time": "20:30"}, "status": "Geplant"}, {"spieltag": 6, "date": "2026-11-10", "court2_type": "singles", "p1": {"p1": "Rumpf", "p2": "Dedores", "time": "19:00"}, "p2": {"p1": "Mönning", "p2": "Kissner", "time": "20:00"}, "p3": {"p1": "Wojtanowitsch", "p2": "Trojanski", "time": "21:00"}, "doppel": {"p1": "Hansmann", "p2": "Nolte", "time": "20:30"}, "status": "Geplant"}, {"spieltag": 7, "date": "2026-11-17", "court2_type": "doppel", "p1": {"p1": "Wojtanowitsch", "p2": "Mönning", "time": "19:00"}, "p2": {"p1": "Dedores", "p2": "Hansmann", "time": "20:00"}, "p3": {"p1": "Kissner", "p2": "van de Loo", "time": "21:00"}, "doppel": {"team1": ["Beumer", "Rumpf"], "team2": ["Heyn", "Redieker"], "time": "20:30"}, "status": "Geplant"}, {"spieltag": 8, "date": "2026-11-24", "court2_type": "singles", "p1": {"p1": "Kissner", "p2": "Nolte", "time": "19:00"}, "p2": {"p1": "Wojtanowitsch", "p2": "Rumpf", "time": "20:00"}, "p3": {"p1": "Mönning", "p2": "Beumer", "time": "21:00"}, "doppel": {"p1": "Marschollek", "p2": "Heyn", "time": "20:30"}, "status": "Geplant"}, {"spieltag": 9, "date": "2026-12-01", "court2_type": "doppel", "p1": {"p1": "Kuhlhoff", "p2": "Mönning", "time": "19:00"}, "p2": {"p1": "Nolte", "p2": "Dedores", "time": "20:00"}, "p3": {"p1": "Redieker", "p2": "Wojtanowitsch", "time": "21:00"}, "doppel": {"team1": ["Beumer", "Marschollek"], "team2": ["Prodehl", "Heyn"], "time": "20:30"}, "status": "Geplant"}, {"spieltag": 10, "date": "2026-12-08", "court2_type": "singles", "p1": {"p1": "Weber", "p2": "Beumer", "time": "19:00"}, "p2": {"p1": "Wojtanowitsch", "p2": "Mönning", "time": "20:00"}, "p3": {"p1": "Dedores", "p2": "Nolte", "time": "21:00"}, "doppel": {"p1": "Hansmann", "p2": "Rumpf", "time": "20:30"}, "status": "Geplant"}, {"spieltag": 11, "date": "2026-12-15", "court2_type": "doppel", "p1": {"p1": "Hansmann", "p2": "Wojtanowitsch", "time": "19:00"}, "p2": {"p1": "Kuhlhoff", "p2": "Beumer", "time": "20:00"}, "p3": {"p1": "van de Loo", "p2": "Prodehl", "time": "21:00"}, "doppel": {"team1": ["Heyn", "Weber"], "team2": ["Nolte", "Marschollek"], "time": "20:30"}, "status": "Geplant"}, {"spieltag": 12, "date": "2026-12-22", "court2_type": "singles", "p1": {"p1": "Heyn", "p2": "Wojtanowitsch", "time": "19:00"}, "p2": {"p1": "Hansmann", "p2": "Marschollek", "time": "20:00"}, "p3": {"p1": "Rumpf", "p2": "Kuhlhoff", "time": "21:00"}, "doppel": {"p1": "Nolte", "p2": "Prodehl", "time": "20:30"}, "status": "Geplant"}, {"spieltag": 13, "date": "2026-12-29", "court2_type": "doppel", "p1": {"p1": "", "p2": "", "time": "19:00"}, "p2": {"p1": "", "p2": "", "time": "20:00"}, "p3": {"p1": "", "p2": "", "time": "21:00"}, "doppel": {"team1": ["", ""], "team2": ["", ""], "time": "20:30"}, "status": "Reserviert für alle"}];
         const playerRules = {"Mönning": ["Spielt ausschließlich Einzel (0% Doppel)."], "Hansmann": ["Möchte ca. 70% Einzel spielen (30% Doppel).", "Kann an Spieltag 9 nicht teilnehmen."], "Dedores": ["Spielt ausschließlich Einzel (0% Doppel).", "Kann an folgenden Tagen nicht teilnehmen: 20.10.26 (#3), 27.10.26 (#4), 24.11.26 (#8), 29.12.26 (#13)."], "Hinz": ["Möchte ca. 50% Doppel und 50% Einzel spielen.", "Kann vor dem 01.01.2027 (Spieltag 1–13) und am 27.04.2027 (Spieltag 30) nicht spielen."], "Beumer": ["Möchte ca. 50% Doppel und 50% Einzel spielen."], "Prodehl": ["Möchte ca. 60% Doppel spielen.", "Ist in den ersten beiden Wochen im November im Urlaub (Spieltag 5 & 6)."], "Marschollek": ["Möchte ca. 90% Doppel spielen.", "Kann an folgenden Tagen nicht teilnehmen: 13.10.26 (#2), 20.10.26 (#3), 03.11.26 (#5), 08.12.26 (#10), 19.01.27 (#16), 16.03.27 (#24)."], "Kissner": ["Spielt nur Einzel (0% Doppel)."], "Knust": ["Nimmt erst 2027 teil."], "Heyn": ["Möchte ca. 50% Doppel und 50% Einzel spielen.", "Kann an folgenden Tagen nicht teilnehmen: 13.10.26 (#2), 27.10.26 (#4), 03.11.26 (#5), 10.11.26 (#6), 08.12.26 (#10), 29.12.26 (#13)."], "Trojanski": ["2-Wochen-Rhythmus (mindestens 1 Spieltag Pause dazwischen).", "Spielt ausschließlich Einzel (0% Doppel).", "Kann an folgenden Tagen nicht teilnehmen: 13.10.26 (#2), 03.11.26 (#5), 08.12.26 (#10)."], "Kuhlhoff": ["Kann an folgenden Tagen nicht teilnehmen: 10.11.26 (#6), 17.11.26 (#7), 24.11.26 (#8), 08.12.26 (#10), 29.12.26 (#13).", "Spielt ausschließlich Einzel (0% Doppel)."], "van de Loo": ["Einmal im Monat (mindestens 3 Spieltage Pause dazwischen).", "Spielt ausschließlich Einzel (0% Doppel)."], "Wojtanowitsch": ["Spielt ausschließlich Einzel (0% Doppel)."]};
-        const playerStats = {"Beumer": {"singles": 5, "doppel": 7, "total": 12, "ratio": 58, "kosten": 5.12}, "Dedores": {"singles": 6, "doppel": 0, "total": 6, "ratio": 0, "kosten": 3.0}, "Hansmann": {"singles": 7, "doppel": 4, "total": 11, "ratio": 36, "kosten": 5.0}, "Heyn": {"singles": 3, "doppel": 3, "total": 6, "ratio": 50, "kosten": 2.62}, "Hinz": {"singles": 0, "doppel": 0, "total": 0, "ratio": 0, "kosten": 0.0}, "Kissner": {"singles": 3, "doppel": 0, "total": 3, "ratio": 0, "kosten": 1.5}, "Knust": {"singles": 0, "doppel": 0, "total": 0, "ratio": 0, "kosten": 0.0}, "Kuhlhoff": {"singles": 8, "doppel": 0, "total": 8, "ratio": 0, "kosten": 4.0}, "Marschollek": {"singles": 1, "doppel": 6, "total": 7, "ratio": 86, "kosten": 2.75}, "Mönning": {"singles": 8, "doppel": 0, "total": 8, "ratio": 0, "kosten": 4.0}, "Nolte": {"singles": 4, "doppel": 7, "total": 11, "ratio": 64, "kosten": 4.62}, "Prodehl": {"singles": 3, "doppel": 5, "total": 8, "ratio": 62, "kosten": 3.38}, "Redieker": {"singles": 1, "doppel": 6, "total": 7, "ratio": 86, "kosten": 2.75}, "Rumpf": {"singles": 2, "doppel": 6, "total": 8, "ratio": 75, "kosten": 3.25}, "Trojanski": {"singles": 2, "doppel": 0, "total": 2, "ratio": 0, "kosten": 1.0}, "Weber": {"singles": 4, "doppel": 4, "total": 8, "ratio": 50, "kosten": 3.5}, "Wojtanowitsch": {"singles": 12, "doppel": 0, "total": 12, "ratio": 0, "kosten": 6.0}, "van de Loo": {"singles": 3, "doppel": 0, "total": 3, "ratio": 0, "kosten": 1.5}};
+        const playerStats = {"Beumer": {"singles": 6, "doppel": 4, "total": 10, "ratio": 40, "kosten": 4.5}, "Dedores": {"singles": 7, "doppel": 0, "total": 7, "ratio": 0, "kosten": 3.5}, "Hansmann": {"singles": 7, "doppel": 3, "total": 10, "ratio": 30, "kosten": 4.62}, "Heyn": {"singles": 3, "doppel": 4, "total": 7, "ratio": 57, "kosten": 3.0}, "Hinz": {"singles": 0, "doppel": 0, "total": 0, "ratio": 0, "kosten": 0.0}, "Kissner": {"singles": 5, "doppel": 0, "total": 5, "ratio": 0, "kosten": 2.5}, "Knust": {"singles": 0, "doppel": 0, "total": 0, "ratio": 0, "kosten": 0.0}, "Kuhlhoff": {"singles": 6, "doppel": 0, "total": 6, "ratio": 0, "kosten": 3.0}, "Marschollek": {"singles": 2, "doppel": 3, "total": 5, "ratio": 60, "kosten": 2.12}, "Mönning": {"singles": 7, "doppel": 0, "total": 7, "ratio": 0, "kosten": 3.5}, "Nolte": {"singles": 8, "doppel": 3, "total": 11, "ratio": 27, "kosten": 5.12}, "Prodehl": {"singles": 5, "doppel": 2, "total": 7, "ratio": 29, "kosten": 3.25}, "Redieker": {"singles": 2, "doppel": 1, "total": 3, "ratio": 33, "kosten": 1.38}, "Rumpf": {"singles": 5, "doppel": 2, "total": 7, "ratio": 29, "kosten": 3.25}, "Trojanski": {"singles": 2, "doppel": 0, "total": 2, "ratio": 0, "kosten": 1.0}, "Weber": {"singles": 4, "doppel": 2, "total": 6, "ratio": 33, "kosten": 2.75}, "Wojtanowitsch": {"singles": 12, "doppel": 0, "total": 12, "ratio": 0, "kosten": 6.0}, "van de Loo": {"singles": 3, "doppel": 0, "total": 3, "ratio": 0, "kosten": 1.5}};
 
         const { createApp, ref, computed, onMounted, nextTick } = Vue;
 
@@ -233,14 +228,24 @@
                 const showPastMatches = ref(false);
                 const rulesByPlayer = ref(playerRules);
 
-                const allPlayers = computed(() => {
-                    return [...new Set(matchesData.flatMap(m => [
+                function getMatchPlayers(m) {
+                    const players = [
                         m.p1.p1, m.p1.p2,
                         m.p2.p1, m.p2.p2,
-                        m.p3.p1, m.p3.p2,
-                        ...m.doppel.team1,
-                        ...m.doppel.team2
-                    ]).filter(p => p && p !== 'vs'))].sort();
+                        m.p3.p1, m.p3.p2
+                    ];
+                    if (m.court2_type === 'singles') {
+                        if (m.doppel.p1) players.push(m.doppel.p1);
+                        if (m.doppel.p2) players.push(m.doppel.p2);
+                    } else {
+                        if (m.doppel.team1) players.push(...m.doppel.team1);
+                        if (m.doppel.team2) players.push(...m.doppel.team2);
+                    }
+                    return players.filter(p => p && p !== 'vs');
+                }
+
+                const allPlayers = computed(() => {
+                    return [...new Set(matchesData.flatMap(m => getMatchPlayers(m)))].sort();
                 });
 
                 const explicitPlayerColors = {
@@ -275,16 +280,7 @@
 
                 const filteredMatches = computed(() => {
                     if (currentFilter.value === 'ALL') return matchesData;
-                    return matchesData.filter(m => {
-                        const playersInMatch = [
-                            m.p1.p1, m.p1.p2,
-                            m.p2.p1, m.p2.p2,
-                            m.p3.p1, m.p3.p2,
-                            ...m.doppel.team1,
-                            ...m.doppel.team2
-                        ];
-                        return playersInMatch.includes(currentFilter.value);
-                    });
+                    return matchesData.filter(m => getMatchPlayers(m).includes(currentFilter.value));
                 });
 
                 const displayedMatches = computed(() => {
@@ -297,14 +293,7 @@
 
                 function matchHasPlayer(m, player) {
                     if (player === 'ALL') return true;
-                    const playersInMatch = [
-                        m.p1.p1, m.p1.p2,
-                        m.p2.p1, m.p2.p2,
-                        m.p3.p1, m.p3.p2,
-                        ...m.doppel.team1,
-                        ...m.doppel.team2
-                    ];
-                    return playersInMatch.includes(player);
+                    return getMatchPlayers(m).includes(player);
                 }
 
                 const nextMatch = computed(() => {
@@ -316,14 +305,7 @@
                 const nextMatchPlayers = computed(() => {
                     const m = nextMatch.value;
                     if (!m) return [];
-                    const playersInMatch = [
-                        m.p1.p1, m.p1.p2,
-                        m.p2.p1, m.p2.p2,
-                        m.p3.p1, m.p3.p2,
-                        ...m.doppel.team1,
-                        ...m.doppel.team2
-                    ];
-                    return [...new Set(playersInMatch.filter(p => p && p !== 'vs'))].sort();
+                    return [...new Set(getMatchPlayers(m))].sort();
                 });
 
                 const nextUpcomingIndex = computed(() => {
@@ -413,12 +395,15 @@
                         const p1List = [m.p1.p1, m.p1.p2];
                         const p2List = [m.p2.p1, m.p2.p2];
                         const p3List = [m.p3.p1, m.p3.p2];
-                        const doppelList = [...m.doppel.team1, ...m.doppel.team2];
+                        const c2List = (m.court2_type === 'singles') ? [m.doppel.p1, m.doppel.p2] : [...(m.doppel.team1 || []), ...(m.doppel.team2 || [])];
 
                         if (p1List.includes(playerName)) { matchTime = m.p1.time; courtName = "19:00 Uhr"; }
                         else if (p2List.includes(playerName)) { matchTime = m.p2.time; courtName = "20:00 Uhr"; }
                         else if (p3List.includes(playerName)) { matchTime = m.p3.time; courtName = "21:00 Uhr"; }
-                        else if (doppelList.includes(playerName)) { matchTime = m.doppel.time; courtName = "Doppel (20:30 Uhr)"; }
+                        else if (c2List.includes(playerName)) {
+                            matchTime = m.doppel.time;
+                            courtName = (m.court2_type === 'singles') ? "Einzel (20:30 Uhr)" : "Doppel (20:30 Uhr)";
+                        }
 
                         if (matchTime && m.date) {
                             const dateStr = m.date.replace(/-/g, '');

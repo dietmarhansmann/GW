@@ -316,19 +316,39 @@ for r in raw_rows:
         time_p3 = "21:00"
         time_doppel = "20:30"
 
-        # Raw slots from Excel
-        slots = {
-            'p1_1': str(r[2] or '').strip(),
-            'p1_2': str(r[4] or '').strip(),
-            'p2_1': str(r[6] or '').strip(),
-            'p2_2': str(r[8] or '').strip(),
-            'p3_1': str(r[10] or '').strip(),
-            'p3_2': str(r[12] or '').strip(),
-            'd_t1_1': str(r[14] or '').strip(),
-            'd_t1_2': str(r[15] or '').strip(),
-            'd_t2_1': str(r[17] or '').strip(),
-            'd_t2_2': str(r[18] or '').strip(),
-        }
+        is_doppel_week = (spieltag % 2 == 1)
+        if is_doppel_week:
+            slots = {
+                'p1_1': str(r[2] or '').strip(),
+                'p1_2': str(r[4] or '').strip(),
+                'p2_1': str(r[6] or '').strip(),
+                'p2_2': str(r[8] or '').strip(),
+                'p3_1': str(r[10] or '').strip(),
+                'p3_2': str(r[12] or '').strip(),
+                'd_t1_1': str(r[14] or '').strip(),
+                'd_t1_2': str(r[15] or '').strip(),
+                'd_t2_1': str(r[17] or '').strip(),
+                'd_t2_2': str(r[18] or '').strip(),
+            }
+            slot_keys = ['p1_1', 'p1_2', 'p2_1', 'p2_2', 'p3_1', 'p3_2', 'd_t1_1', 'd_t1_2', 'd_t2_1', 'd_t2_2']
+            singles_keys = ['p1_1', 'p1_2', 'p2_1', 'p2_2', 'p3_1', 'p3_2']
+            doppel_keys = ['d_t1_1', 'd_t1_2', 'd_t2_1', 'd_t2_2']
+        else:
+            slots = {
+                'p1_1': str(r[2] or '').strip(),
+                'p1_2': str(r[4] or '').strip(),
+                'p2_1': str(r[6] or '').strip(),
+                'p2_2': str(r[8] or '').strip(),
+                'p3_1': str(r[10] or '').strip(),
+                'p3_2': str(r[12] or '').strip(),
+                'd_t1_1': str(r[14] or '').strip(),
+                'd_t1_2': '',
+                'd_t2_1': str(r[17] or '').strip(),
+                'd_t2_2': '',
+            }
+            slot_keys = ['p1_1', 'p1_2', 'p2_1', 'p2_2', 'p3_1', 'p3_2', 'd_t1_1', 'd_t2_1']
+            singles_keys = ['p1_1', 'p1_2', 'p2_1', 'p2_2', 'p3_1', 'p3_2', 'd_t1_1', 'd_t2_1']
+            doppel_keys = []
 
         # Clean 'vs' entries and normalize spelling
         for k in slots:
@@ -339,9 +359,11 @@ for r in raw_rows:
 
         if spieltag == 13 or date_val == '2026-12-29':
             status = 'Reserviert für alle'
+            is_dw = (spieltag % 2 == 1)
             matches.append({
                 'spieltag': spieltag,
                 'date': date_val,
+                'court2_type': 'doppel' if is_dw else 'singles',
                 'p1': {'p1': '', 'p2': '', 'time': time_p1},
                 'p2': {'p1': '', 'p2': '', 'time': time_p2},
                 'p3': {'p1': '', 'p2': '', 'time': time_p3},
@@ -349,6 +371,8 @@ for r in raw_rows:
                     'team1': ['', ''],
                     'team2': ['', ''],
                     'time': time_doppel
+                } if is_dw else {
+                    'p1': '', 'p2': '', 'time': time_doppel
                 },
                 'status': status
             })
@@ -702,12 +726,17 @@ for r in raw_rows:
         matches.append({
             'spieltag': spieltag,
             'date': date_val,
+            'court2_type': 'doppel' if is_doppel_week else 'singles',
             'p1': {'p1': slots['p1_1'], 'p2': slots['p1_2'], 'time': time_p1},
             'p2': {'p1': slots['p2_1'], 'p2': slots['p2_2'], 'time': time_p2},
             'p3': {'p1': slots['p3_1'], 'p2': slots['p3_2'], 'time': time_p3},
             'doppel': {
                 'team1': [slots['d_t1_1'], slots['d_t1_2']],
                 'team2': [slots['d_t2_1'], slots['d_t2_2']],
+                'time': time_doppel
+            } if is_doppel_week else {
+                'p1': slots['d_t1_1'],
+                'p2': slots['d_t2_1'],
                 'time': time_doppel
             },
             'status': status
@@ -725,11 +754,15 @@ for player, player_data in PLAYER_RULES.items():
 
             player_matches = []
             for m in matches:
-                singles = [m["p1"]["p1"], m["p1"]["p2"], m["p2"]["p1"], m["p2"]["p2"], m["p3"]["p1"], m["p3"]["p2"]]
-                doppel = m["doppel"]["team1"] + m["doppel"]["team2"]
-                if player in singles:
+                s_list = [m["p1"]["p1"], m["p1"]["p2"], m["p2"]["p1"], m["p2"]["p2"], m["p3"]["p1"], m["p3"]["p2"]]
+                if m.get("court2_type") == 'singles':
+                    s_list.extend([m["doppel"]["p1"], m["doppel"]["p2"]])
+                    d_list = []
+                else:
+                    d_list = m["doppel"]["team1"] + m["doppel"]["team2"]
+                if player in s_list:
                     player_matches.append((m, 'singles'))
-                elif player in doppel:
+                elif player in d_list:
                     player_matches.append((m, 'doppel'))
 
             total_p = len(player_matches)
@@ -745,10 +778,11 @@ for player, player_data in PLAYER_RULES.items():
                 to_convert = current_doppel_matches[:diff]
                 for m, _ in to_convert:
                     d_slot = None
-                    for t, idx in [('team1', 0), ('team1', 1), ('team2', 0), ('team2', 1)]:
-                        if m["doppel"][t][idx] == player:
-                            d_slot = (t, idx)
-                            break
+                    if m.get('court2_type') != 'singles':
+                        for t, idx in [('team1', 0), ('team1', 1), ('team2', 0), ('team2', 1)]:
+                            if m["doppel"][t][idx] == player:
+                                d_slot = (t, idx)
+                                break
                     s_slot = None
                     for group, s_key in [('p1', 'p1'), ('p1', 'p2'), ('p2', 'p1'), ('p2', 'p2'), ('p3', 'p1'), ('p3', 'p2')]:
                         other = m[group][s_key]
@@ -770,11 +804,12 @@ for player, player_data in PLAYER_RULES.items():
                             s_slot = (group, s_key)
                             break
                     d_slot = None
-                    for t, idx in [('team1', 0), ('team1', 1), ('team2', 0), ('team2', 1)]:
-                        other = m["doppel"][t][idx]
-                        if other and other != player and can_play_slot(other, "singles"):
-                            d_slot = (t, idx)
-                            break
+                    if m.get('court2_type') != 'singles':
+                        for t, idx in [('team1', 0), ('team1', 1), ('team2', 0), ('team2', 1)]:
+                            other = m["doppel"][t][idx]
+                            if other and other != player and can_play_slot(other, 'singles'):
+                                d_slot = (t, idx)
+                                break
                     if s_slot and d_slot:
                         group, s_key = s_slot
                         t, idx = d_slot
@@ -794,7 +829,11 @@ errors_found = 0
 for m in matches:
     stg = m["spieltag"]
     singles = [m["p1"]["p1"], m["p1"]["p2"], m["p2"]["p1"], m["p2"]["p2"], m["p3"]["p1"], m["p3"]["p2"]]
-    doppel = m["doppel"]["team1"] + m["doppel"]["team2"]
+    if m.get("court2_type") == 'singles':
+        singles.extend([m["doppel"]["p1"], m["doppel"]["p2"]])
+        doppel = []
+    else:
+        doppel = m["doppel"]["team1"] + m["doppel"]["team2"]
     all_today = singles + doppel
 
     # 1. Hansmann blackout check (dynamic)
@@ -861,7 +900,11 @@ for p in players:
     d_count = 0
     for m in matches:
         s_list = [m["p1"]["p1"], m["p1"]["p2"], m["p2"]["p1"], m["p2"]["p2"], m["p3"]["p1"], m["p3"]["p2"]]
-        d_list = m["doppel"]["team1"] + m["doppel"]["team2"]
+        if m.get("court2_type") == "singles":
+            s_list.extend([m["doppel"]["p1"], m["doppel"]["p2"]])
+            d_list = []
+        else:
+            d_list = m["doppel"]["team1"] + m["doppel"]["team2"]
         s_count += s_list.count(p)
         d_count += d_list.count(p)
     total = s_count + d_count
@@ -904,28 +947,17 @@ html_template = """<!DOCTYPE html>
             </div>
         </header>
 
-        <!-- Next Match Highlight Banner -->
-        <div v-if="nextMatch" class="bg-emerald-50 border border-emerald-300 text-emerald-900 rounded-lg p-3 mb-2.5 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-2">
-            <div class="font-bold text-xs uppercase tracking-wider text-emerald-900">
-                Nächster Spieltag: [[ formatFullDate(nextMatch.date) ]] (Spieltag [[ nextMatch.spieltag ]]) mit ...
-            </div>
-            <div class="text-[11px] text-emerald-800 flex flex-wrap items-center gap-1.5">
-                <span v-for="p in nextMatchPlayers" :key="p" @click="setFilter(p)" class="cursor-pointer">
-                    <span v-html="formatPlayerBadge(p, false)"></span>
-                </span>
-            </div>
-        </div>
-
         <!-- Player Legend & Controls Bar -->
         <div class="bg-white border border-gray-200 rounded-lg p-2.5 mb-2.5 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-2">
             <div class="flex-1 w-full">
-                <div class="flex justify-between items-center mb-1.5">
-                    <span class="font-bold text-xs uppercase tracking-wider text-gray-700">Spieler (Klick = Spiele filtern | 📅 = Kalender-Download für z.B. Google Kalender):</span>
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-1.5 gap-1">
+                    <span class="font-bold text-xs uppercase tracking-wider text-gray-700">⭐ #1 = 06.10.2026 = Nächster Spieltag | Klick = Spiele filtern | 📅 = Kalender-Download für z.B. Google Kalender:</span>
                     <span v-if="currentFilter !== 'ALL'" class="text-[11px] text-emerald-700 font-semibold">
                         Filter aktiv: [[ currentFilter ]] ([[ filteredMatches.length ]] Spieltage)
                     </span>
                 </div>
-                <div class="flex flex-wrap gap-1 items-center">
+
+                <div class="flex flex-wrap gap-2 items-center pt-1 pb-0.5">
                     <!-- 'Alle' button -->
                     <button @click="setFilter('ALL')"
                         :class="currentFilter === 'ALL' ? 'bg-black text-white border-black ring-2 ring-gray-400 scale-105' : 'bg-gray-100 hover:bg-gray-200 text-gray-800 border-gray-300'"
@@ -936,12 +968,13 @@ html_template = """<!DOCTYPE html>
                     <!-- Player pills -->
                     <div v-for="player in allPlayers" :key="player"
                         :style="{ backgroundColor: currentFilter === player ? '#111827' : (playerColors[player] ? playerColors[player].bg : '#eee'), borderColor: playerColors[player] ? playerColors[player].border : '#ccc' }"
-                        :class="currentFilter === player ? 'scale-110 font-black shadow-xl ring-2 ring-emerald-600 ring-offset-1 z-10' : 'hover:opacity-95 shadow-sm border'"
-                        class="inline-flex items-center rounded border transition">
+                        :class="currentFilter === player ? 'scale-110 font-black shadow-xl ring-2 ring-emerald-600 ring-offset-1 z-10' : 'hover:opacity-95 shadow-sm border'""
+                        class="inline-flex items-center rounded border transition relative">
                         <button @click="setFilter(player)"
                             :style="{ color: currentFilter === player ? '#ffffff' : '#111827' }"
-                            class="px-2.5 py-1 text-xs font-bold flex items-center gap-1 focus:outline-none">
-                            [[ player ]]
+                            class="px-2 py-1 text-xs font-bold flex items-center gap-1 focus:outline-none">
+                            <span>[[ player ]]</span>
+                            <span v-if="nextMatchPlayers.includes(player)" title="Am nächsten Spieltag im Einsatz">⭐</span>
                         </button>
                         <button @click.stop="downloadPlayerIcs(player)"
                             :style="{ borderColor: playerColors[player] ? playerColors[player].border : '#ccc', color: currentFilter === player ? '#ffffff' : '#111827' }"
@@ -970,7 +1003,7 @@ html_template = """<!DOCTYPE html>
                         <th class="py-2 px-1.5">19:00 Uhr</th>
                         <th class="py-2 px-1.5">20:00 Uhr</th>
                         <th class="py-2 px-1.5">21:00 Uhr</th>
-                        <th class="py-2 px-1.5">Doppel <span class="font-normal normal-case text-gray-500">(20:30)</span></th>
+                        <th class="py-2 px-1.5">Doppel / Einzel <span class="font-normal normal-case text-gray-500">(20:30)</span></th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200">
@@ -1014,9 +1047,9 @@ html_template = """<!DOCTYPE html>
                                 <span v-html="formatPlayerBadge(m.p3.p2, m.status === 'Abgeschlossen')"></span>
                             </div>
                         </td>
-                        <!-- Platz 2 - Doppel (20:30) -->
+                        <!-- Platz 2 - Doppel / Einzel (20:30) -->
                         <td class="py-2 px-1.5">
-                            <div class="flex flex-wrap items-center gap-1">
+                            <div v-if="m.court2_type !== 'singles'" class="flex flex-wrap items-center gap-1">
                                 <span class="inline-flex flex-col gap-0.5">
                                     <span v-html="formatPlayerBadge(m.doppel.team1[0], m.status === 'Abgeschlossen')"></span>
                                     <span v-html="formatPlayerBadge(m.doppel.team1[1], m.status === 'Abgeschlossen')"></span>
@@ -1026,6 +1059,11 @@ html_template = """<!DOCTYPE html>
                                     <span v-html="formatPlayerBadge(m.doppel.team2[0], m.status === 'Abgeschlossen')"></span>
                                     <span v-html="formatPlayerBadge(m.doppel.team2[1], m.status === 'Abgeschlossen')"></span>
                                 </span>
+                            </div>
+                            <div v-else class="flex flex-wrap items-center gap-1">
+                                <span v-html="formatPlayerBadge(m.doppel.p1, m.status === 'Abgeschlossen')"></span>
+                                <span v-if="m.doppel.p1 && m.doppel.p2" class="text-[9px] hidden md:inline" :class="m.status === 'Abgeschlossen' ? 'text-gray-300' : 'text-gray-400'">vs</span>
+                                <span v-html="formatPlayerBadge(m.doppel.p2, m.status === 'Abgeschlossen')"></span>
                             </div>
                         </td>
                     </tr>
@@ -1112,14 +1150,24 @@ html_template = """<!DOCTYPE html>
                 const showPastMatches = ref(false);
                 const rulesByPlayer = ref(playerRules);
 
-                const allPlayers = computed(() => {
-                    return [...new Set(matchesData.flatMap(m => [
+                function getMatchPlayers(m) {
+                    const players = [
                         m.p1.p1, m.p1.p2,
                         m.p2.p1, m.p2.p2,
-                        m.p3.p1, m.p3.p2,
-                        ...m.doppel.team1,
-                        ...m.doppel.team2
-                    ]).filter(p => p && p !== 'vs'))].sort();
+                        m.p3.p1, m.p3.p2
+                    ];
+                    if (m.court2_type === 'singles') {
+                        if (m.doppel.p1) players.push(m.doppel.p1);
+                        if (m.doppel.p2) players.push(m.doppel.p2);
+                    } else {
+                        if (m.doppel.team1) players.push(...m.doppel.team1);
+                        if (m.doppel.team2) players.push(...m.doppel.team2);
+                    }
+                    return players.filter(p => p && p !== 'vs');
+                }
+
+                const allPlayers = computed(() => {
+                    return [...new Set(matchesData.flatMap(m => getMatchPlayers(m)))].sort();
                 });
 
                 const explicitPlayerColors = {
@@ -1154,16 +1202,7 @@ html_template = """<!DOCTYPE html>
 
                 const filteredMatches = computed(() => {
                     if (currentFilter.value === 'ALL') return matchesData;
-                    return matchesData.filter(m => {
-                        const playersInMatch = [
-                            m.p1.p1, m.p1.p2,
-                            m.p2.p1, m.p2.p2,
-                            m.p3.p1, m.p3.p2,
-                            ...m.doppel.team1,
-                            ...m.doppel.team2
-                        ];
-                        return playersInMatch.includes(currentFilter.value);
-                    });
+                    return matchesData.filter(m => getMatchPlayers(m).includes(currentFilter.value));
                 });
 
                 const displayedMatches = computed(() => {
@@ -1176,14 +1215,7 @@ html_template = """<!DOCTYPE html>
 
                 function matchHasPlayer(m, player) {
                     if (player === 'ALL') return true;
-                    const playersInMatch = [
-                        m.p1.p1, m.p1.p2,
-                        m.p2.p1, m.p2.p2,
-                        m.p3.p1, m.p3.p2,
-                        ...m.doppel.team1,
-                        ...m.doppel.team2
-                    ];
-                    return playersInMatch.includes(player);
+                    return getMatchPlayers(m).includes(player);
                 }
 
                 const nextMatch = computed(() => {
@@ -1195,14 +1227,7 @@ html_template = """<!DOCTYPE html>
                 const nextMatchPlayers = computed(() => {
                     const m = nextMatch.value;
                     if (!m) return [];
-                    const playersInMatch = [
-                        m.p1.p1, m.p1.p2,
-                        m.p2.p1, m.p2.p2,
-                        m.p3.p1, m.p3.p2,
-                        ...m.doppel.team1,
-                        ...m.doppel.team2
-                    ];
-                    return [...new Set(playersInMatch.filter(p => p && p !== 'vs'))].sort();
+                    return [...new Set(getMatchPlayers(m))].sort();
                 });
 
                 const nextUpcomingIndex = computed(() => {
@@ -1292,12 +1317,15 @@ html_template = """<!DOCTYPE html>
                         const p1List = [m.p1.p1, m.p1.p2];
                         const p2List = [m.p2.p1, m.p2.p2];
                         const p3List = [m.p3.p1, m.p3.p2];
-                        const doppelList = [...m.doppel.team1, ...m.doppel.team2];
+                        const c2List = (m.court2_type === 'singles') ? [m.doppel.p1, m.doppel.p2] : [...(m.doppel.team1 || []), ...(m.doppel.team2 || [])];
 
                         if (p1List.includes(playerName)) { matchTime = m.p1.time; courtName = "19:00 Uhr"; }
                         else if (p2List.includes(playerName)) { matchTime = m.p2.time; courtName = "20:00 Uhr"; }
                         else if (p3List.includes(playerName)) { matchTime = m.p3.time; courtName = "21:00 Uhr"; }
-                        else if (doppelList.includes(playerName)) { matchTime = m.doppel.time; courtName = "Doppel (20:30 Uhr)"; }
+                        else if (c2List.includes(playerName)) {
+                            matchTime = m.doppel.time;
+                            courtName = (m.court2_type === 'singles') ? "Einzel (20:30 Uhr)" : "Doppel (20:30 Uhr)";
+                        }
 
                         if (matchTime && m.date) {
                             const dateStr = m.date.replace(/-/g, '');
