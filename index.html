@@ -20,7 +20,7 @@
             </div>
             <div>
                 <span class="text-xs bg-emerald-900/80 text-emerald-100 px-2.5 py-1 rounded font-medium border border-emerald-700">
-                    Stand: 10.09.2026 23:51
+                    Stand: 11.09.2026 10:14
                 </span>
             </div>
         </header>
@@ -65,8 +65,8 @@
 
                     <!-- Player pills -->
                     <div v-for="player in allPlayers" :key="player"
-                        :style="{ backgroundColor: currentFilter === player ? (playerColors[player] ? playerColors[player].border : '#333') : (playerColors[player] ? playerColors[player].bg : '#eee'), borderColor: playerColors[player] ? playerColors[player].border : '#ccc' }"
-                        :class="currentFilter === player ? 'scale-105 font-extrabold shadow-md' : 'hover:opacity-95 shadow-sm border'"
+                        :style="{ backgroundColor: currentFilter === player ? '#111827' : (playerColors[player] ? playerColors[player].bg : '#eee'), borderColor: playerColors[player] ? playerColors[player].border : '#ccc' }"
+                        :class="currentFilter === player ? 'scale-110 font-black shadow-xl ring-2 ring-emerald-600 ring-offset-1 z-10' : 'hover:opacity-95 shadow-sm border'"
                         class="inline-flex items-center rounded border transition">
                         <button @click="setFilter(player)"
                             :style="{ color: currentFilter === player ? '#ffffff' : '#111827' }"
@@ -404,7 +404,7 @@
                     const innerHtml = `<span class="md:hidden">${shortName}</span><span class="hidden md:inline">${player}</span>`;
 
                     if (isSelected) {
-                        return `<span class="px-2 py-0.5 rounded text-xs font-extrabold inline-block border shadow-sm whitespace-nowrap" style="background-color: ${colors.border}; color: #ffffff; border-color: ${colors.border};">${innerHtml}</span>`;
+                        return `<span class="px-2.5 py-0.5 rounded text-xs font-black inline-block border shadow-md whitespace-nowrap ring-2 ring-emerald-600 ring-offset-1" style="background-color: #111827; color: #ffffff; border-color: ${colors.border};">${innerHtml}</span>`;
                     } else if (isCompleted) {
                         return `<span class="px-2 py-0.5 rounded text-xs font-medium inline-block border whitespace-nowrap opacity-40 grayscale-[20%]" style="background-color: ${colors.bg}; color: ${colors.text}; border-color: ${colors.border};">${innerHtml}</span>`;
                     } else {
