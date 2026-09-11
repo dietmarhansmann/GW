@@ -20,28 +20,19 @@
             </div>
             <div>
                 <span class="text-xs bg-emerald-900/80 text-emerald-100 px-2.5 py-1 rounded font-medium border border-emerald-700">
-                    Stand: 11.09.2026 10:14
+                    Stand: 11.09.2026 10:18
                 </span>
             </div>
         </header>
 
         <!-- Next Match Highlight Banner -->
         <div v-if="nextMatch" class="bg-emerald-50 border border-emerald-300 text-emerald-900 rounded-lg p-3 mb-2.5 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-2">
-            <div class="flex items-center gap-2.5">
-                <div>
-                    <div class="font-bold text-xs uppercase tracking-wider text-emerald-900">
-                        Nächster Spieltag: [[ formatFullDate(nextMatch.date) ]] (Spieltag [[ nextMatch.spieltag ]])
-                    </div>
-                    <div class="text-[11px] text-emerald-800 mt-1 flex flex-wrap items-center gap-1.5">
-                        <span v-for="p in nextMatchPlayers" :key="p" @click="setFilter(p)" class="cursor-pointer">
-                            <span v-html="formatPlayerBadge(p, false)"></span>
-                        </span>
-                    </div>
-                </div>
+            <div class="font-bold text-xs uppercase tracking-wider text-emerald-900">
+                Nächster Spieltag: [[ formatFullDate(nextMatch.date) ]] (Spieltag [[ nextMatch.spieltag ]]) mit ...
             </div>
-            <div>
-                <span class="text-[10px] bg-emerald-200 text-emerald-900 px-2.5 py-1 rounded font-bold border border-emerald-300">
-                    Als nächstes im Einsatz
+            <div class="text-[11px] text-emerald-800 flex flex-wrap items-center gap-1.5">
+                <span v-for="p in nextMatchPlayers" :key="p" @click="setFilter(p)" class="cursor-pointer">
+                    <span v-html="formatPlayerBadge(p, false)"></span>
                 </span>
             </div>
         </div>
@@ -49,8 +40,8 @@
         <!-- Player Legend & Controls Bar -->
         <div class="bg-white border border-gray-200 rounded-lg p-2.5 mb-2.5 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-2">
             <div class="flex-1 w-full">
-                <div class="flex justify-between items-center mb-1">
-                    <span class="text-[10px] font-bold uppercase tracking-wider text-gray-500">Spieler (Klick = Spiele filtern | 📅 = Kalender-Download für z.B. Google Kalender):</span>
+                <div class="flex justify-between items-center mb-1.5">
+                    <span class="font-bold text-xs uppercase tracking-wider text-gray-700">Spieler (Klick = Spiele filtern | 📅 = Kalender-Download für z.B. Google Kalender):</span>
                     <span v-if="currentFilter !== 'ALL'" class="text-[11px] text-emerald-700 font-semibold">
                         Filter aktiv: [[ currentFilter ]] ([[ filteredMatches.length ]] Spieltage)
                     </span>
