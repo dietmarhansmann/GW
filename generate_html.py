@@ -944,10 +944,7 @@ html_template = """<!DOCTYPE html>
                 <span class="text-gray-300">•</span>
                 <span class="text-emerald-800 font-semibold">⭐ Nächster Spieltag: <b>06.10.2026</b> (#1)</span>
             </div>
-            <div class="flex items-center gap-2">
-                <span class="text-[11px] text-gray-500 bg-gray-100 px-2.5 py-1 rounded border border-gray-200 font-medium">
-                    Stand: /*UPDATE_DATE_PLACEHOLDER*/
-                </span>
+            <div>
                 <button @click="downloadAllIcs()" class="bg-emerald-800 hover:bg-emerald-900 text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition border border-emerald-700 flex items-center gap-1.5 shadow-sm">
                     <span>📅 Gesamter Spielplan als ICS</span>
                 </button>
@@ -1149,6 +1146,11 @@ html_template = """<!DOCTYPE html>
                     </div>
                 </div>
             </div>
+        </div>
+
+        <!-- Footer / Stand timestamp -->
+        <div class="mt-3 mb-2 text-center text-xs text-gray-500 py-2 border-t border-gray-200">
+            Stand: /*UPDATE_DATE_PLACEHOLDER*/
         </div>
 
     </div>
