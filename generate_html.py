@@ -1003,7 +1003,6 @@ html_template = """<!DOCTYPE html>
                             :style="{ color: currentFilter === player ? '#ffffff' : '#111827' }"
                             class="px-2 py-1 text-xs font-bold flex items-center gap-1 focus:outline-none">
                             <span>{{ player }}</span>
-                            <span v-if="nextMatchPlayers.includes(player)" title="Am nächsten Spieltag im Einsatz">⭐</span>
                         </button>
                         <button @click.stop="downloadPlayerIcs(player)"
                             :style="{ borderColor: playerColors[player] ? playerColors[player].border : '#ccc', color: currentFilter === player ? '#ffffff' : '#111827' }"
@@ -1323,11 +1322,8 @@ html_template = """<!DOCTYPE html>
                         opacityClass = 'opacity-30';
                     }
 
-                    const isNext = nextMatchPlayers.value.includes(player);
-                    const starHtml = isNext ? ' <span title="Am nächsten Spieltag im Einsatz">⭐</span>' : '';
-
                     return `<span style="background-color: ${colors.bg}; border-color: ${colors.border}; color: ${colors.text};" class="inline-flex items-center px-1.5 py-0.5 rounded border text-[11px] font-semibold shadow-2xs transition ${opacityClass}">
-                        ${player}${starHtml}
+                        ${player}
                     </span>`;
                 }
 
