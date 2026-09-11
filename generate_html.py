@@ -112,6 +112,12 @@ PLAYER_RULES = {
                 "id": "blackout_spieltage",
                 "spieltage": [3, 4, 8, 13],
                 "description": "Kann an folgenden Tagen nicht teilnehmen: 20.10.26 (#3), 27.10.26 (#4), 24.11.26 (#8), 29.12.26 (#13)."
+            },
+            {
+                "id": "allowed_times",
+                "times": ["19:00", "20:00"],
+                "description": "Interne Zeitvorgabe: Nur um 19:00 oder 20:00 Uhr.",
+                "visible": False
             }
         ]
     },
@@ -265,8 +271,11 @@ PLAYER_RULES = {
     }
 }
 
-def can_play_slot(player, stype):
+def can_play_slot(player, stype, slot_time=None):
     for rule in PLAYER_RULES.get(player, {}).get("rules", []):
+        if rule.get("id") == "allowed_times" and slot_time is not None:
+            if slot_time not in rule.get("times", []):
+                return False
         r_target = rule.get("target")
         r_id = rule.get("id", "")
         r_ratio = rule.get("ratio", 0.8)
@@ -491,6 +500,29 @@ for r in raw_rows:
                     sub = get_substitute(current_occ, slot_type="singles")
                     slots[sk] = sub
 
+        # Apply internal time restrictions before the remaining rule passes.
+        slot_times = {
+            'p1_1': '19:00', 'p1_2': '19:00',
+            'p2_1': '20:00', 'p2_2': '20:00',
+            'p3_1': '21:00', 'p3_2': '21:00',
+            'd_t1_1': '20:30', 'd_t1_2': '20:30',
+            'd_t2_1': '20:30', 'd_t2_2': '20:30'
+        }
+        for player, player_data in PLAYER_RULES.items():
+            allowed_rules = [r for r in player_data.get('rules', []) if r.get('id') == 'allowed_times']
+            for rule in allowed_rules:
+                allowed_times = set(rule.get('times', []))
+                for current_key in slot_keys:
+                    if slots[current_key] != player or slot_times[current_key] in allowed_times:
+                        continue
+                    replacement_key = next(
+                        (k for k in singles_keys + doppel_keys
+                         if slots[k] != player and slot_times[k] in allowed_times),
+                        None
+                    )
+                    if replacement_key:
+                        slots[current_key], slots[replacement_key] = slots[replacement_key], slots[current_key]
+
         # 1. Apply Player Rules dynamically from nested structure
         for player, player_data in PLAYER_RULES.items():
             rules_list = player_data.get("rules", [])
@@ -682,6 +714,11 @@ for r in raw_rows:
         best_score = float('inf')
 
         def respects_constraints(test_slots):
+            for slot_key, player in test_slots.items():
+                for rule in PLAYER_RULES.get(player, {}).get("rules", []):
+                    if rule.get("id") == "allowed_times" and slot_times[slot_key] not in rule.get("times", []):
+                        return False
+
             for p in current_players:
                 for rule in PLAYER_RULES.get(p, {}).get("rules", []):
                     r_target = rule.get("target")
@@ -889,7 +926,7 @@ else:
 # Prepare rules grouped by player for frontend display from nested structure
 frontend_rules_by_player = {}
 for p, player_data in PLAYER_RULES.items():
-    rules_list = [r.get('description', '') for r in player_data.get("rules", [])]
+    rules_list = [r.get('description', '') for r in player_data.get("rules", []) if r.get('visible', True)]
     if rules_list:
         frontend_rules_by_player[p] = rules_list
 
