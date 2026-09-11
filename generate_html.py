@@ -1384,6 +1384,13 @@ html_template = """<!DOCTYPE html>
 
                 function setFilter(player) {
                     currentFilter.value = player;
+                    const url = new URL(window.location.href);
+                    if (player === 'ALL') {
+                        url.searchParams.delete('spieler');
+                    } else {
+                        url.searchParams.set('spieler', player);
+                    }
+                    window.history.replaceState({}, '', url);
                 }
 
                 function togglePastMatches() {
@@ -1490,6 +1497,10 @@ html_template = """<!DOCTYPE html>
                 }
 
                 onMounted(() => {
+                    const playerFromUrl = new URLSearchParams(window.location.search).get('spieler');
+                    if (playerFromUrl && allPlayers.value.includes(playerFromUrl)) {
+                        currentFilter.value = playerFromUrl;
+                    }
                     nextTick(() => {
                         const el = document.getElementById('next-match-target');
                         if (el) {
