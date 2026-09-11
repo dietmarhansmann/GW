@@ -15,6 +15,14 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
         body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
         .dark body, body.dark { background-color: #111827; color: #f3f4f6; }
+        .player-name-short { display: none; }
+        @media (max-width: 767px) {
+            #schedule-table td { padding: 0.25rem 0.2rem; }
+            #schedule-table .match-players { gap: 0.15rem; }
+            #schedule-table .player-name-full { display: none; }
+            #schedule-table .player-name-short { display: inline; }
+            #schedule-table .player-badge { padding: 0.15rem 0.3rem; font-size: 10px; }
+        }
         @media print {
             .no-print { display: none !important; }
             body { background: white !important; color: black !important; font-size: 10pt; }
@@ -102,7 +110,7 @@
 
         <!-- Ultra-Compact Table -->
         <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm overflow-x-auto mb-2.5">
-            <table class="w-full text-left border-collapse text-xs table-auto">
+            <table id="schedule-table" class="w-full text-left border-collapse text-xs table-auto">
                 <thead>
                     <tr class="bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-400 uppercase text-[10px] tracking-wider border-b border-gray-200 dark:border-gray-700">
                         <th class="py-2 px-1 whitespace-nowrap w-1">Datum</th>
@@ -139,7 +147,7 @@
                         </td>
                         <!-- Platz 1 (19:00) -->
                         <td class="py-2 px-1.5">
-                            <div class="flex flex-wrap items-center gap-1">
+                            <div class="match-players flex flex-wrap items-center gap-1">
                                 <span v-html="formatPlayerBadge(m.p1.p1, m.status === 'Abgeschlossen')"></span>
                                 <span v-if="m.p1.p1 && m.p1.p2" class="text-[9px] hidden md:inline" :class="m.status === 'Abgeschlossen' ? 'text-gray-300 dark:text-gray-700' : 'text-gray-400 dark:text-gray-500'">vs</span>
                                 <span v-html="formatPlayerBadge(m.p1.p2, m.status === 'Abgeschlossen')"></span>
@@ -147,7 +155,7 @@
                         </td>
                         <!-- Platz 1 (20:00) -->
                         <td class="py-2 px-1.5">
-                            <div class="flex flex-wrap items-center gap-1">
+                            <div class="match-players flex flex-wrap items-center gap-1">
                                 <span v-html="formatPlayerBadge(m.p2.p1, m.status === 'Abgeschlossen')"></span>
                                 <span v-if="m.p2.p1 && m.p2.p2" class="text-[9px] hidden md:inline" :class="m.status === 'Abgeschlossen' ? 'text-gray-300 dark:text-gray-700' : 'text-gray-400 dark:text-gray-500'">vs</span>
                                 <span v-html="formatPlayerBadge(m.p2.p2, m.status === 'Abgeschlossen')"></span>
@@ -155,7 +163,7 @@
                         </td>
                         <!-- Platz 1 (21:00) -->
                         <td class="py-2 px-1.5">
-                            <div class="flex flex-wrap items-center gap-1">
+                            <div class="match-players flex flex-wrap items-center gap-1">
                                 <span v-html="formatPlayerBadge(m.p3.p1, m.status === 'Abgeschlossen')"></span>
                                 <span v-if="m.p3.p1 && m.p3.p2" class="text-[9px] hidden md:inline" :class="m.status === 'Abgeschlossen' ? 'text-gray-300 dark:text-gray-700' : 'text-gray-400 dark:text-gray-500'">vs</span>
                                 <span v-html="formatPlayerBadge(m.p3.p2, m.status === 'Abgeschlossen')"></span>
@@ -163,7 +171,7 @@
                         </td>
                         <!-- Platz 2 - Doppel / Einzel (20:30) -->
                         <td class="py-2 px-1.5">
-                            <div v-if="m.court2_type !== 'singles'" class="flex flex-wrap items-center gap-1">
+                            <div v-if="m.court2_type !== 'singles'" class="match-players flex flex-wrap items-center gap-1">
                                 <span class="inline-flex flex-col gap-0.5">
                                     <span v-html="formatPlayerBadge(m.doppel.team1[0], m.status === 'Abgeschlossen')"></span>
                                     <span v-html="formatPlayerBadge(m.doppel.team1[1], m.status === 'Abgeschlossen')"></span>
@@ -174,7 +182,7 @@
                                     <span v-html="formatPlayerBadge(m.doppel.team2[1], m.status === 'Abgeschlossen')"></span>
                                 </span>
                             </div>
-                            <div v-else class="flex flex-wrap items-center gap-1">
+                            <div v-else class="match-players flex flex-wrap items-center gap-1">
                                 <span v-html="formatPlayerBadge(m.doppel.p1, m.status === 'Abgeschlossen')"></span>
                                 <span v-if="m.doppel.p1 && m.doppel.p2" class="text-[9px] hidden md:inline" :class="m.status === 'Abgeschlossen' ? 'text-gray-300 dark:text-gray-700' : 'text-gray-400 dark:text-gray-500'">vs</span>
                                 <span v-html="formatPlayerBadge(m.doppel.p2, m.status === 'Abgeschlossen')"></span>
@@ -961,8 +969,9 @@
                         opacityClass = 'opacity-30';
                     }
 
-                    return `<span style="background-color: ${colors.bg}; border-color: ${colors.border}; color: ${colors.text};" class="inline-flex items-center px-1.5 py-0.5 rounded border text-[11px] font-semibold shadow-2xs transition ${opacityClass}">
-                        ${player}
+                    const shortName = player.length > 4 ? `${player.slice(0, 4)}...` : player;
+                    return `<span title="${player}" style="background-color: ${colors.bg}; border-color: ${colors.border}; color: ${colors.text};" class="player-badge inline-flex items-center px-1.5 py-0.5 rounded border text-[11px] font-semibold shadow-2xs transition ${opacityClass}">
+                        <span class="player-name-full">${player}</span><span class="player-name-short">${shortName}</span>
                     </span>`;
                 }
 
