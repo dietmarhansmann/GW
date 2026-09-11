@@ -1013,15 +1013,23 @@ html_template = """<!DOCTYPE html>
                     <tr v-for="(m, idx) in displayedMatches" :key="m.spieltag"
                         :id="isNextUpcoming(m, idx) ? 'next-match-target' : null"
                         :class="getRowClass(m, idx)">
+                        <template v-if="m.status === 'Reserviert für alle'">
+                            <td colspan="5" class="py-3 px-3 text-center bg-amber-50 border-amber-200">
+                                <div class="flex items-center justify-center gap-2 text-amber-900 font-bold text-xs md:text-sm whitespace-nowrap">
+                                    <span>🎾 Spieltag #[[ m.spieltag ]] — [[ formatFullDate(m.date) ]]:</span>
+                                    <span class="bg-amber-200 text-amber-900 px-2.5 py-1 rounded-md shadow-sm border border-amber-300 font-extrabold uppercase tracking-wide">
+                                        Reserviert für alle
+                                    </span>
+                                </div>
+                            </td>
+                        </template>
+                        <template v-else>
                         <td class="py-2 px-1" :class="m.status === 'Abgeschlossen' ? 'text-gray-400' : 'text-gray-600'">
                             <span class="md:hidden">[[ formatShortDate(m.date) ]]</span>
                             <div class="hidden md:block leading-tight">
                                 <span class="font-bold text-[10px]">#[[ m.spieltag ]]</span>
                                 <div class="text-[11px]">[[ formatFullDate(m.date) ]]</div>
                             </div>
-                            <span v-if="m.status === 'Reserviert für alle'" class="mt-0.5 inline-flex items-center px-1 py-0.5 rounded text-[9px] font-semibold bg-amber-100 text-amber-800">
-                                Reserviert für alle
-                            </span>
                         </td>
                         <!-- Platz 1 (19:00) -->
                         <td class="py-2 px-1.5">
@@ -1066,6 +1074,7 @@ html_template = """<!DOCTYPE html>
                                 <span v-html="formatPlayerBadge(m.doppel.p2, m.status === 'Abgeschlossen')"></span>
                             </div>
                         </td>
+                        </template>
                     </tr>
                 </tbody>
             </table>
