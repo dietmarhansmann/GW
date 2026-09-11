@@ -13,23 +13,30 @@
 </head>
 <body class="bg-gray-50 text-gray-800 antialiased min-h-screen p-2 md:p-3">
     <div id="app" class="max-w-[98%] mx-auto">
-        <!-- Header -->
-        <header class="bg-emerald-800 text-white shadow-sm rounded-lg px-4 py-2.5 mb-2.5 flex justify-between items-center">
-            <div>
-                <h1 class="text-base md:text-lg font-bold tracking-tight">🎾 Tennis-Spielplan Winter 2026/2027</h1>
+        <!-- Quick Stats & Global Export Bar -->
+        <div class="bg-white border border-emerald-200 rounded-lg px-3 py-2 mb-2.5 shadow-sm text-xs flex flex-wrap justify-between items-center gap-2">
+            <div class="flex items-center gap-3 text-gray-700 font-medium">
+                <span>📊 <b>13</b> Spieltage (Saison 2026/2027)</span>
+                <span class="text-gray-300">•</span>
+                <span>👥 <b>[[ allPlayers.length ]]</b> aktive Spieler</span>
+                <span class="text-gray-300">•</span>
+                <span class="text-emerald-800 font-semibold">⭐ Nächster Spieltag: <b>06.10.2026</b> (#1)</span>
             </div>
-            <div>
-                <span class="text-xs bg-emerald-900/80 text-emerald-100 px-2.5 py-1 rounded font-medium border border-emerald-700">
-                    Stand: 11.09.2026 10:49
+            <div class="flex items-center gap-2">
+                <span class="text-[11px] text-gray-500 bg-gray-100 px-2.5 py-1 rounded border border-gray-200 font-medium">
+                    Stand: 11.09.2026 11:00
                 </span>
+                <button @click="downloadAllIcs()" class="bg-emerald-800 hover:bg-emerald-900 text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition border border-emerald-700 flex items-center gap-1.5 shadow-sm">
+                    <span>📅 Gesamter Spielplan als ICS</span>
+                </button>
             </div>
-        </header>
+        </div>
 
         <!-- Player Legend & Controls Bar -->
         <div class="bg-white border border-gray-200 rounded-lg p-2.5 mb-2.5 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-2">
             <div class="flex-1 w-full">
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-1.5 gap-1">
-                    <span class="font-bold text-xs uppercase tracking-wider text-gray-700">⭐ #1 = 06.10.2026 = Nächster Spieltag | Klick = Spiele filtern | 📅 = Kalender-Download für z.B. Google Kalender:</span>
+                    <span class="font-bold text-xs uppercase tracking-wider text-gray-700">Klick [NAME] = Spiele filtern | 📅 = Kalender-Download für z.B. Google Kalender:</span>
                     <span v-if="currentFilter !== 'ALL'" class="text-[11px] text-emerald-700 font-semibold">
                         Filter aktiv: [[ currentFilter ]] ([[ filteredMatches.length ]] Spieltage)
                     </span>
@@ -164,24 +171,24 @@
                 <h3 class="text-xs font-bold uppercase tracking-wider text-emerald-800 flex items-center gap-1.5">
                     <span>📊 Spieler-Statistik-Matrix (Einzel vs. Doppel)</span>
                 </h3>
-                <span class="text-[10px] text-gray-500 font-medium">Gesamtübersicht aller Einsätze</span>
+                <span class="text-[10px] text-gray-500 font-medium">Klick auf Spaltenköpfe zum Sortieren</span>
             </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse text-xs">
                     <thead>
-                        <tr class="bg-emerald-800 text-white">
-                            <th class="p-2 font-semibold">Spieler</th>
-                            <th class="p-2 text-center font-semibold">Einzel</th>
-                            <th class="p-2 text-center font-semibold">Doppel</th>
-                            <th class="p-2 text-center font-semibold">Gesamt Spiele</th>
-                            <th class="p-2 text-center font-semibold">Doppel-Anteil</th>
-                            <th class="p-2 text-center font-semibold">Kosten</th>
+                        <tr class="bg-emerald-800 text-white select-none">
+                            <th @click="sortBy('name')" class="p-2 font-semibold cursor-pointer hover:bg-emerald-700">Spieler [[ sortColumn === 'name' ? (sortDirection === 'asc' ? '▲' : '▼') : '↕' ]]</th>
+                            <th @click="sortBy('singles')" class="p-2 text-center font-semibold cursor-pointer hover:bg-emerald-700">Einzel [[ sortColumn === 'singles' ? (sortDirection === 'asc' ? '▲' : '▼') : '↕' ]]</th>
+                            <th @click="sortBy('doppel')" class="p-2 text-center font-semibold cursor-pointer hover:bg-emerald-700">Doppel [[ sortColumn === 'doppel' ? (sortDirection === 'asc' ? '▲' : '▼') : '↕' ]]</th>
+                            <th @click="sortBy('total')" class="p-2 text-center font-semibold cursor-pointer hover:bg-emerald-700">Gesamt Spiele [[ sortColumn === 'total' ? (sortDirection === 'asc' ? '▲' : '▼') : '↕' ]]</th>
+                            <th @click="sortBy('ratio')" class="p-2 text-center font-semibold cursor-pointer hover:bg-emerald-700">Doppel-Anteil [[ sortColumn === 'ratio' ? (sortDirection === 'asc' ? '▲' : '▼') : '↕' ]]</th>
+                            <th @click="sortBy('kosten')" class="p-2 text-center font-semibold cursor-pointer hover:bg-emerald-700" title="Kosten = (Einzel × 0.5) + (Doppel × 0.375)">Kosten ℹ️ [[ sortColumn === 'kosten' ? (sortDirection === 'asc' ? '▲' : '▼') : '↕' ]]</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="(stat, player) in playerStats" :key="player" class="border-b border-gray-100 hover:bg-emerald-50/50">
+                        <tr v-for="stat in sortedPlayerStats" :key="stat.name" class="border-b border-gray-100 hover:bg-emerald-50/50">
                             <td class="p-2 font-medium">
-                                <span v-html="formatPlayerBadge(player, false)"></span>
+                                <span v-html="formatPlayerBadge(stat.name, false)"></span>
                             </td>
                             <td class="p-2 text-center font-semibold text-gray-700">[[ stat.singles ]]</td>
                             <td class="p-2 text-center font-semibold text-emerald-700">[[ stat.doppel ]]</td>
@@ -423,7 +430,7 @@
                             if (mins >= 60) { hours += 1; mins -= 60; }
                             const endTimeStr = String(hours).padStart(2, '0') + String(mins).padStart(2, '0') + '00';
 
-                            let matchDetails = `19:00: ${m.p1.p1} vs ${m.p1.p2} | 20:00: ${m.p2.p1} vs ${m.p2.p2} | 21:00: ${m.p3.p1} vs ${m.p3.p2} | Doppel (20:30): ${m.doppel.team1.join(' & ')} vs ${m.doppel.team2.join(' & ')}`;
+                            let matchDetails = `19:00: ${m.p1.p1} vs ${m.p1.p2} | 20:00: ${m.p2.p1} vs ${m.p2.p2} | 21:00: ${m.p3.p1} vs ${m.p3.p2}`;
 
                             icsContent += "BEGIN:VEVENT\n";
                             icsContent += `UID:spieltag-${m.spieltag}-${playerName.replace(/\s+/g, '')}@tennis.local\n`;
@@ -446,6 +453,58 @@
                     link.click();
                     document.body.removeChild(link);
                 }
+
+                function downloadAllIcs() {
+                    let icsContent = "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//Tennis Spielplan Gesamtsaison 2026/2027//DE\nCALSCALE:GREGORIAN\nMETHOD:PUBLISH\n";
+                    matchesData.forEach(m => {
+                        if (m.status === 'Reserviert für alle' || !m.date) return;
+                        const dateStr = m.date.replace(/-/g, '');
+                        const timeClean = '190000';
+                        const endTimeStr = '223000';
+                        let matchDetails = `19:00: ${m.p1.p1} vs ${m.p1.p2} | 20:00: ${m.p2.p1} vs ${m.p2.p2} | 21:00: ${m.p3.p1} vs ${m.p3.p2}`;
+                        icsContent += "BEGIN:VEVENT\n";
+                        icsContent += `UID:spieltag-${m.spieltag}-gesamt@tennis.local\n`;
+                        icsContent += `DTSTAMP:${dateStr}T${timeClean}Z\n`;
+                        icsContent += `DTSTART:${dateStr}T${timeClean}Z\n`;
+                        icsContent += `DTEND:${dateStr}T${endTimeStr}Z\n`;
+                        icsContent += `SUMMARY:Tennis-Abend Spieltag ${m.spieltag} (Wintersaison)\n`;
+                        icsContent += `DESCRIPTION:Spieltag ${m.spieltag} am ${m.date}\n${matchDetails}\n`;
+                        icsContent += "END:VEVENT\n";
+                    });
+                    icsContent += "END:VCALENDAR";
+
+                    const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+                    const link = document.createElement('a');
+                    link.href = window.URL.createObjectURL(blob);
+                    link.download = "Tennis_Gesamter_Spielplan_2026_2027.ics";
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }
+
+                const sortColumn = ref('total');
+                const sortDirection = ref('desc');
+
+                function sortBy(col) {
+                    if (sortColumn.value === col) {
+                        sortDirection.value = sortDirection.value === 'asc' ? 'desc' : 'asc';
+                    } else {
+                        sortColumn.value = col;
+                        sortDirection.value = ['name', 'ratio'].includes(col) ? 'asc' : 'desc';
+                    }
+                }
+
+                const sortedPlayerStats = computed(() => {
+                    const entries = Object.entries(playerStats).map(([name, stats]) => ({ name, ...stats }));
+                    entries.sort((a, b) => {
+                        let valA = (sortColumn.value === 'name') ? a.name : a[sortColumn.value];
+                        let valB = (sortColumn.value === 'name') ? b.name : b[sortColumn.value];
+                        if (valA < valB) return sortDirection.value === 'asc' ? -1 : 1;
+                        if (valA > valB) return sortDirection.value === 'asc' ? 1 : -1;
+                        return 0;
+                    });
+                    return entries;
+                });
 
                 onMounted(() => {
                     if (currentFilter.value === 'ALL' && !showPastMatches.value) {
@@ -476,7 +535,12 @@
                     formatShortDate,
                     formatFullDate,
                     formatPlayerBadge,
-                    downloadPlayerIcs
+                    downloadPlayerIcs,
+                    downloadAllIcs,
+                    sortColumn,
+                    sortDirection,
+                    sortedPlayerStats,
+                    sortBy
                 };
             },
             compilerOptions: {

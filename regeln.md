@@ -93,7 +93,7 @@ Die Werte werden über alle gespielten Spieltage hinweg aufsummiert.
 - **Vermeidung von Wiederholungen**: Ein Algorithmus (Randomized Local Search über Platz-Permutationen) minimiert die Wiederholung gleicher Paarungen (Head-to-Head) über die Saison hinweg (maximal ca. 3–4 Wiederholungen pro Paarung).
 - **Slot-Zuordnung**:
   - Platz 1 (Zeiten 19:00, 20:00, 21:00): Einzel-Matches.
-  - Platz 2 (Zeit 20:30): Doppel-Matches (4 Spieler).
+  - Platz 2 (Zeit 20:30): **Alternierend** (ungerade Spieltage = Doppel mit 4 Spielern, gerade Spieltage = Einzel mit 2 Spielern).
 
 ---
 
@@ -143,10 +143,12 @@ Für jeden Spieltag (beschränkt auf Saison 2026, Spieltage 1–13) läuft folge
 ### F. Frontend-Generierung (Vue.js 3 & Tailwind CSS)
 Das Skript generiert eine eigenständige HTML-Datei mit folgenden integrierten Features:
 - **Responsive UI**: Tailwind CSS Styling im modernen Clean-Design.
-- **Interaktive Filter**: Klickbare Spieler-Badges zum Filtern von Spieltagen.
-- **Statistik-Matrix**: Sortierbare Tabelle aller Spieler inklusive Kostenübersicht.
+- **Quick-Stats-Leiste**: Übersicht zu Spieltagen, aktiven Spielern und nächstbester Begegnung.
+- **Interaktive Filter**: Klickbare Spieler-Badges zum Filtern von Spieltagen (nicht beteiligte Spiele werden dezent abgeblendet).
+- **Statistik-Matrix**: Klickbare, sortierbare Tabellenköpfe für alle Spieler inklusive Kostenübersicht und Formel-Tooltip.
 - **Regel-Legende**: Übersichtliche Darstellung aller aktiven Spielerregeln direkt im UI.
-- **ICS Kalender-Export**: Generierung von `.ics`-Kalenderdateien für einzelne Spieler.
+- **ICS Kalender-Export**: Sowohl personalisierter `.ics`-Download pro Spieler als auch globaler Gesamtkalender-Export für die gesamte Saison.
+- **Sonder-Spieltag-Darstellung**: „Reserviert für alle“ erstreckt sich über die gesamte Tabellenzeile.
 - **Zustandsverwaltung**: Vue.js 3 Reactive State (Suchfilter, Vergangenheits-Toggle, Nächster-Spieltag-Highlight).
 
 
