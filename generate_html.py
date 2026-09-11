@@ -958,7 +958,7 @@ html_template = """<!DOCTYPE html>
                 <span class="text-emerald-800 dark:text-emerald-400 font-semibold">⭐ Nächster Spieltag: <b>06.10.2026</b> (#1)</span>
             </div>
             <div class="flex items-center gap-2">
-                <button @click="window.print()" class="no-print bg-gray-100 hover:bg-gray-200 text-gray-700 px-2.5 py-1.5 rounded-lg text-xs font-semibold transition border border-gray-300 flex items-center gap-1 shadow-sm" title="Spielplan drucken">
+                <button @click="printPage()" class="no-print bg-gray-100 hover:bg-gray-200 text-gray-700 px-2.5 py-1.5 rounded-lg text-xs font-semibold transition border border-gray-300 flex items-center gap-1 shadow-sm" title="Spielplan drucken">
                     <span>🖨️ Drucken</span>
                 </button>
                 <button @click="downloadAllIcs()" class="no-print bg-emerald-800 hover:bg-emerald-900 text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition border border-emerald-700 flex items-center gap-1.5 shadow-sm">
@@ -1015,9 +1015,6 @@ html_template = """<!DOCTYPE html>
                 </div>
             </div>
             <div class="no-print flex items-center gap-2">
-                <button @click="window.print()" class="bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 px-3 py-1.5 rounded-lg border border-gray-300 dark:border-gray-600 text-xs font-medium transition flex items-center gap-1 shadow-sm" title="Drucken / Als PDF speichern">
-                    <span>🖨️ Drucken</span>
-                </button>
                 <button @click="togglePastMatches"
                     :class="showPastMatches ? 'bg-emerald-100 dark:bg-emerald-900/50 hover:bg-emerald-200 text-emerald-800 dark:text-emerald-300 border-emerald-300 dark:border-emerald-700' : 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600'"
                     class="text-xs font-medium px-3 py-1.5 rounded-lg border transition whitespace-nowrap">
@@ -1432,6 +1429,10 @@ html_template = """<!DOCTYPE html>
                     document.body.removeChild(link);
                 }
 
+                function printPage() {
+                    window.print();
+                }
+
                 function downloadAllIcs() {
                     let ics = "BEGIN:VCALENDAR\\nVERSION:2.0\\nPRODID:-//Tennis Spielplan 2026//DE\\n";
                     matchesData.forEach(m => {
@@ -1489,6 +1490,7 @@ html_template = """<!DOCTYPE html>
                     sortedPlayerStats,
                     exportStatsCsv,
                     downloadPlayerIcs,
+                    printPage,
                     downloadAllIcs
                 };
             }
