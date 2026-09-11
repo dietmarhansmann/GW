@@ -22,7 +22,10 @@
                 <span class="text-gray-300">•</span>
                 <span class="text-emerald-800 font-semibold">⭐ Nächster Spieltag: <b>06.10.2026</b> (#1)</span>
             </div>
-            <div>
+            <div class="flex items-center gap-2">
+                <a href="anleitung.html" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-800 px-3 py-1.5 rounded-lg text-xs font-semibold transition border border-emerald-300 flex items-center gap-1.5 shadow-sm">
+                    <span>📖 Anleitung</span>
+                </a>
                 <button @click="downloadAllIcs()" class="bg-emerald-800 hover:bg-emerald-900 text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition border border-emerald-700 flex items-center gap-1.5 shadow-sm">
                     <span>📅 Gesamter Spielplan als ICS</span>
                 </button>
