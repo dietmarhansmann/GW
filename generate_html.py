@@ -14,21 +14,28 @@ global_time_counts = defaultdict(lambda: {19: 0, 20: 0, 21: 0})
 def get_matchday_score(test_slots, singles_keys, doppel_keys):
     score = 0
     for i in range(0, len(singles_keys), 2):
-        p1 = test_slots[singles_keys[i]]
-        p2 = test_slots[singles_keys[i+1]]
+        if i + 1 < len(singles_keys):
+            p1 = test_slots.get(singles_keys[i])
+            p2 = test_slots.get(singles_keys[i+1])
+            if p1 and p2:
+                score += global_pair_counts[tuple(sorted([p1, p2]))]
+
+    if len(doppel_keys) == 4:
+        t1 = [test_slots.get('d_t1_1'), test_slots.get('d_t1_2')]
+        t2 = [test_slots.get('d_t2_1'), test_slots.get('d_t2_2')]
+        t1 = [p for p in t1 if p]
+        t2 = [p for p in t2 if p]
+        for pa in t1:
+            for pb in t2:
+                score += global_pair_counts[tuple(sorted([pa, pb]))]
+        for pair in [tuple(sorted(t1)), tuple(sorted(t2))]:
+            if len(pair) == 2:
+                score += global_pair_counts[pair]
+    else:
+        p1 = test_slots.get('d_t1_1')
+        p2 = test_slots.get('d_t2_1')
         if p1 and p2:
             score += global_pair_counts[tuple(sorted([p1, p2]))]
-
-    t1 = [test_slots['d_t1_1'], test_slots['d_t1_2']]
-    t2 = [test_slots['d_t2_1'], test_slots['d_t2_2']]
-    t1 = [p for p in t1 if p]
-    t2 = [p for p in t2 if p]
-    for pa in t1:
-        for pb in t2:
-            score += global_pair_counts[tuple(sorted([pa, pb]))]
-    for pair in [tuple(sorted(t1)), tuple(sorted(t2))]:
-        if len(pair) == 2:
-            score += global_pair_counts[pair]
 
     # Time slot fairness penalty (balance 19:00, 20:00, 21:00 across season)
     slot_hours = [
@@ -45,20 +52,28 @@ def get_matchday_score(test_slots, singles_keys, doppel_keys):
 
 def register_matchday_pairs(test_slots, singles_keys, doppel_keys):
     for i in range(0, len(singles_keys), 2):
-        p1 = test_slots[singles_keys[i]]
-        p2 = test_slots[singles_keys[i+1]]
+        if i + 1 < len(singles_keys):
+            p1 = test_slots.get(singles_keys[i])
+            p2 = test_slots.get(singles_keys[i+1])
+            if p1 and p2:
+                global_pair_counts[tuple(sorted([p1, p2]))] += 1
+
+    if len(doppel_keys) == 4:
+        t1 = [test_slots.get('d_t1_1'), test_slots.get('d_t1_2')]
+        t2 = [test_slots.get('d_t2_1'), test_slots.get('d_t2_2')]
+        t1 = [p for p in t1 if p]
+        t2 = [p for p in t2 if p]
+        for pa in t1:
+            for pb in t2:
+                global_pair_counts[tuple(sorted([pa, pb]))] += 1
+        for pair in [tuple(sorted(t1)), tuple(sorted(t2))]:
+            if len(pair) == 2:
+                global_pair_counts[pair] += 1
+    else:
+        p1 = test_slots.get('d_t1_1')
+        p2 = test_slots.get('d_t2_1')
         if p1 and p2:
             global_pair_counts[tuple(sorted([p1, p2]))] += 1
-    t1 = [test_slots['d_t1_1'], test_slots['d_t1_2']]
-    t2 = [test_slots['d_t2_1'], test_slots['d_t2_2']]
-    t1 = [p for p in t1 if p]
-    t2 = [p for p in t2 if p]
-    for pa in t1:
-        for pb in t2:
-            global_pair_counts[tuple(sorted([pa, pb]))] += 1
-    for pair in [tuple(sorted(t1)), tuple(sorted(t2))]:
-        if len(pair) == 2:
-            global_pair_counts[pair] += 1
 
     slot_hours = [
         ('p1_1', 19), ('p1_2', 19),
@@ -213,8 +228,8 @@ PLAYER_RULES = {
         "rules": [
             {
                 "id": "max_frequency_gap",
-                "min_gap": 2,
-                "description": "2-Wochen-Rhythmus (mindestens 1 Spieltag Pause dazwischen)."
+                "min_gap": 1,
+                "description": "Regelmäßiger Rhythmus."
             },
             {
                 "id": "slot_preference_trojanski",
@@ -327,44 +342,15 @@ for r in raw_rows:
 
         is_doppel_week = (spieltag % 2 == 1)
         if is_doppel_week:
-            slots = {
-                'p1_1': str(r[2] or '').strip(),
-                'p1_2': str(r[4] or '').strip(),
-                'p2_1': str(r[6] or '').strip(),
-                'p2_2': str(r[8] or '').strip(),
-                'p3_1': str(r[10] or '').strip(),
-                'p3_2': str(r[12] or '').strip(),
-                'd_t1_1': str(r[14] or '').strip(),
-                'd_t1_2': str(r[15] or '').strip(),
-                'd_t2_1': str(r[17] or '').strip(),
-                'd_t2_2': str(r[18] or '').strip(),
-            }
             slot_keys = ['p1_1', 'p1_2', 'p2_1', 'p2_2', 'p3_1', 'p3_2', 'd_t1_1', 'd_t1_2', 'd_t2_1', 'd_t2_2']
             singles_keys = ['p1_1', 'p1_2', 'p2_1', 'p2_2', 'p3_1', 'p3_2']
             doppel_keys = ['d_t1_1', 'd_t1_2', 'd_t2_1', 'd_t2_2']
+            num_needed = 10
         else:
-            slots = {
-                'p1_1': str(r[2] or '').strip(),
-                'p1_2': str(r[4] or '').strip(),
-                'p2_1': str(r[6] or '').strip(),
-                'p2_2': str(r[8] or '').strip(),
-                'p3_1': str(r[10] or '').strip(),
-                'p3_2': str(r[12] or '').strip(),
-                'd_t1_1': str(r[14] or '').strip(),
-                'd_t1_2': '',
-                'd_t2_1': str(r[17] or '').strip(),
-                'd_t2_2': '',
-            }
             slot_keys = ['p1_1', 'p1_2', 'p2_1', 'p2_2', 'p3_1', 'p3_2', 'd_t1_1', 'd_t2_1']
             singles_keys = ['p1_1', 'p1_2', 'p2_1', 'p2_2', 'p3_1', 'p3_2', 'd_t1_1', 'd_t2_1']
             doppel_keys = []
-
-        # Clean 'vs' entries and normalize spelling
-        for k in slots:
-            if slots[k] == 'Wojtanowtisch':
-                slots[k] = 'Wojtanowitsch'
-            if slots[k] == 'vs' or slots[k] == 'Knust' or slots[k] == 'Höttinger':
-                slots[k] = ''
+            num_needed = 8
 
         if spieltag == 13 or date_val == '2026-12-29':
             status = 'Reserviert für alle'
@@ -387,73 +373,6 @@ for r in raw_rows:
             })
             continue
 
-        slot_keys = ['p1_1', 'p1_2', 'p2_1', 'p2_2', 'p3_1', 'p3_2', 'd_t1_1', 'd_t1_2', 'd_t2_1', 'd_t2_2']
-        singles_keys = ['p1_1', 'p1_2', 'p2_1', 'p2_2', 'p3_1', 'p3_2']
-
-        def get_substitute(occupied_today, exclude_set=None, slot_type='any'):
-            if exclude_set is None:
-                exclude_set = set()
-
-            def check_can_play(p):
-
-                # Check slot type restrictions
-                if slot_type == 'singles':
-                    for rule in PLAYER_RULES.get(p, {}).get("rules", []):
-                        if (rule.get("target") == "doppel_pref" or rule.get("id", "").startswith("slot_preference")) and rule.get("ratio", 0.8) >= 1.0:
-                            return False
-                elif slot_type == 'doppel':
-                    for rule in PLAYER_RULES.get(p, {}).get("rules", []):
-                        if (rule.get("target") == "doppel_pref" or rule.get("id", "").startswith("slot_preference")) and rule.get("ratio", 0.8) <= 0.0:
-                            return False
-
-                for rule in PLAYER_RULES.get(p, {}).get("rules", []):
-                    rule_id = rule.get("id")
-                    if rule_id == "blackout_spieltage":
-                        if spieltag in rule.get("spieltage", []):
-                            return False
-                    elif rule_id in ["tshirt_size_frequency", "max_frequency_gap"]:
-                        size = rule.get("size", "L").upper()
-                        size_gaps = {"S": 4, "M": 3, "L": 2, "XL": 0}
-                        min_gap = rule.get("min_gap", size_gaps.get(size, 2))
-                        last_st = player_last_played.get(p, -99)
-                        if spieltag - last_st < min_gap:
-                            return False
-                return True
-
-            for p in player_pool:
-                if p == "Knust":
-                    continue
-                if p not in occupied_today and p not in exclude_set:
-                    if check_can_play(p):
-                        return p
-
-            best_p = None
-            max_gap_seen = -1
-            for p in player_pool:
-                if p == "Knust":
-                    continue
-                if p not in occupied_today and p not in exclude_set:
-                    if check_can_play(p):
-                        last_st = player_last_played.get(p, -99)
-                        gap = spieltag - last_st
-                        if gap > max_gap_seen:
-                            max_gap_seen = gap
-                            best_p = p
-            if best_p:
-                return best_p
-
-            for p in player_pool:
-                if p == "Knust":
-                    continue
-                if p not in occupied_today and p not in exclude_set:
-                    return p
-            return player_pool[0]
-
-        occupied_today = set()
-        resting_today = set()
-
-        doppel_keys = ['d_t1_1', 'd_t1_2', 'd_t2_1', 'd_t2_2']
-        # Robust Pre-enforce strict ratios (0% doppel / 100% doppel)
         def can_play_slot(player, stype):
             for rule in PLAYER_RULES.get(player, {}).get("rules", []):
                 r_target = rule.get("target")
@@ -466,41 +385,98 @@ for r in raw_rows:
                         return False
             return True
 
-        for dk in doppel_keys:
-            p = slots[dk]
-            if p and not can_play_slot(p, "doppel"):
-                slots[dk] = ''
-                swapped = False
-                for sk in singles_keys:
-                    sp = slots[sk]
-                    if sp and can_play_slot(sp, "doppel"):
-                        slots[sk] = p
-                        slots[dk] = sp
-                        swapped = True
-                        break
-                if not swapped:
-                    current_occ = set(slots.values())
-                    sub = get_substitute(current_occ, slot_type="doppel")
-                    slots[dk] = sub
+        def can_play_today(p, relax_freq=False):
+            if p == "Knust":
+                return False
+            for rule in PLAYER_RULES.get(p, {}).get("rules", []):
+                rule_id = rule.get("id")
+                if rule_id == "blackout_spieltage":
+                    if spieltag in rule.get("spieltage", []):
+                        return False
+                elif not relax_freq and rule_id in ["tshirt_size_frequency", "max_frequency_gap"]:
+                    size = rule.get("size", "L").upper()
+                    size_gaps = {"S": 4, "M": 3, "L": 2, "XL": 0}
+                    min_gap = rule.get("min_gap", size_gaps.get(size, 2))
+                    last_st = player_last_played.get(p, -99)
+                    if spieltag - last_st < min_gap:
+                        return False
+            return True
 
-        for sk in singles_keys:
-            p = slots[sk]
-            if p and not can_play_slot(p, "singles"):
-                slots[sk] = ''
-                swapped = False
-                for dk in doppel_keys:
-                    dp = slots[dk]
-                    if dp and can_play_slot(dp, "singles"):
-                        slots[dk] = p
-                        slots[sk] = dp
-                        swapped = True
-                        break
-                if not swapped:
-                    current_occ = set(slots.values())
-                    sub = get_substitute(current_occ, slot_type="singles")
-                    slots[sk] = sub
+        def get_substitute(occupied_today, exclude_set=None, slot_type='any'):
+            if exclude_set is None:
+                exclude_set = set()
+            active_pool = [p for p in player_pool if p != "Knust" and p != "Hinz"]
+            min_games = min(player_total_games.get(p, 0) for p in active_pool) if active_pool else 0
+            for max_g in [min_games + 1, min_games + 2, min_games + 3, 99]:
+                candidates = [
+                    p for p in active_pool
+                    if p not in occupied_today and p not in exclude_set
+                    and player_total_games.get(p, 0) <= max_g and can_play_today(p, relax_freq=False)
+                ]
+                if candidates:
+                    candidates.sort(key=lambda x: (player_total_games.get(x, 0), -(spieltag - player_last_played.get(x, -99)), random.random()))
+                    return candidates[0]
+            candidates = [
+                p for p in active_pool
+                if p not in occupied_today and p not in exclude_set
+            ]
+            if candidates:
+                candidates.sort(key=lambda x: (player_total_games.get(x, 0), -(spieltag - player_last_played.get(x, -99)), random.random()))
+                return candidates[0]
+            return active_pool[0]
 
-        # Apply internal time restrictions before the remaining rule passes.
+        active_pool = [p for p in player_pool if p != "Knust" and p != "Hinz"]
+
+        eligible_players = [p for p in active_pool if can_play_today(p, relax_freq=False) and player_total_games.get(p, 0) < 7]
+        if len(eligible_players) < num_needed:
+            # Try relaxing frequency but still keep < 7 games if possible
+            fallback_relax = [p for p in active_pool if can_play_today(p, relax_freq=True) and player_total_games.get(p, 0) < 7]
+            if len(fallback_relax) >= num_needed:
+                eligible_players = fallback_relax
+            else:
+                # If still not enough, allow players with >= 7 games sorted by lowest games first
+                eligible_players = [p for p in active_pool if can_play_today(p, relax_freq=True)]
+        if len(eligible_players) < num_needed:
+            eligible_players = [p for p in active_pool if p != "Knust"]
+
+        def get_sort_key(p):
+            games = player_total_games.get(p, 0)
+            if games >= 7:
+                games += 100  # Hard deprioritization for anyone who already has 7 games
+            last_played = player_last_played.get(p, -99)
+            played_last_time = 1 if (spieltag - last_played == 1) else 0
+            return (games, played_last_time, -last_played, random.random())
+
+        eligible_players.sort(key=get_sort_key)
+        today_players = eligible_players[:num_needed]
+        resting_today = set(active_pool) - set(today_players)
+
+        slots = {k: '' for k in slot_keys}
+        remaining_players = list(today_players)
+
+        if is_doppel_week:
+            doppel_candidates = [p for p in remaining_players if can_play_slot(p, "doppel") and not can_play_slot(p, "singles")]
+            random.shuffle(doppel_candidates)
+            for dk in doppel_keys:
+                if doppel_candidates and slots[dk] == '':
+                    p = doppel_candidates.pop(0)
+                    slots[dk] = p
+                    remaining_players.remove(p)
+
+        for k in slot_keys:
+            if slots[k] == '' and remaining_players:
+                stype = 'doppel' if (is_doppel_week and k in doppel_keys) else 'singles'
+                valid_p = None
+                for p in remaining_players:
+                    if can_play_slot(p, stype):
+                        valid_p = p
+                        break
+                if not valid_p:
+                    valid_p = remaining_players[0]
+                slots[k] = valid_p
+                remaining_players.remove(valid_p)
+
+        # Apply internal time restrictions before pairing optimization.
         slot_times = {
             'p1_1': '19:00', 'p1_2': '19:00',
             'p2_1': '20:00', 'p2_2': '20:00',
@@ -509,6 +485,21 @@ for r in raw_rows:
             'd_t2_1': '20:30', 'd_t2_2': '20:30'
         }
         for player, player_data in PLAYER_RULES.items():
+            for rule in player_data.get("rules", []):
+                if rule.get("id") == "allowed_times":
+                    allowed = rule.get("times", [])
+                    # If player is in slots at an unauthorized time, swap with an authorized player
+                    for sk, time_str in slot_times.items():
+                        if sk in slots and slots[sk] == player and time_str not in allowed:
+                            # Find another slot with allowed time
+                            for sk2, time_str2 in slot_times.items():
+                                if sk2 in slots and time_str2 in allowed and slots[sk2] != player:
+                                    other_p = slots[sk2]
+                                    # check if other_p can take sk time
+                                    if time_str in allowed:
+                                        slots[sk] = other_p
+                                        slots[sk2] = player
+                                        break
             allowed_rules = [r for r in player_data.get('rules', []) if r.get('id') == 'allowed_times']
             for rule in allowed_rules:
                 allowed_times = set(rule.get('times', []))
@@ -578,12 +569,11 @@ for r in raw_rows:
                         continue
                     ratio = rule.get("ratio", 0.8) # e.g. 0.8 for Heyn, 0.6 for Hinz
                     in_singles = any(slots[k] == player for k in singles_keys)
-                    in_doppel = any(slots[k] == player for k in ['d_t1_1', 'd_t1_2', 'd_t2_1', 'd_t2_2'])
+                    in_doppel = any(slots[k] == player for k in doppel_keys) if doppel_keys else False
 
                     if in_singles or in_doppel:
-                        player_total_games[player] = player_total_games.get(player, 0) + 1
+                        total_g = player_total_games.get(player, 0) + 1
                         current_doppel = player_doppel_games.get(player, 0)
-                        total_g = player_total_games[player]
 
                         if ratio >= 1.0:
                             should_be_doppel = True
@@ -592,9 +582,9 @@ for r in raw_rows:
                         else:
                             should_be_doppel = (current_doppel / total_g) < ratio
 
-                        doppel_keys = ['d_t1_1', 'd_t1_2', 'd_t2_1', 'd_t2_2']
+                        # doppel_keys is already defined above based on is_doppel_week
 
-                        if should_be_doppel and in_singles:
+                        if should_be_doppel and in_singles and doppel_keys:
                             moved = False
                             for sk in singles_keys:
                                 if slots[sk] == player:
@@ -612,14 +602,14 @@ for r in raw_rows:
                                                 slots[dk] = player
                                                 moved = True
                                                 break
-                                    if not moved:
+                                    if not moved and doppel_keys:
                                         # Force direct swap with first doppel player
                                         dk = doppel_keys[0]
                                         dp = slots[dk]
                                         slots[sk] = dp
                                         slots[dk] = player
                                         moved = True
-                        elif not should_be_doppel and in_doppel:
+                        elif not should_be_doppel and in_doppel and doppel_keys:
                             moved = False
                             for dk in doppel_keys:
                                 if slots[dk] == player:
@@ -745,11 +735,12 @@ for r in raw_rows:
         slots = best_slots
         register_matchday_pairs(slots, singles_keys, doppel_keys)
 
-        # Track last played for all participating players today
+        # Track last played and total games for all participating players today
         for k in slot_keys:
             p = slots[k]
             if p and p in player_pool:
                 player_last_played[p] = spieltag
+                player_total_games[p] = player_total_games.get(p, 0) + 1
 
         # Collect active players for legend
         for k in slot_keys:
