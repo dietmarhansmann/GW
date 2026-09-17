@@ -723,6 +723,21 @@ for r in raw_rows:
                     if rule.get("id") == "allowed_times" and slot_times[slot_key] not in rule.get("times", []):
                         return False
 
+            # Dedores must not play against any player from Topf A (Prodehl, Beumer, Heyn) in the same match
+            topf_a_members = {"Prodehl", "Beumer", "Heyn"}
+            singles_match_pairs = [
+                ('p1_1', 'p1_2'),
+                ('p2_1', 'p2_2'),
+                ('p3_1', 'p3_2')
+            ]
+            if not is_doppel_week:
+                singles_match_pairs.append(('d_t1_1', 'd_t2_1'))
+            for s1, s2 in singles_match_pairs:
+                p1 = test_slots.get(s1)
+                p2 = test_slots.get(s2)
+                if (p1 == "Dedores" and p2 in topf_a_members) or (p2 == "Dedores" and p1 in topf_a_members):
+                    return False
+
             for p in current_players:
                 for rule in PLAYER_RULES.get(p, {}).get("rules", []):
                     r_target = rule.get("target")
@@ -1247,6 +1262,7 @@ html_template = """<!DOCTYPE html>
         const matchesData = /*JSON_DATA_PLACEHOLDER*/;
         const playerRules = /*RULES_JSON_PLACEHOLDER*/;
         const playerStats = /*PLAYER_STATS_JSON_PLACEHOLDER*/;
+        const topfA = /*TOPF_A_JSON_PLACEHOLDER*/;
 
         const { createApp, ref, computed, onMounted, nextTick } = Vue;
 
@@ -1256,6 +1272,7 @@ html_template = """<!DOCTYPE html>
                 const showPastMatches = ref(false);
                 const rulesByPlayer = ref(playerRules);
                 const playerSearchQuery = ref('');
+                const showTopfA = ref(false);
 
                 function getMatchPlayers(m) {
                     const players = [
@@ -1537,6 +1554,8 @@ html_template = """<!DOCTYPE html>
                     allPlayers,
                     displayedPlayers,
                     playerSearchQuery,
+                    topfA,
+                    showTopfA,
                     playerColors,
                     filteredMatches,
                     displayedMatches,
@@ -1566,9 +1585,11 @@ html_template = """<!DOCTYPE html>
 </html>"""
 
 today_str = datetime.date.today().strftime('%d.%m.%Y')
+topf_a = ["Prodehl", "Beumer", "Heyn"]
 html_output = html_template.replace('/*JSON_DATA_PLACEHOLDER*/', json.dumps(matches, ensure_ascii=False, indent=4))
 html_output = html_output.replace('/*RULES_JSON_PLACEHOLDER*/', json.dumps(frontend_rules_by_player, ensure_ascii=False, indent=4))
 html_output = html_output.replace('/*PLAYER_STATS_JSON_PLACEHOLDER*/', json.dumps(player_stats, ensure_ascii=False, indent=4))
+html_output = html_output.replace('/*TOPF_A_JSON_PLACEHOLDER*/', json.dumps(topf_a, ensure_ascii=False, indent=4))
 html_output = html_output.replace('/*UPDATE_DATE_PLACEHOLDER*/', today_str)
 
 with open('index.html', 'w', encoding='utf-8') as f:

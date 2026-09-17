@@ -842,6 +842,11 @@
         "kosten": 1.5
     }
 };
+        const topfA = [
+    "Prodehl",
+    "Beumer",
+    "Heyn"
+];
 
         const { createApp, ref, computed, onMounted, nextTick } = Vue;
 
@@ -851,6 +856,7 @@
                 const showPastMatches = ref(false);
                 const rulesByPlayer = ref(playerRules);
                 const playerSearchQuery = ref('');
+                const showTopfA = ref(false);
 
                 function getMatchPlayers(m) {
                     const players = [
@@ -1132,6 +1138,8 @@
                     allPlayers,
                     displayedPlayers,
                     playerSearchQuery,
+                    topfA,
+                    showTopfA,
                     playerColors,
                     filteredMatches,
                     displayedMatches,
