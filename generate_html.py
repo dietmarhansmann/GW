@@ -9,33 +9,41 @@ wb = openpyxl.load_workbook('Tennis_Spielplan_Google_Drive_Native_Fix.xlsx', dat
 sheet = wb['Gesamt-Spielplan']
 
 global_pair_counts = defaultdict(int)
+global_partner_counts = defaultdict(int)
 global_time_counts = defaultdict(lambda: {19: 0, 20: 0, 21: 0})
 
 def get_matchday_score(test_slots, singles_keys, doppel_keys):
     score = 0
+    # Singles pairs penalty (avoid playing against same person twice)
     for i in range(0, len(singles_keys), 2):
         if i + 1 < len(singles_keys):
             p1 = test_slots.get(singles_keys[i])
             p2 = test_slots.get(singles_keys[i+1])
             if p1 and p2:
-                score += global_pair_counts[tuple(sorted([p1, p2]))]
+                count = global_pair_counts[tuple(sorted([p1, p2]))]
+                score += count * 5000.0  # Heavy penalty for duplicate matchup
 
     if len(doppel_keys) == 4:
         t1 = [test_slots.get('d_t1_1'), test_slots.get('d_t1_2')]
         t2 = [test_slots.get('d_t2_1'), test_slots.get('d_t2_2')]
         t1 = [p for p in t1 if p]
         t2 = [p for p in t2 if p]
+
+        # Check partnership counts (very heavy penalty for duplicate partners)
+        if len(t1) == 2:
+            score += global_partner_counts[tuple(sorted(t1))] * 10000.0
+        if len(t2) == 2:
+            score += global_partner_counts[tuple(sorted(t2))] * 10000.0
+
+        # Check opponent pairs in doubles
         for pa in t1:
             for pb in t2:
-                score += global_pair_counts[tuple(sorted([pa, pb]))]
-        for pair in [tuple(sorted(t1)), tuple(sorted(t2))]:
-            if len(pair) == 2:
-                score += global_pair_counts[pair]
+                score += global_pair_counts[tuple(sorted([pa, pb]))] * 5000.0
     else:
         p1 = test_slots.get('d_t1_1')
         p2 = test_slots.get('d_t2_1')
         if p1 and p2:
-            score += global_pair_counts[tuple(sorted([p1, p2]))]
+            score += global_pair_counts[tuple(sorted([p1, p2]))] * 5000.0
 
     # Time slot fairness penalty (balance 19:00, 20:00, 21:00 across season)
     slot_hours = [
@@ -63,6 +71,12 @@ def register_matchday_pairs(test_slots, singles_keys, doppel_keys):
         t2 = [test_slots.get('d_t2_1'), test_slots.get('d_t2_2')]
         t1 = [p for p in t1 if p]
         t2 = [p for p in t2 if p]
+
+        if len(t1) == 2:
+            global_partner_counts[tuple(sorted(t1))] += 1
+        if len(t2) == 2:
+            global_partner_counts[tuple(sorted(t2))] += 1
+
         for pa in t1:
             for pb in t2:
                 global_pair_counts[tuple(sorted([pa, pb]))] += 1
@@ -920,6 +934,12 @@ for p, player_data in PLAYER_RULES.items():
     rules_list = [r.get('description', '') for r in player_data.get("rules", []) if r.get('visible', True)]
     if rules_list:
         frontend_rules_by_player[p] = rules_list
+
+# Add general rule/guideline for matchup avoidance
+frontend_rules_by_player["Allgemeine Regeln"] = [
+    "Jeder reguläre Spieler strebt nach Möglichkeit 7 Spiele an.",
+    "Doppelte Begegnungen gegen exakt die gleichen Gegner/Paarungen werden über die Saison hinweg minimiert."
+]
 
 # Calculate player statistics (singles vs doubles)
 player_stats = {}
