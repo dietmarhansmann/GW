@@ -12,16 +12,16 @@ global_pair_counts = defaultdict(int)
 global_partner_counts = defaultdict(int)
 global_time_counts = defaultdict(lambda: {19: 0, 20: 0, 21: 0})
 
-def get_matchday_score(test_slots, singles_keys, doppel_keys):
+def get_matchday_score(test_slots, einzel_keys, doppel_keys):
     score = 0
-    # Singles pairs penalty (avoid playing against same person twice)
-    for i in range(0, len(singles_keys), 2):
-        if i + 1 < len(singles_keys):
-            p1 = test_slots.get(singles_keys[i])
-            p2 = test_slots.get(singles_keys[i+1])
+    # Strafe für doppelte Einzel-Begegnungen (Vermeidung von Wiederholungen gegen denselben Spieler)
+    for i in range(0, len(einzel_keys), 2):
+        if i + 1 < len(einzel_keys):
+            p1 = test_slots.get(einzel_keys[i])
+            p2 = test_slots.get(einzel_keys[i+1])
             if p1 and p2:
                 count = global_pair_counts[tuple(sorted([p1, p2]))]
-                score += count * 5000.0  # Heavy penalty for duplicate matchup
+                score += count * 5000.0  # Hohe Strafe für doppelte Begegnungen
 
     if len(doppel_keys) == 4:
         t1 = [test_slots.get('d_t1_1'), test_slots.get('d_t1_2')]
@@ -29,13 +29,13 @@ def get_matchday_score(test_slots, singles_keys, doppel_keys):
         t1 = [p for p in t1 if p]
         t2 = [p for p in t2 if p]
 
-        # Check partnership counts (very heavy penalty for duplicate partners)
+        # Partnerschaftszahlen prüfen (sehr hohe Strafe für doppelte Doppel-Partner)
         if len(t1) == 2:
             score += global_partner_counts[tuple(sorted(t1))] * 10000.0
         if len(t2) == 2:
             score += global_partner_counts[tuple(sorted(t2))] * 10000.0
 
-        # Check opponent pairs in doubles
+        # Gegnerische Paare im Doppel prüfen
         for pa in t1:
             for pb in t2:
                 score += global_pair_counts[tuple(sorted([pa, pb]))] * 5000.0
@@ -45,7 +45,7 @@ def get_matchday_score(test_slots, singles_keys, doppel_keys):
         if p1 and p2:
             score += global_pair_counts[tuple(sorted([p1, p2]))] * 5000.0
 
-    # Time slot fairness penalty (balance 19:00, 20:00, 21:00 across season)
+    # Fairness-Strafe für Zeitslots (Ausgleich von 19:00, 20:00, 21:00 über die Saison)
     slot_hours = [
         ('p1_1', 19), ('p1_2', 19),
         ('p2_1', 20), ('p2_2', 20),
@@ -58,11 +58,11 @@ def get_matchday_score(test_slots, singles_keys, doppel_keys):
 
     return score
 
-def register_matchday_pairs(test_slots, singles_keys, doppel_keys):
-    for i in range(0, len(singles_keys), 2):
-        if i + 1 < len(singles_keys):
-            p1 = test_slots.get(singles_keys[i])
-            p2 = test_slots.get(singles_keys[i+1])
+def register_matchday_pairs(test_slots, einzel_keys, doppel_keys):
+    for i in range(0, len(einzel_keys), 2):
+        if i + 1 < len(einzel_keys):
+            p1 = test_slots.get(einzel_keys[i])
+            p2 = test_slots.get(einzel_keys[i+1])
             if p1 and p2:
                 global_pair_counts[tuple(sorted([p1, p2]))] += 1
 
@@ -111,6 +111,11 @@ PLAYER_RULES = {
                 "target": "doppel_pref",
                 "ratio": 0.0,
                 "description": "Spielt ausschließlich Einzel (0% Doppel)."
+            },
+            {
+                "id": "abwesend",
+                "spieltage": [2, 5, 6, 9],
+                "description": "Abwesend an folgenden Tagen: 13.10.26 (#2), 03.11.26 (#5), 10.11.26 (#6), 01.12.26 (#9)."
             }
         ]
     },
@@ -123,7 +128,7 @@ PLAYER_RULES = {
                 "description": "Möchte ca. 70% Einzel spielen (30% Doppel)."
             },
             {
-                "id": "blackout_spieltage",
+                "id": "abwesend",
                 "spieltage": [9],
                 "description": "Kann an Spieltag 9 nicht teilnehmen."
             }
@@ -138,7 +143,7 @@ PLAYER_RULES = {
                 "description": "Spielt ausschließlich Einzel (0% Doppel)."
             },
             {
-                "id": "blackout_spieltage",
+                "id": "abwesend",
                 "spieltage": [3, 4, 8, 13],
                 "description": "Kann an folgenden Tagen nicht teilnehmen: 20.10.26 (#3), 27.10.26 (#4), 24.11.26 (#8), 29.12.26 (#13)."
             },
@@ -159,7 +164,7 @@ PLAYER_RULES = {
                 "description": "Möchte ca. 50% Doppel und 50% Einzel spielen."
             },
             {
-                "id": "blackout_spieltage",
+                "id": "abwesend",
                 "spieltage": list(range(1, 14)) + [30],
                 "description": "Kann vor dem 01.01.2027 (Spieltag 1–13) und am 27.04.2027 (Spieltag 30) nicht spielen."
             }
@@ -184,7 +189,7 @@ PLAYER_RULES = {
                 "description": "Möchte ca. 60% Doppel spielen."
             },
             {
-                "id": "blackout_spieltage",
+                "id": "abwesend",
                 "spieltage": [5, 6],
                 "description": "Ist in den ersten beiden Wochen im November im Urlaub (Spieltag 5 & 6)."
             }
@@ -199,7 +204,7 @@ PLAYER_RULES = {
                 "description": "Möchte ca. 90% Doppel spielen."
             },
             {
-                "id": "blackout_spieltage",
+                "id": "abwesend",
                 "spieltage": [2, 3, 5, 10, 16, 24],
                 "description": "Kann an folgenden Tagen nicht teilnehmen: 13.10.26 (#2), 20.10.26 (#3), 03.11.26 (#5), 08.12.26 (#10), 19.01.27 (#16), 16.03.27 (#24)."
             }
@@ -232,7 +237,7 @@ PLAYER_RULES = {
                 "description": "Möchte ca. 50% Doppel und 50% Einzel spielen."
             },
             {
-                "id": "blackout_spieltage",
+                "id": "abwesend",
                 "spieltage": [2, 4, 5, 6, 10, 13],
                 "description": "Kann an folgenden Tagen nicht teilnehmen: 13.10.26 (#2), 27.10.26 (#4), 03.11.26 (#5), 10.11.26 (#6), 08.12.26 (#10), 29.12.26 (#13)."
             }
@@ -252,7 +257,7 @@ PLAYER_RULES = {
                 "description": "Spielt ausschließlich Einzel (0% Doppel)."
             },
             {
-                "id": "blackout_spieltage",
+                "id": "abwesend",
                 "spieltage": [2, 5, 10],
                 "description": "Kann an folgenden Tagen nicht teilnehmen: 13.10.26 (#2), 03.11.26 (#5), 08.12.26 (#10)."
             }
@@ -261,7 +266,7 @@ PLAYER_RULES = {
     "Kuhlhoff": {
         "rules": [
             {
-                "id": "blackout_spieltage",
+                "id": "abwesend",
                 "spieltage": [6, 7, 8, 10, 13],
                 "description": "Kann an folgenden Tagen nicht teilnehmen: 10.11.26 (#6), 17.11.26 (#7), 24.11.26 (#8), 08.12.26 (#10), 29.12.26 (#13)."
             },
@@ -309,14 +314,14 @@ def can_play_slot(player, stype, slot_time=None):
         r_id = rule.get("id", "")
         r_ratio = rule.get("ratio", 0.8)
         if (r_target == "doppel_pref" or r_id.startswith("slot_preference")):
-            if stype == "singles" and r_ratio >= 1.0:
+            if stype == "einzel" and r_ratio >= 1.0:
                 return False
             if stype == "doppel" and r_ratio <= 0.0:
                 return False
     return True
 
 
-# Get all unique players from Excel as a substitution pool
+# Alle eindeutigen Spieler aus Excel als Ersatzspieler-Pool ermitteln
 all_excel_players = set()
 raw_rows = [r for r in list(sheet.iter_rows(values_only=True))[6:] if r[0] is not None and int(r[0]) <= 13]
 for r in raw_rows:
@@ -336,7 +341,7 @@ player_pool = sorted(list(all_excel_players))
 matches = []
 players_set = set()
 
-# State tracking for rules across matchdays
+# Status-Tracking für Regeln über alle Spieltage hinweg
 player_last_played = {p: -99 for p in player_pool}
 player_total_games = {p: 0 for p in player_pool}
 player_doppel_games = {p: 0 for p in player_pool}
@@ -357,12 +362,12 @@ for r in raw_rows:
         is_doppel_week = (spieltag % 2 == 1)
         if is_doppel_week:
             slot_keys = ['p1_1', 'p1_2', 'p2_1', 'p2_2', 'p3_1', 'p3_2', 'd_t1_1', 'd_t1_2', 'd_t2_1', 'd_t2_2']
-            singles_keys = ['p1_1', 'p1_2', 'p2_1', 'p2_2', 'p3_1', 'p3_2']
+            einzel_keys = ['p1_1', 'p1_2', 'p2_1', 'p2_2', 'p3_1', 'p3_2']
             doppel_keys = ['d_t1_1', 'd_t1_2', 'd_t2_1', 'd_t2_2']
             num_needed = 10
         else:
             slot_keys = ['p1_1', 'p1_2', 'p2_1', 'p2_2', 'p3_1', 'p3_2', 'd_t1_1', 'd_t2_1']
-            singles_keys = ['p1_1', 'p1_2', 'p2_1', 'p2_2', 'p3_1', 'p3_2', 'd_t1_1', 'd_t2_1']
+            einzel_keys = ['p1_1', 'p1_2', 'p2_1', 'p2_2', 'p3_1', 'p3_2', 'd_t1_1', 'd_t2_1']
             doppel_keys = []
             num_needed = 8
 
@@ -372,7 +377,7 @@ for r in raw_rows:
             matches.append({
                 'spieltag': spieltag,
                 'date': date_val,
-                'court2_type': 'doppel' if is_dw else 'singles',
+                'court2_type': 'doppel' if is_dw else 'einzel',
                 'p1': {'p1': '', 'p2': '', 'time': time_p1},
                 'p2': {'p1': '', 'p2': '', 'time': time_p2},
                 'p3': {'p1': '', 'p2': '', 'time': time_p3},
@@ -393,7 +398,7 @@ for r in raw_rows:
                 r_id = rule.get("id", "")
                 r_ratio = rule.get("ratio", 0.8)
                 if (r_target == "doppel_pref" or r_id.startswith("slot_preference")):
-                    if stype == "singles" and r_ratio >= 1.0:
+                    if stype == "einzel" and r_ratio >= 1.0:
                         return False
                     if stype == "doppel" and r_ratio <= 0.0:
                         return False
@@ -404,7 +409,7 @@ for r in raw_rows:
                 return False
             for rule in PLAYER_RULES.get(p, {}).get("rules", []):
                 rule_id = rule.get("id")
-                if rule_id == "blackout_spieltage":
+                if rule_id == "abwesend":
                     if spieltag in rule.get("spieltage", []):
                         return False
                 elif not relax_freq and rule_id in ["tshirt_size_frequency", "max_frequency_gap"]:
@@ -443,12 +448,12 @@ for r in raw_rows:
 
         eligible_players = [p for p in active_pool if can_play_today(p, relax_freq=False) and player_total_games.get(p, 0) < 7]
         if len(eligible_players) < num_needed:
-            # Try relaxing frequency but still keep < 7 games if possible
+            # Versuche, die Frequenz zu lockern, aber wenn möglich < 7 Spiele zu behalten
             fallback_relax = [p for p in active_pool if can_play_today(p, relax_freq=True) and player_total_games.get(p, 0) < 7]
             if len(fallback_relax) >= num_needed:
                 eligible_players = fallback_relax
             else:
-                # If still not enough, allow players with >= 7 games sorted by lowest games first
+                # Wenn immer noch nicht genug, Spieler mit >= 7 Spielen erlauben, sortiert nach den wenigsten Spielen zuerst
                 eligible_players = [p for p in active_pool if can_play_today(p, relax_freq=True)]
         if len(eligible_players) < num_needed:
             eligible_players = [p for p in active_pool if p != "Knust"]
@@ -456,7 +461,7 @@ for r in raw_rows:
         def get_sort_key(p):
             games = player_total_games.get(p, 0)
             if games >= 7:
-                games += 100  # Hard deprioritization for anyone who already has 7 games
+                games += 100  # Starke Abwertung für jeden, der bereits 7 Spiele hat
             last_played = player_last_played.get(p, -99)
             played_last_time = 1 if (spieltag - last_played == 1) else 0
             return (games, played_last_time, -last_played, random.random())
@@ -469,7 +474,7 @@ for r in raw_rows:
         remaining_players = list(today_players)
 
         if is_doppel_week:
-            doppel_candidates = [p for p in remaining_players if can_play_slot(p, "doppel") and not can_play_slot(p, "singles")]
+            doppel_candidates = [p for p in remaining_players if can_play_slot(p, "doppel") and not can_play_slot(p, "einzel")]
             random.shuffle(doppel_candidates)
             for dk in doppel_keys:
                 if doppel_candidates and slots[dk] == '':
@@ -479,7 +484,7 @@ for r in raw_rows:
 
         for k in slot_keys:
             if slots[k] == '' and remaining_players:
-                stype = 'doppel' if (is_doppel_week and k in doppel_keys) else 'singles'
+                stype = 'doppel' if (is_doppel_week and k in doppel_keys) else 'einzel'
                 valid_p = None
                 for p in remaining_players:
                     if can_play_slot(p, stype):
@@ -490,7 +495,7 @@ for r in raw_rows:
                 slots[k] = valid_p
                 remaining_players.remove(valid_p)
 
-        # Apply internal time restrictions before pairing optimization.
+        # Interne Zeitbeschränkungen vor der Paarungs-Optimierung anwenden.
         slot_times = {
             'p1_1': '19:00', 'p1_2': '19:00',
             'p2_1': '20:00', 'p2_2': '20:00',
@@ -502,14 +507,14 @@ for r in raw_rows:
             for rule in player_data.get("rules", []):
                 if rule.get("id") == "allowed_times":
                     allowed = rule.get("times", [])
-                    # If player is in slots at an unauthorized time, swap with an authorized player
+                    # Wenn ein Spieler zu einer unzulässigen Zeit eingeteilt ist, tausche mit einem berechtigten Spieler
                     for sk, time_str in slot_times.items():
                         if sk in slots and slots[sk] == player and time_str not in allowed:
-                            # Find another slot with allowed time
+                            # Finde einen anderen Slot mit erlaubter Zeit
                             for sk2, time_str2 in slot_times.items():
                                 if sk2 in slots and time_str2 in allowed and slots[sk2] != player:
                                     other_p = slots[sk2]
-                                    # check if other_p can take sk time
+                                    # Prüfe, ob other_p die Zeit sk übernehmen kann
                                     if time_str in allowed:
                                         slots[sk] = other_p
                                         slots[sk2] = player
@@ -521,37 +526,37 @@ for r in raw_rows:
                     if slots[current_key] != player or slot_times[current_key] in allowed_times:
                         continue
                     replacement_key = next(
-                        (k for k in singles_keys + doppel_keys
+                        (k for k in einzel_keys + doppel_keys
                          if slots[k] != player and slot_times[k] in allowed_times),
                         None
                     )
                     if replacement_key:
                         slots[current_key], slots[replacement_key] = slots[replacement_key], slots[current_key]
 
-        # 1. Apply Player Rules dynamically from nested structure
+        # 1. Spielerregeln dynamisch aus verschachtelter Struktur anwenden
         for player, player_data in PLAYER_RULES.items():
             rules_list = player_data.get("rules", [])
             for rule in rules_list:
                 rule_id = rule.get("id")
 
-                # Rule: Blackout Spieltage (e.g. Hansmann November)
-                if rule_id == "blackout_spieltage":
+                # Regel: Abwesenheit an Spieltagen
+                if rule_id == "abwesend":
                     if spieltag in rule.get("spieltage", []):
                         for k in slot_keys:
                             if slots[k] == player:
-                                stype = 'singles' if k in singles_keys else 'doppel'
+                                stype = 'einzel' if k in einzel_keys else 'doppel'
                                 sub = get_substitute(set(slots.values()).union(occupied_today), exclude_set={player}, slot_type=stype)
                                 slots[k] = sub
                         resting_today.add(player)
 
-                # Rule: Max Frequency Gap (e.g. Hinz every 2 weeks)
+                # Regel: Max. Frequenz-Abstand
                 elif rule_id == "max_frequency_gap":
                     min_gap = rule.get("min_gap", 2)
                     last_spieltag = player_last_played.get(player, -99)
                     if spieltag - last_spieltag < min_gap:
                         for k in slot_keys:
                             if slots[k] == player:
-                                stype = 'singles' if k in singles_keys else 'doppel'
+                                stype = 'einzel' if k in einzel_keys else 'doppel'
                                 sub = get_substitute(set(slots.values()).union(occupied_today), exclude_set={player}, slot_type=stype)
                                 slots[k] = sub
                         resting_today.add(player)
@@ -560,7 +565,7 @@ for r in raw_rows:
                         if player_present:
                             player_last_played[player] = spieltag
 
-                # Rule: T-Shirt Size Frequency (S, M, L, XL)
+                # Regel: T-Shirt-Größen-Frequenz
                 elif rule_id == "tshirt_size_frequency":
                     size = rule.get("size", "L").upper()
                     size_gaps = {"S": 4, "M": 3, "L": 2, "XL": 0}
@@ -569,7 +574,7 @@ for r in raw_rows:
                     if spieltag - last_spieltag < min_gap:
                         for k in slot_keys:
                             if slots[k] == player:
-                                stype = 'singles' if k in singles_keys else 'doppel'
+                                stype = 'einzel' if k in einzel_keys else 'doppel'
                                 sub = get_substitute(set(slots.values()).union(occupied_today), exclude_set={player}, slot_type=stype)
                                 slots[k] = sub
                         resting_today.add(player)
@@ -577,15 +582,15 @@ for r in raw_rows:
                         player_present = any(slots[k] == player for k in slot_keys)
                         if player_present:
                             player_last_played[player] = spieltag
-                # Rule: Slot Preference (Doppel vs Singles ratio based on actual games played)
+                # Regel: Slot-Präferenz (Doppel- vs. Einzel-Verhältnis basierend auf tatsächlich gespielten Spielen)
                 elif rule_id and (rule_id.startswith("slot_preference") or rule.get("target") == "doppel_pref"):
                     if player in resting_today:
                         continue
-                    ratio = rule.get("ratio", 0.8) # e.g. 0.8 for Heyn, 0.6 for Hinz
-                    in_singles = any(slots[k] == player for k in singles_keys)
+                    ratio = rule.get("ratio", 0.8)  # z.B. 0.8 für Heyn, 0.6 für Hinz
+                    in_einzel = any(slots[k] == player for k in einzel_keys)
                     in_doppel = any(slots[k] == player for k in doppel_keys) if doppel_keys else False
 
-                    if in_singles or in_doppel:
+                    if in_einzel or in_doppel:
                         total_g = player_total_games.get(player, 0) + 1
                         current_doppel = player_doppel_games.get(player, 0)
 
@@ -596,11 +601,11 @@ for r in raw_rows:
                         else:
                             should_be_doppel = (current_doppel / total_g) < ratio
 
-                        # doppel_keys is already defined above based on is_doppel_week
+                        # doppel_keys ist bereits oben basierend auf is_doppel_week definiert
 
-                        if should_be_doppel and in_singles and doppel_keys:
+                        if should_be_doppel and in_einzel and doppel_keys:
                             moved = False
-                            for sk in singles_keys:
+                            for sk in einzel_keys:
                                 if slots[sk] == player:
                                     for dk in doppel_keys:
                                         dp = slots[dk]
@@ -617,7 +622,7 @@ for r in raw_rows:
                                                 moved = True
                                                 break
                                     if not moved and doppel_keys:
-                                        # Force direct swap with first doppel player
+                                        # Erzwinge direkten Tausch mit erstem Doppel-Spieler
                                         dk = doppel_keys[0]
                                         dp = slots[dk]
                                         slots[sk] = dp
@@ -627,7 +632,7 @@ for r in raw_rows:
                             moved = False
                             for dk in doppel_keys:
                                 if slots[dk] == player:
-                                    for sk in singles_keys:
+                                    for sk in einzel_keys:
                                         sp = slots[sk]
                                         if sp and sp != player:
                                             slots[dk] = sp
@@ -635,15 +640,15 @@ for r in raw_rows:
                                             moved = True
                                             break
                                     if not moved:
-                                        for sk in singles_keys:
+                                        for sk in einzel_keys:
                                             if not slots[sk]:
                                                 slots[dk] = ''
                                                 slots[sk] = player
                                                 moved = True
                                                 break
                                     if not moved:
-                                        # Force direct swap with first singles player
-                                        sk = singles_keys[0]
+                                        # Erzwinge direkten Tausch mit erstem Einzel-Spieler
+                                        sk = einzel_keys[0]
                                         sp = slots[sk]
                                         slots[dk] = sp
                                         slots[sk] = player
@@ -655,7 +660,7 @@ for r in raw_rows:
                         else:
                             player_doppel_games[player] = current_doppel
 
-        # Enforce strict 100% or 0% ratios if configured
+        # Erzwinge strenge 100%- oder 0%-Verhältnisse, falls konfiguriert
         print(f"DEBUG Stg {spieltag} resting_today:", resting_today)
         for player, player_data in PLAYER_RULES.items():
             if player in resting_today:
@@ -664,7 +669,7 @@ for r in raw_rows:
                 if rule.get("target") == "doppel_pref" or rule.get("id", "").startswith("slot_preference"):
                     ratio = rule.get("ratio", 0.8)
                     if ratio >= 1.0:
-                        for sk in singles_keys:
+                        for sk in einzel_keys:
                             if slots[sk] == player:
                                 slots[sk] = ''
                         if not any(slots[dk] == player for dk in doppel_keys):
@@ -680,39 +685,39 @@ for r in raw_rows:
                         for dk in doppel_keys:
                             if slots[dk] == player:
                                 slots[dk] = ''
-                        if not any(slots[sk] == player for sk in singles_keys):
+                        if not any(slots[sk] == player for sk in einzel_keys):
                             placed = False
-                            for sk in singles_keys:
+                            for sk in einzel_keys:
                                 if not slots[sk]:
                                     slots[sk] = player
                                     placed = True
                                     break
-                            if not placed and singles_keys:
-                                slots[singles_keys[0]] = player
+                            if not placed and einzel_keys:
+                                slots[einzel_keys[0]] = player
 
-        # Build occupied_today from current assignments
+        # occupied_today aus aktuellen Zuweisungen aufbauen
         occupied_today = set()
         for k in slot_keys:
             p = slots[k]
             if p and p in player_pool:
                 if p in occupied_today:
-                    # Double booking detected, resolve with substitute
-                    stype = 'singles' if k in singles_keys else 'doppel'
+                    # Doppelbuchung erkannt, mit Ersatzspieler auflösen
+                    stype = 'einzel' if k in einzel_keys else 'doppel'
                     sub = get_substitute(occupied_today, slot_type=stype)
                     slots[k] = sub
                     occupied_today.add(sub)
                 else:
                     occupied_today.add(p)
 
-        # Fill any remaining empty slots (ensure singles has 2 players, doppel has 4 players)
+        # Verbleibende leere Slots auffüllen (sicherstellen, dass Einzel 2 Spieler, Doppel 4 Spieler hat)
         for k in slot_keys:
             if not slots[k]:
-                stype = 'singles' if k in singles_keys else 'doppel'
+                stype = 'einzel' if k in einzel_keys else 'doppel'
                 sub = get_substitute(occupied_today, slot_type=stype)
                 slots[k] = sub
                 occupied_today.add(sub)
 
-        # Optimize pairings to minimize duplicate matchups across the season
+        # Paarungen optimieren, um doppelte Begegnungen über die Saison zu minimieren
         current_players = [slots[k] for k in slot_keys if slots[k]]
         best_slots = dict(slots)
         best_score = float('inf')
@@ -723,16 +728,16 @@ for r in raw_rows:
                     if rule.get("id") == "allowed_times" and slot_times[slot_key] not in rule.get("times", []):
                         return False
 
-            # Dedores must not play against any player from Topf A (Prodehl, Beumer, Heyn) in the same match
+            # Dedores darf nicht gegen Spieler aus Topf A (Prodehl, Beumer, Heyn) im selben Match spielen
             topf_a_members = {"Prodehl", "Beumer", "Heyn"}
-            singles_match_pairs = [
+            einzel_match_pairs = [
                 ('p1_1', 'p1_2'),
                 ('p2_1', 'p2_2'),
                 ('p3_1', 'p3_2')
             ]
             if not is_doppel_week:
-                singles_match_pairs.append(('d_t1_1', 'd_t2_1'))
-            for s1, s2 in singles_match_pairs:
+                einzel_match_pairs.append(('d_t1_1', 'd_t2_1'))
+            for s1, s2 in einzel_match_pairs:
                 p1 = test_slots.get(s1)
                 p2 = test_slots.get(s2)
                 if (p1 == "Dedores" and p2 in topf_a_members) or (p2 == "Dedores" and p1 in topf_a_members):
@@ -744,7 +749,7 @@ for r in raw_rows:
                     r_id = rule.get("id", "")
                     r_ratio = rule.get("ratio", 0.8)
                     if (r_target == "doppel_pref" or r_id.startswith("slot_preference")) and r_ratio >= 1.0:
-                        if any(test_slots[sk] == p for sk in singles_keys):
+                        if any(test_slots[sk] == p for sk in einzel_keys):
                             return False
                     elif (r_target == "doppel_pref" or r_id.startswith("slot_preference")) and r_ratio <= 0.0:
                         if any(test_slots[dk] == p for dk in doppel_keys):
@@ -756,22 +761,22 @@ for r in raw_rows:
             random.shuffle(shuffled)
             test_slots = {k: shuffled[idx] for idx, k in enumerate(slot_keys)}
             if respects_constraints(test_slots):
-                score = get_matchday_score(test_slots, singles_keys, doppel_keys)
+                score = get_matchday_score(test_slots, einzel_keys, doppel_keys)
                 if score < best_score:
                     best_score = score
                     best_slots = test_slots
 
         slots = best_slots
-        register_matchday_pairs(slots, singles_keys, doppel_keys)
+        register_matchday_pairs(slots, einzel_keys, doppel_keys)
 
-        # Track last played and total games for all participating players today
+        # Zuletzt gespielt und Gesamtspiele für alle teilnehmenden Spieler heute verfolgen
         for k in slot_keys:
             p = slots[k]
             if p and p in player_pool:
                 player_last_played[p] = spieltag
                 player_total_games[p] = player_total_games.get(p, 0) + 1
 
-        # Collect active players for legend
+        # Aktive Spieler für Legende sammeln
         for k in slot_keys:
             if slots[k]:
                 players_set.add(slots[k])
@@ -783,7 +788,7 @@ for r in raw_rows:
         matches.append({
             'spieltag': spieltag,
             'date': date_val,
-            'court2_type': 'doppel' if is_doppel_week else 'singles',
+            'court2_type': 'doppel' if is_doppel_week else 'einzel',
             'p1': {'p1': slots['p1_1'], 'p2': slots['p1_2'], 'time': time_p1},
             'p2': {'p1': slots['p2_1'], 'p2': slots['p2_2'], 'time': time_p2},
             'p3': {'p1': slots['p3_1'], 'p2': slots['p3_2'], 'time': time_p3},
@@ -801,7 +806,7 @@ for r in raw_rows:
 
 players = sorted(list(players_set.union(PLAYER_RULES.keys()).union(player_pool)))
 
-# Post-pass ratio balancing for players with ratio rules
+# Nachträglicher Verhältnis-Ausgleich für Spieler mit Quoten-Regeln
 for player, player_data in PLAYER_RULES.items():
     for rule in player_data.get("rules", []):
         if rule.get("target") == "doppel_pref" or rule.get("id", "").startswith("slot_preference"):
@@ -812,13 +817,13 @@ for player, player_data in PLAYER_RULES.items():
             player_matches = []
             for m in matches:
                 s_list = [m["p1"]["p1"], m["p1"]["p2"], m["p2"]["p1"], m["p2"]["p2"], m["p3"]["p1"], m["p3"]["p2"]]
-                if m.get("court2_type") == 'singles':
+                if m.get("court2_type") == 'einzel':
                     s_list.extend([m["doppel"]["p1"], m["doppel"]["p2"]])
                     d_list = []
                 else:
                     d_list = m["doppel"]["team1"] + m["doppel"]["team2"]
                 if player in s_list:
-                    player_matches.append((m, 'singles'))
+                    player_matches.append((m, 'einzel'))
                 elif player in d_list:
                     player_matches.append((m, 'doppel'))
 
@@ -828,14 +833,14 @@ for player, player_data in PLAYER_RULES.items():
 
             target_doppel = int(round(total_p * ratio))
             current_doppel_matches = [item for item in player_matches if item[1] == 'doppel']
-            current_singles_matches = [item for item in player_matches if item[1] == 'singles']
+            current_einzel_matches = [item for item in player_matches if item[1] == 'einzel']
 
             diff = len(current_doppel_matches) - target_doppel
             if diff > 0:
                 to_convert = current_doppel_matches[:diff]
                 for m, _ in to_convert:
                     d_slot = None
-                    if m.get('court2_type') != 'singles':
+                    if m.get('court2_type') != 'einzel':
                         for t, idx in [('team1', 0), ('team1', 1), ('team2', 0), ('team2', 1)]:
                             if m["doppel"][t][idx] == player:
                                 d_slot = (t, idx)
@@ -853,7 +858,7 @@ for player, player_data in PLAYER_RULES.items():
                         m[group][s_key] = player
                         m["doppel"][t][idx] = other
             elif diff < 0:
-                to_convert = current_singles_matches[:abs(diff)]
+                to_convert = current_einzel_matches[:abs(diff)]
                 for m, _ in to_convert:
                     s_slot = None
                     for group, s_key in [('p1', 'p1'), ('p1', 'p2'), ('p2', 'p1'), ('p2', 'p2'), ('p3', 'p1'), ('p3', 'p2')]:
@@ -861,10 +866,10 @@ for player, player_data in PLAYER_RULES.items():
                             s_slot = (group, s_key)
                             break
                     d_slot = None
-                    if m.get('court2_type') != 'singles':
+                    if m.get('court2_type') != 'einzel':
                         for t, idx in [('team1', 0), ('team1', 1), ('team2', 0), ('team2', 1)]:
                             other = m["doppel"][t][idx]
-                            if other and other != player and can_play_slot(other, 'singles'):
+                            if other and other != player and can_play_slot(other, 'einzel'):
                                 d_slot = (t, idx)
                                 break
                     if s_slot and d_slot:
@@ -885,34 +890,21 @@ errors_found = 0
 
 for m in matches:
     stg = m["spieltag"]
-    singles = [m["p1"]["p1"], m["p1"]["p2"], m["p2"]["p1"], m["p2"]["p2"], m["p3"]["p1"], m["p3"]["p2"]]
-    if m.get("court2_type") == 'singles':
-        singles.extend([m["doppel"]["p1"], m["doppel"]["p2"]])
+    einzel = [m["p1"]["p1"], m["p1"]["p2"], m["p2"]["p1"], m["p2"]["p2"], m["p3"]["p1"], m["p3"]["p2"]]
+    if m.get("court2_type") == 'einzel':
+        einzel.extend([m["doppel"]["p1"], m["doppel"]["p2"]])
         doppel = []
     else:
         doppel = m["doppel"]["team1"] + m["doppel"]["team2"]
-    all_today = singles + doppel
+    all_today = einzel + doppel
 
-    # 1. Hansmann blackout check (dynamic)
-    for rule in PLAYER_RULES.get("Hansmann", {}).get("rules", []):
-        if rule.get("id") == "blackout_spieltage":
-            if stg in rule.get("spieltage", []) and "Hansmann" in all_today:
-                print(f"❌ Regelverstoß [Hansmann Blackout]: Hansmann spielt an Spieltag {stg}!")
-                errors_found += 1
-
-    # Hinz blackout check (dynamic)
-    for rule in PLAYER_RULES.get("Hinz", {}).get("rules", []):
-        if rule.get("id") == "blackout_spieltage":
-            if stg in rule.get("spieltage", []) and "Hinz" in all_today:
-                print(f"❌ Regelverstoß [Hinz Blackout]: Hinz spielt an Spieltag {stg}!")
-                errors_found += 1
-
-    # Prodehl blackout check (dynamic)
-    for rule in PLAYER_RULES.get("Prodehl", {}).get("rules", []):
-        if rule.get("id") == "blackout_spieltage":
-            if stg in rule.get("spieltage", []) and "Prodehl" in all_today:
-                print(f"❌ Regelverstoß [Prodehl Blackout]: Prodehl spielt an Spieltag {stg}!")
-                errors_found += 1
+    # 1. Abwesenheits-Prüfung (Dynamic for all players)
+    for p, pdata in PLAYER_RULES.items():
+        for rule in pdata.get("rules", []):
+            if rule.get("id") == "abwesend":
+                if stg in rule.get("spieltage", []) and p in all_today:
+                    print(f"❌ Regelverstoß [Abwesend]: {p} spielt an Spieltag {stg} trotz Abwesenheit!")
+                    errors_found += 1
 
     # 3. Double booking check per matchday
     seen_today = set()
@@ -932,7 +924,7 @@ for m in matches:
                     if ratio <= 0.0 and p in doppel:
                         print(f"❌ Regelverstoß [Nur-Einzel]: Spieler '{p}' spielt Doppel an Spieltag {stg}!")
                         errors_found += 1
-                    elif ratio >= 1.0 and p in singles:
+                    elif ratio >= 1.0 and p in einzel:
                         print(f"❌ Regelverstoß [Nur-Doppel]: Spieler '{p}' spielt Einzel an Spieltag {stg}!")
                         errors_found += 1
 
@@ -956,25 +948,25 @@ frontend_rules_by_player["Allgemeine Regeln"] = [
     "Doppelte Begegnungen gegen exakt die gleichen Gegner/Paarungen werden über die Saison hinweg minimiert."
 ]
 
-# Calculate player statistics (singles vs doubles)
+# Spielerstatistik berechnen (Einzel vs. Doppel)
 player_stats = {}
 for p in players:
-    s_count = 0
+    e_count = 0
     d_count = 0
     for m in matches:
         s_list = [m["p1"]["p1"], m["p1"]["p2"], m["p2"]["p1"], m["p2"]["p2"], m["p3"]["p1"], m["p3"]["p2"]]
-        if m.get("court2_type") == "singles":
+        if m.get("court2_type") == "einzel":
             s_list.extend([m["doppel"]["p1"], m["doppel"]["p2"]])
             d_list = []
         else:
             d_list = m["doppel"]["team1"] + m["doppel"]["team2"]
-        s_count += s_list.count(p)
+        e_count += s_list.count(p)
         d_count += d_list.count(p)
-    total = s_count + d_count
+    total = e_count + d_count
     ratio = int(round((d_count / total * 100))) if total > 0 else 0
-    kosten = (s_count * 0.5) + (d_count * (1.5 / 4.0))
+    kosten = (e_count * 0.5) + (d_count * (1.5 / 4.0))
     player_stats[p] = {
-        'singles': s_count,
+        'einzel': e_count,
         'doppel': d_count,
         'total': total,
         'ratio': ratio,
@@ -1156,7 +1148,7 @@ html_template = """<!DOCTYPE html>
                         </td>
                         <!-- Platz 2 - Doppel / Einzel (20:30) -->
                         <td class="py-2 px-1.5">
-                            <div v-if="m.court2_type !== 'singles'" class="match-players flex flex-wrap items-center gap-1">
+                            <div v-if="m.court2_type !== 'einzel'" class="match-players flex flex-wrap items-center gap-1">
                                 <span class="inline-flex flex-col gap-0.5">
                                     <span v-html="formatPlayerBadge(m.doppel.team1[0], m.status === 'Abgeschlossen')"></span>
                                     <span v-html="formatPlayerBadge(m.doppel.team1[1], m.status === 'Abgeschlossen')"></span>
@@ -1197,7 +1189,7 @@ html_template = """<!DOCTYPE html>
                     <thead>
                         <tr class="bg-emerald-800 text-white select-none">
                             <th @click="sortBy('name')" class="p-2 font-semibold cursor-pointer hover:bg-emerald-700">Spieler {{ sortColumn === 'name' ? (sortDirection === 'asc' ? '▲' : '▼') : '↕' }}</th>
-                            <th @click="sortBy('singles')" class="p-2 text-center font-semibold cursor-pointer hover:bg-emerald-700">Einzel {{ sortColumn === 'singles' ? (sortDirection === 'asc' ? '▲' : '▼') : '↕' }}</th>
+                            <th @click="sortBy('einzel')" class="p-2 text-center font-semibold cursor-pointer hover:bg-emerald-700">Einzel {{ sortColumn === 'einzel' ? (sortDirection === 'asc' ? '▲' : '▼') : '↕' }}</th>
                             <th @click="sortBy('doppel')" class="p-2 text-center font-semibold cursor-pointer hover:bg-emerald-700">Doppel {{ sortColumn === 'doppel' ? (sortDirection === 'asc' ? '▲' : '▼') : '↕' }}</th>
                             <th @click="sortBy('total')" class="p-2 text-center font-semibold cursor-pointer hover:bg-emerald-700">Gesamt Spiele {{ sortColumn === 'total' ? (sortDirection === 'asc' ? '▲' : '▼') : '↕' }}</th>
                             <th @click="sortBy('ratio')" class="p-2 text-center font-semibold cursor-pointer hover:bg-emerald-700">Doppel-Anteil {{ sortColumn === 'ratio' ? (sortDirection === 'asc' ? '▲' : '▼') : '↕' }}</th>
@@ -1212,7 +1204,7 @@ html_template = """<!DOCTYPE html>
                             <td class="p-2 font-medium">
                                 <span v-html="formatPlayerBadge(stat.name, false)"></span>
                             </td>
-                            <td class="p-2 text-center font-semibold text-gray-700 dark:text-gray-300">{{ stat.singles }}</td>
+                            <td class="p-2 text-center font-semibold text-gray-700 dark:text-gray-300">{{ stat.einzel }}</td>
                             <td class="p-2 text-center font-semibold text-emerald-700 dark:text-emerald-400">{{ stat.doppel }}</td>
                             <td class="p-2 text-center font-bold text-gray-900 dark:text-gray-100">{{ stat.total }}</td>
                             <td class="p-2 text-center">
@@ -1280,7 +1272,7 @@ html_template = """<!DOCTYPE html>
                         m.p2.p1, m.p2.p2,
                         m.p3.p1, m.p3.p2
                     ];
-                    if (m.court2_type === 'singles') {
+                    if (m.court2_type === 'einzel') {
                         if (m.doppel.p1) players.push(m.doppel.p1);
                         if (m.doppel.p2) players.push(m.doppel.p2);
                     } else {
@@ -1304,18 +1296,18 @@ html_template = """<!DOCTYPE html>
                     "Beumer": { bg: '#bfdbfe', text: '#111827', border: '#60a5fa' },   // Soft Blue
                     "Dedores": { bg: '#fecaca', text: '#111827', border: '#f87171' },  // Soft Red
                     "Hansmann": { bg: '#fef08a', text: '#111827', border: '#facc15' }, // Soft Yellow
-                    "Heyn": { bg: '#bbf7d0', text: '#111827', border: '#4ade80' },     // Soft Green
-                    "Hinz": { bg: '#fed7aa', text: '#111827', border: '#fb923c' },     // Soft Orange
+                    "Heyn": { bg: '#bbf7d0', text: '#111827', border: '#4ade80' },     // Sanftes Grün
+                    "Hinz": { bg: '#fed7aa', text: '#111827', border: '#fb923c' },     // Sanftes Orange
                     "Kissner": { bg: '#e9d5ff', text: '#111827', border: '#c084fc' },  // Soft Purple
                     "Kuhlhoff": { bg: '#a5f3fc', text: '#111827', border: '#22d3ee' }, // Soft Cyan
                     "Marschollek": { bg: '#fbcfe8', text: '#111827', border: '#f472b6' }, // Soft Pink
                     "Mönning": { bg: '#c7d2fe', text: '#111827', border: '#818cf8' },  // Soft Indigo
-                    "Nolte": { bg: '#d9f99d', text: '#111827', border: '#a3e635' },    // Soft Lime
+                    "Nolte": { bg: '#d9f99d', text: '#111827', border: '#a3e635' },    // Sanftes Lime
                     "Prodehl": { bg: '#99f6e4', text: '#111827', border: '#2dd4bf' },  // Soft Teal
                     "Redieker": { bg: '#fecdd3', text: '#111827', border: '#fb7185' }, // Soft Rose
-                    "Rumpf": { bg: '#fed7aa', text: '#111827', border: '#f97316' },    // Distinct Deep Orange/Amber for Rumpf
+                    "Rumpf": { bg: '#fed7aa', text: '#111827', border: '#f97316' },    // Markantes dunkles Orange/Amber für Rumpf
                     "Trojanski": { bg: '#cbd5e1', text: '#111827', border: '#94a3b8' }, // Soft Slate
-                    "Weber": { bg: '#ddd6fe', text: '#111827', border: '#a78bfa' },    // Soft Violet
+                    "Weber": { bg: '#ddd6fe', text: '#111827', border: '#a78bfa' },    // Sanftes Violett
                     "Wojtanowitsch": { bg: '#a7f3d0', text: '#111827', border: '#34d399' }, // Soft Emerald
                     "van de Loo": { bg: '#bae6fd', text: '#111827', border: '#38bdf8' }  // Soft Sky
                 };
@@ -1471,7 +1463,7 @@ html_template = """<!DOCTYPE html>
                 function exportStatsCsv() {
                     let csv = "Spieler;Einzel;Doppel;Gesamt Spiele;Doppel-Anteil (%);Kosten\\n";
                     sortedPlayerStats.value.forEach(s => {
-                        csv += `${s.name};${s.singles};${s.doppel};${s.total};${s.ratio}%;${s.kosten}\\n`;
+                        csv += `${s.name};${s.einzel};${s.doppel};${s.total};${s.ratio}%;${s.kosten}\\n`;
                     });
                     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
                     const link = document.createElement("a");

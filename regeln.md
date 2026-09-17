@@ -1,6 +1,6 @@
 all# Tennis Spielplan — Regeln, Präferenzen und Systemarchitektur (Stand: 2026)
 
-Dieses Dokument fasst alle geschäftlichen Regeln, Spielerpräferenzen, Blackout-Zeiten und technischen Anforderungen zusammen, die für die Generierung und den Betrieb des Tennis-Spielplans (`generate_html.py` und `index.html`) gelten.
+Dieses Dokument fasst alle geschäftlichen Regeln, Spielerpräferenzen, Abwesenheit-Zeiten und technischen Anforderungen zusammen, die für die Generierung und den Betrieb des Tennis-Spielplans (`generate_html.py` und `index.html`) gelten.
 
 ---
 
@@ -32,22 +32,22 @@ Dieses Dokument fasst alle geschäftlichen Regeln, Spielerpräferenzen, Blackout
 
 ### Hansmann
 - **Slot-Präferenz**: Wunsch nach ca. 70% Einzel / 30% Doppel (`ratio: 0.3`).
-- **Blackout-Tage**: Kann an **Spieltag 9** (Dienstag, 01.12. / 02.12.2026) nicht teilnehmen.
+- **Abwesenheiten**: Kann an **Spieltag 9** (Dienstag, 01.12. / 02.12.2026) nicht teilnehmen.
 
 ### Dedores
 - **Slot-Präferenz**: Spielt ausschließlich **Einzel** (0% Doppel, `ratio: 0.0`).
-- **Blackout-Tage**: 20.10.26 (#3), 27.10.26 (#4), 24.11.26 (#8), 29.12.26 (#13).
+- **Abwesenheiten**: 20.10.26 (#3), 27.10.26 (#4), 24.11.26 (#8), 29.12.26 (#13).
 
 ### Hinz
 - **Slot-Präferenz**: Wunsch nach ca. 50% Doppel / 50% Einzel (`ratio: 0.5`).
-- **Blackout-Tage**: Kann vor dem 01.01.2027 (Spieltage 1–13) und am 27.04.2027 (Spieltag 30) nicht spielen.
+- **Abwesenheiten**: Kann vor dem 01.01.2027 (Spieltage 1–13) und am 27.04.2027 (Spieltag 30) nicht spielen.
 
 ### Beumer
 - **Slot-Präferenz**: Wunsch nach ca. 50% Doppel / 50% Einzel (`ratio: 0.5`).
 
 ### Mönning
 - **Slot-Präferenz**: Spielt ausschließlich **Einzel** (0% Doppel, `ratio: 0.0`).
-- **Verfügbarkeit / Präferenzen**: Nimmt regelmäßig an den Spielabenden teil, strikter Einzelspieler.
+- **Abwesenheiten**: 13.10.26 (#2, Zeitraum 29.09.–13.10.), 03.11.26 (#5, Zeitraum 03.11.–10.11.), 10.11.26 (#6, Zeitraum 03.11.–10.11.), 01.12.26 (#9, Dienstag 02.12.).
 
 ### Prodehl
 - **Slot-Präferenz**: Wunsch nach ca. 60% Doppel (`ratio: 0.6`).
@@ -55,23 +55,23 @@ Dieses Dokument fasst alle geschäftlichen Regeln, Spielerpräferenzen, Blackout
 
 ### Marschollek
 - **Slot-Präferenz**: Wunsch nach ca. 90% Doppel (`ratio: 0.9`).
-- **Blackout-Tage**: 13.10.26 (#2, im Zeitraum 29.09.–13.10.), 20.10.26 (#3), 03.11.26 (#5, im Zeitraum 03.11.–10.11.), 08.12.26 (#10), 19.01.27 (#16), 16.03.27 (#24).
+- **Abwesenheiten**: 13.10.26 (#2, im Zeitraum 29.09.–13.10.), 20.10.26 (#3), 03.11.26 (#5, im Zeitraum 03.11.–10.11.), 08.12.26 (#10), 19.01.27 (#16), 16.03.27 (#24).
 
 ### Kissner
 - **Slot-Präferenz**: Spielt ausschließlich **Einzel** (0% Doppel, `ratio: 0.0`).
 
 ### Heyn
 - **Slot-Präferenz**: Wunsch nach ca. 50% Doppel / 50% Einzel (`ratio: 0.5`).
-- **Blackout-Tage**: 13.10.26 (#2, Zeitraum 29.09.–13.10.), 27.10.26 (#4), 03.11.26 (#5, Zeitraum 03.11.–10.11.), 10.11.26 (#6, Zeitraum 03.11.–10.11.), 08.12.26 (#10), 29.12.26 (#13).
+- **Abwesenheiten**: 13.10.26 (#2, Zeitraum 29.09.–13.10.), 27.10.26 (#4), 03.11.26 (#5, Zeitraum 03.11.–10.11.), 10.11.26 (#6, Zeitraum 03.11.–10.11.), 08.12.26 (#10), 29.12.26 (#13).
 
 ### Trojanski
 - **Frequenz**: 2-Wochen-Rhythmus (mindestens 1 Spieltag Pause zwischen Einsätzen).
 - **Slot-Präferenz**: Spielt ausschließlich **Einzel** (0% Doppel, `ratio: 0.0`).
-- **Blackout-Tage**: 13.10.26 (#2, Zeitraum 29.09.–13.10.), 03.11.26 (#5, Zeitraum 03.11.–10.11.), 08.12.26 (#10).
+- **Abwesenheiten**: 13.10.26 (#2, Zeitraum 29.09.–13.10.), 03.11.26 (#5, Zeitraum 03.11.–10.11.), 08.12.26 (#10).
 
 ### Kuhlhoff
 - **Slot-Präferenz**: Spielt ausschließlich **Einzel** (0% Doppel, `ratio: 0.0`).
-- **Blackout-Tage**: 10.11.26 (#6, Zeitraum 03.11.–10.11.), 17.11.26 (#7), 24.11.26 (#8), 08.12.26 (#10), 29.12.26 (#13).
+- **Abwesenheiten**: 10.11.26 (#6, Zeitraum 03.11.–10.11.), 17.11.26 (#7), 24.11.26 (#8), 08.12.26 (#10), 29.12.26 (#13).
 
 ### van de Loo
 - **Frequenz**: Einmal im Monat (mindestens 3 Spieltage Pause / 4 Wochen Abstand).
@@ -126,7 +126,7 @@ Für jeden Spieltag (beschränkt auf Saison 2026, Spieltage 1–13) läuft folge
 2. **Vorab-Prüfung von Hard-Ratio-Regeln**:
    - Spieler mit 100% Doppel (`ratio >= 1.0`) oder 0% Doppel (`ratio <= 0.0`) werden vorab in die korrekten Kategorien (Einzel vs. Doppel) gelenkt.
 3. **Regel-Applikation (`PLAYER_RULES`)**:
-   - **Blackout-Tage**: Abgleich mit den spezifischen Spieltags-IDs je Spieler. Bei Abwesenheit wird automatisch ein valider Ersatzspieler (`get_substitute`) ermittelt.
+   - **Abwesenheiten**: Abgleich mit den spezifischen Spieltags-IDs je Spieler. Bei Abwesenheit wird automatisch ein valider Ersatzspieler (`get_substitute`) ermittelt.
    - **Frequenz & Pausen (`max_frequency_gap`, `tshirt_size_frequency`)**: Einhaltung von Mindestabständen (z. B. Trojanski im 2-Wochen-Rhythmus, van de Loo monatlich).
    - **Slot-Präferenzen & Quoten (`ratio`)**: Dynamischer Ausgleich von Einzel- und Doppelspielen basierend auf kumulierten Ist-Zahlen.
 4. **Doppelbuchungs-Schutz & Auffüllung**:

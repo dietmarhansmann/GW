@@ -171,7 +171,7 @@
                         </td>
                         <!-- Platz 2 - Doppel / Einzel (20:30) -->
                         <td class="py-2 px-1.5">
-                            <div v-if="m.court2_type !== 'singles'" class="match-players flex flex-wrap items-center gap-1">
+                            <div v-if="m.court2_type !== 'einzel'" class="match-players flex flex-wrap items-center gap-1">
                                 <span class="inline-flex flex-col gap-0.5">
                                     <span v-html="formatPlayerBadge(m.doppel.team1[0], m.status === 'Abgeschlossen')"></span>
                                     <span v-html="formatPlayerBadge(m.doppel.team1[1], m.status === 'Abgeschlossen')"></span>
@@ -212,7 +212,7 @@
                     <thead>
                         <tr class="bg-emerald-800 text-white select-none">
                             <th @click="sortBy('name')" class="p-2 font-semibold cursor-pointer hover:bg-emerald-700">Spieler {{ sortColumn === 'name' ? (sortDirection === 'asc' ? '▲' : '▼') : '↕' }}</th>
-                            <th @click="sortBy('singles')" class="p-2 text-center font-semibold cursor-pointer hover:bg-emerald-700">Einzel {{ sortColumn === 'singles' ? (sortDirection === 'asc' ? '▲' : '▼') : '↕' }}</th>
+                            <th @click="sortBy('einzel')" class="p-2 text-center font-semibold cursor-pointer hover:bg-emerald-700">Einzel {{ sortColumn === 'einzel' ? (sortDirection === 'asc' ? '▲' : '▼') : '↕' }}</th>
                             <th @click="sortBy('doppel')" class="p-2 text-center font-semibold cursor-pointer hover:bg-emerald-700">Doppel {{ sortColumn === 'doppel' ? (sortDirection === 'asc' ? '▲' : '▼') : '↕' }}</th>
                             <th @click="sortBy('total')" class="p-2 text-center font-semibold cursor-pointer hover:bg-emerald-700">Gesamt Spiele {{ sortColumn === 'total' ? (sortDirection === 'asc' ? '▲' : '▼') : '↕' }}</th>
                             <th @click="sortBy('ratio')" class="p-2 text-center font-semibold cursor-pointer hover:bg-emerald-700">Doppel-Anteil {{ sortColumn === 'ratio' ? (sortDirection === 'asc' ? '▲' : '▼') : '↕' }}</th>
@@ -227,7 +227,7 @@
                             <td class="p-2 font-medium">
                                 <span v-html="formatPlayerBadge(stat.name, false)"></span>
                             </td>
-                            <td class="p-2 text-center font-semibold text-gray-700 dark:text-gray-300">{{ stat.singles }}</td>
+                            <td class="p-2 text-center font-semibold text-gray-700 dark:text-gray-300">{{ stat.einzel }}</td>
                             <td class="p-2 text-center font-semibold text-emerald-700 dark:text-emerald-400">{{ stat.doppel }}</td>
                             <td class="p-2 text-center font-bold text-gray-900 dark:text-gray-100">{{ stat.total }}</td>
                             <td class="p-2 text-center">
@@ -291,12 +291,12 @@
         },
         "p3": {
             "p1": "Mönning",
-            "p2": "Heyn",
+            "p2": "Hansmann",
             "time": "21:00"
         },
         "doppel": {
             "team1": [
-                "Hansmann",
+                "Heyn",
                 "Weber"
             ],
             "team2": [
@@ -310,25 +310,25 @@
     {
         "spieltag": 2,
         "date": "2026-10-13",
-        "court2_type": "singles",
+        "court2_type": "einzel",
         "p1": {
-            "p1": "Beumer",
-            "p2": "Kuhlhoff",
+            "p1": "Nolte",
+            "p2": "Kissner",
             "time": "19:00"
         },
         "p2": {
             "p1": "Dedores",
-            "p2": "van de Loo",
+            "p2": "Kuhlhoff",
             "time": "20:00"
         },
         "p3": {
-            "p1": "Wojtanowitsch",
-            "p2": "Kissner",
+            "p1": "van de Loo",
+            "p2": "Prodehl",
             "time": "21:00"
         },
         "doppel": {
-            "p1": "Mönning",
-            "p2": "Nolte",
+            "p1": "Wojtanowitsch",
+            "p2": "Beumer",
             "time": "20:30"
         },
         "status": "Geplant"
@@ -338,28 +338,28 @@
         "date": "2026-10-20",
         "court2_type": "doppel",
         "p1": {
-            "p1": "Trojanski",
-            "p2": "Kissner",
+            "p1": "Rumpf",
+            "p2": "Wojtanowitsch",
             "time": "19:00"
         },
         "p2": {
-            "p1": "Hansmann",
-            "p2": "Wojtanowitsch",
+            "p1": "Weber",
+            "p2": "Mönning",
             "time": "20:00"
         },
         "p3": {
-            "p1": "Kuhlhoff",
-            "p2": "Weber",
+            "p1": "Trojanski",
+            "p2": "Kuhlhoff",
             "time": "21:00"
         },
         "doppel": {
             "team1": [
-                "Prodehl",
-                "Rumpf"
-            ],
-            "team2": [
                 "Redieker",
                 "Heyn"
+            ],
+            "team2": [
+                "Beumer",
+                "Hansmann"
             ],
             "time": "20:30"
         },
@@ -368,20 +368,20 @@
     {
         "spieltag": 4,
         "date": "2026-10-27",
-        "court2_type": "singles",
+        "court2_type": "einzel",
         "p1": {
-            "p1": "Prodehl",
-            "p2": "Marschollek",
+            "p1": "Trojanski",
+            "p2": "Weber",
             "time": "19:00"
         },
         "p2": {
-            "p1": "Mönning",
-            "p2": "Kissner",
+            "p1": "Prodehl",
+            "p2": "Marschollek",
             "time": "20:00"
         },
         "p3": {
-            "p1": "Weber",
-            "p2": "Beumer",
+            "p1": "Wojtanowitsch",
+            "p2": "Kissner",
             "time": "21:00"
         },
         "doppel": {
@@ -396,24 +396,198 @@
         "date": "2026-11-03",
         "court2_type": "doppel",
         "p1": {
-            "p1": "Mönning",
-            "p2": "Wojtanowitsch",
+            "p1": "Kissner",
+            "p2": "Dedores",
             "time": "19:00"
         },
         "p2": {
+            "p1": "Wojtanowitsch",
+            "p2": "Kuhlhoff",
+            "time": "20:00"
+        },
+        "p3": {
             "p1": "Weber",
+            "p2": "Hansmann",
+            "time": "21:00"
+        },
+        "doppel": {
+            "team1": [
+                "Beumer",
+                "Redieker"
+            ],
+            "team2": [
+                "Rumpf",
+                "Nolte"
+            ],
+            "time": "20:30"
+        },
+        "status": "Geplant"
+    },
+    {
+        "spieltag": 6,
+        "date": "2026-11-10",
+        "court2_type": "einzel",
+        "p1": {
+            "p1": "Beumer",
+            "p2": "Trojanski",
+            "time": "19:00"
+        },
+        "p2": {
+            "p1": "Dedores",
+            "p2": "van de Loo",
+            "time": "20:00"
+        },
+        "p3": {
+            "p1": "Marschollek",
+            "p2": "Rumpf",
+            "time": "21:00"
+        },
+        "doppel": {
+            "p1": "Kissner",
+            "p2": "Redieker",
+            "time": "20:30"
+        },
+        "status": "Geplant"
+    },
+    {
+        "spieltag": 7,
+        "date": "2026-11-17",
+        "court2_type": "doppel",
+        "p1": {
+            "p1": "Hansmann",
+            "p2": "Beumer",
+            "time": "19:00"
+        },
+        "p2": {
+            "p1": "Wojtanowitsch",
+            "p2": "Nolte",
+            "time": "20:00"
+        },
+        "p3": {
+            "p1": "Mönning",
+            "p2": "Redieker",
+            "time": "21:00"
+        },
+        "doppel": {
+            "team1": [
+                "Prodehl",
+                "Heyn"
+            ],
+            "team2": [
+                "Weber",
+                "Marschollek"
+            ],
+            "time": "20:30"
+        },
+        "status": "Geplant"
+    },
+    {
+        "spieltag": 8,
+        "date": "2026-11-24",
+        "court2_type": "einzel",
+        "p1": {
+            "p1": "Mönning",
+            "p2": "Marschollek",
+            "time": "19:00"
+        },
+        "p2": {
+            "p1": "Rumpf",
+            "p2": "Kissner",
+            "time": "20:00"
+        },
+        "p3": {
+            "p1": "Trojanski",
+            "p2": "Hansmann",
+            "time": "21:00"
+        },
+        "doppel": {
+            "p1": "Prodehl",
+            "p2": "Heyn",
+            "time": "20:30"
+        },
+        "status": "Geplant"
+    },
+    {
+        "spieltag": 9,
+        "date": "2026-12-01",
+        "court2_type": "doppel",
+        "p1": {
+            "p1": "Kuhlhoff",
+            "p2": "Beumer",
+            "time": "19:00"
+        },
+        "p2": {
+            "p1": "Redieker",
             "p2": "Dedores",
             "time": "20:00"
         },
         "p3": {
-            "p1": "Hansmann",
-            "p2": "Kissner",
+            "p1": "Wojtanowitsch",
+            "p2": "Heyn",
             "time": "21:00"
         },
         "doppel": {
             "team1": [
                 "Nolte",
-                "Beumer"
+                "Weber"
+            ],
+            "team2": [
+                "Rumpf",
+                "Marschollek"
+            ],
+            "time": "20:30"
+        },
+        "status": "Geplant"
+    },
+    {
+        "spieltag": 10,
+        "date": "2026-12-08",
+        "court2_type": "einzel",
+        "p1": {
+            "p1": "Mönning",
+            "p2": "Prodehl",
+            "time": "19:00"
+        },
+        "p2": {
+            "p1": "Dedores",
+            "p2": "Hansmann",
+            "time": "20:00"
+        },
+        "p3": {
+            "p1": "Kissner",
+            "p2": "Weber",
+            "time": "21:00"
+        },
+        "doppel": {
+            "p1": "Wojtanowitsch",
+            "p2": "van de Loo",
+            "time": "20:30"
+        },
+        "status": "Geplant"
+    },
+    {
+        "spieltag": 11,
+        "date": "2026-12-15",
+        "court2_type": "doppel",
+        "p1": {
+            "p1": "Nolte",
+            "p2": "Dedores",
+            "time": "19:00"
+        },
+        "p2": {
+            "p1": "Kuhlhoff",
+            "p2": "Trojanski",
+            "time": "20:00"
+        },
+        "p3": {
+            "p1": "Mönning",
+            "p2": "Beumer",
+            "time": "21:00"
+        },
+        "doppel": {
+            "team1": [
+                "Marschollek",
+                "Heyn"
             ],
             "team2": [
                 "Redieker",
@@ -424,201 +598,27 @@
         "status": "Geplant"
     },
     {
-        "spieltag": 6,
-        "date": "2026-11-10",
-        "court2_type": "singles",
-        "p1": {
-            "p1": "Dedores",
-            "p2": "Rumpf",
-            "time": "19:00"
-        },
-        "p2": {
-            "p1": "Beumer",
-            "p2": "Wojtanowitsch",
-            "time": "20:00"
-        },
-        "p3": {
-            "p1": "Trojanski",
-            "p2": "Marschollek",
-            "time": "21:00"
-        },
-        "doppel": {
-            "p1": "Redieker",
-            "p2": "van de Loo",
-            "time": "20:30"
-        },
-        "status": "Geplant"
-    },
-    {
-        "spieltag": 7,
-        "date": "2026-11-17",
-        "court2_type": "doppel",
-        "p1": {
-            "p1": "Trojanski",
-            "p2": "Weber",
-            "time": "19:00"
-        },
-        "p2": {
-            "p1": "Redieker",
-            "p2": "Mönning",
-            "time": "20:00"
-        },
-        "p3": {
-            "p1": "Prodehl",
-            "p2": "Kissner",
-            "time": "21:00"
-        },
-        "doppel": {
-            "team1": [
-                "Heyn",
-                "Marschollek"
-            ],
-            "team2": [
-                "Nolte",
-                "Hansmann"
-            ],
-            "time": "20:30"
-        },
-        "status": "Geplant"
-    },
-    {
-        "spieltag": 8,
-        "date": "2026-11-24",
-        "court2_type": "singles",
-        "p1": {
-            "p1": "Heyn",
-            "p2": "Beumer",
-            "time": "19:00"
-        },
-        "p2": {
-            "p1": "Prodehl",
-            "p2": "Trojanski",
-            "time": "20:00"
-        },
-        "p3": {
-            "p1": "Rumpf",
-            "p2": "Hansmann",
-            "time": "21:00"
-        },
-        "doppel": {
-            "p1": "Wojtanowitsch",
-            "p2": "Marschollek",
-            "time": "20:30"
-        },
-        "status": "Geplant"
-    },
-    {
-        "spieltag": 9,
-        "date": "2026-12-01",
-        "court2_type": "doppel",
-        "p1": {
-            "p1": "Redieker",
-            "p2": "Kuhlhoff",
-            "time": "19:00"
-        },
-        "p2": {
-            "p1": "Dedores",
-            "p2": "Nolte",
-            "time": "20:00"
-        },
-        "p3": {
-            "p1": "Kissner",
-            "p2": "Mönning",
-            "time": "21:00"
-        },
-        "doppel": {
-            "team1": [
-                "Prodehl",
-                "Marschollek"
-            ],
-            "team2": [
-                "Weber",
-                "Heyn"
-            ],
-            "time": "20:30"
-        },
-        "status": "Geplant"
-    },
-    {
-        "spieltag": 10,
-        "date": "2026-12-08",
-        "court2_type": "singles",
-        "p1": {
-            "p1": "Dedores",
-            "p2": "Hansmann",
-            "time": "19:00"
-        },
-        "p2": {
-            "p1": "Beumer",
-            "p2": "Mönning",
-            "time": "20:00"
-        },
-        "p3": {
-            "p1": "van de Loo",
-            "p2": "Wojtanowitsch",
-            "time": "21:00"
-        },
-        "doppel": {
-            "p1": "Rumpf",
-            "p2": "Prodehl",
-            "time": "20:30"
-        },
-        "status": "Geplant"
-    },
-    {
-        "spieltag": 11,
-        "date": "2026-12-15",
-        "court2_type": "doppel",
-        "p1": {
-            "p1": "Dedores",
-            "p2": "Redieker",
-            "time": "19:00"
-        },
-        "p2": {
-            "p1": "Kuhlhoff",
-            "p2": "Kissner",
-            "time": "20:00"
-        },
-        "p3": {
-            "p1": "Nolte",
-            "p2": "Trojanski",
-            "time": "21:00"
-        },
-        "doppel": {
-            "team1": [
-                "Marschollek",
-                "Weber"
-            ],
-            "team2": [
-                "Heyn",
-                "Rumpf"
-            ],
-            "time": "20:30"
-        },
-        "status": "Geplant"
-    },
-    {
         "spieltag": 12,
         "date": "2026-12-22",
-        "court2_type": "singles",
+        "court2_type": "einzel",
         "p1": {
-            "p1": "Mönning",
-            "p2": "Hansmann",
+            "p1": "Hansmann",
+            "p2": "Marschollek",
             "time": "19:00"
         },
         "p2": {
             "p1": "Heyn",
-            "p2": "Kuhlhoff",
+            "p2": "Kissner",
             "time": "20:00"
         },
         "p3": {
-            "p1": "Marschollek",
-            "p2": "Beumer",
+            "p1": "Prodehl",
+            "p2": "Kuhlhoff",
             "time": "21:00"
         },
         "doppel": {
-            "p1": "Trojanski",
-            "p2": "Wojtanowitsch",
+            "p1": "Mönning",
+            "p2": "Trojanski",
             "time": "20:30"
         },
         "status": "Geplant"
@@ -658,7 +658,8 @@
 ];
         const playerRules = {
     "Mönning": [
-        "Spielt ausschließlich Einzel (0% Doppel)."
+        "Spielt ausschließlich Einzel (0% Doppel).",
+        "Abwesend an folgenden Tagen: 13.10.26 (#2), 03.11.26 (#5), 10.11.26 (#6), 01.12.26 (#9)."
     ],
     "Hansmann": [
         "Möchte ca. 70% Einzel spielen (30% Doppel).",
@@ -716,126 +717,126 @@
 };
         const playerStats = {
     "Beumer": {
-        "singles": 6,
-        "doppel": 1,
+        "einzel": 5,
+        "doppel": 2,
         "total": 7,
-        "ratio": 14,
-        "kosten": 3.38
+        "ratio": 29,
+        "kosten": 3.25
     },
     "Dedores": {
-        "singles": 7,
+        "einzel": 7,
         "doppel": 0,
         "total": 7,
         "ratio": 0,
         "kosten": 3.5
     },
     "Hansmann": {
-        "singles": 5,
-        "doppel": 2,
+        "einzel": 6,
+        "doppel": 1,
         "total": 7,
-        "ratio": 29,
-        "kosten": 3.25
+        "ratio": 14,
+        "kosten": 3.38
     },
     "Heyn": {
-        "singles": 3,
+        "einzel": 3,
         "doppel": 4,
         "total": 7,
         "ratio": 57,
         "kosten": 3.0
     },
     "Hinz": {
-        "singles": 0,
+        "einzel": 0,
         "doppel": 0,
         "total": 0,
         "ratio": 0,
         "kosten": 0.0
     },
     "Kissner": {
-        "singles": 7,
+        "einzel": 7,
         "doppel": 0,
         "total": 7,
         "ratio": 0,
         "kosten": 3.5
     },
     "Knust": {
-        "singles": 0,
+        "einzel": 0,
         "doppel": 0,
         "total": 0,
         "ratio": 0,
         "kosten": 0.0
     },
     "Kuhlhoff": {
-        "singles": 6,
+        "einzel": 7,
         "doppel": 0,
-        "total": 6,
+        "total": 7,
         "ratio": 0,
-        "kosten": 3.0
+        "kosten": 3.5
     },
     "Marschollek": {
-        "singles": 4,
+        "einzel": 4,
         "doppel": 3,
         "total": 7,
         "ratio": 43,
         "kosten": 3.12
     },
     "Mönning": {
-        "singles": 8,
+        "einzel": 7,
         "doppel": 0,
-        "total": 8,
+        "total": 7,
         "ratio": 0,
-        "kosten": 4.0
+        "kosten": 3.5
     },
     "Nolte": {
-        "singles": 4,
+        "einzel": 4,
         "doppel": 3,
         "total": 7,
         "ratio": 43,
         "kosten": 3.12
     },
     "Prodehl": {
-        "singles": 4,
-        "doppel": 3,
-        "total": 7,
-        "ratio": 43,
-        "kosten": 3.12
-    },
-    "Redieker": {
-        "singles": 5,
+        "einzel": 5,
         "doppel": 2,
         "total": 7,
         "ratio": 29,
         "kosten": 3.25
     },
+    "Redieker": {
+        "einzel": 4,
+        "doppel": 3,
+        "total": 7,
+        "ratio": 43,
+        "kosten": 3.12
+    },
     "Rumpf": {
-        "singles": 4,
+        "einzel": 4,
         "doppel": 3,
         "total": 7,
         "ratio": 43,
         "kosten": 3.12
     },
     "Trojanski": {
-        "singles": 7,
+        "einzel": 7,
         "doppel": 0,
         "total": 7,
         "ratio": 0,
         "kosten": 3.5
     },
     "Weber": {
-        "singles": 4,
+        "einzel": 4,
         "doppel": 3,
         "total": 7,
         "ratio": 43,
         "kosten": 3.12
     },
     "Wojtanowitsch": {
-        "singles": 7,
+        "einzel": 7,
         "doppel": 0,
         "total": 7,
         "ratio": 0,
         "kosten": 3.5
     },
     "van de Loo": {
-        "singles": 3,
+        "einzel": 3,
         "doppel": 0,
         "total": 3,
         "ratio": 0,
@@ -864,7 +865,7 @@
                         m.p2.p1, m.p2.p2,
                         m.p3.p1, m.p3.p2
                     ];
-                    if (m.court2_type === 'singles') {
+                    if (m.court2_type === 'einzel') {
                         if (m.doppel.p1) players.push(m.doppel.p1);
                         if (m.doppel.p2) players.push(m.doppel.p2);
                     } else {
@@ -888,18 +889,18 @@
                     "Beumer": { bg: '#bfdbfe', text: '#111827', border: '#60a5fa' },   // Soft Blue
                     "Dedores": { bg: '#fecaca', text: '#111827', border: '#f87171' },  // Soft Red
                     "Hansmann": { bg: '#fef08a', text: '#111827', border: '#facc15' }, // Soft Yellow
-                    "Heyn": { bg: '#bbf7d0', text: '#111827', border: '#4ade80' },     // Soft Green
-                    "Hinz": { bg: '#fed7aa', text: '#111827', border: '#fb923c' },     // Soft Orange
+                    "Heyn": { bg: '#bbf7d0', text: '#111827', border: '#4ade80' },     // Sanftes Grün
+                    "Hinz": { bg: '#fed7aa', text: '#111827', border: '#fb923c' },     // Sanftes Orange
                     "Kissner": { bg: '#e9d5ff', text: '#111827', border: '#c084fc' },  // Soft Purple
                     "Kuhlhoff": { bg: '#a5f3fc', text: '#111827', border: '#22d3ee' }, // Soft Cyan
                     "Marschollek": { bg: '#fbcfe8', text: '#111827', border: '#f472b6' }, // Soft Pink
                     "Mönning": { bg: '#c7d2fe', text: '#111827', border: '#818cf8' },  // Soft Indigo
-                    "Nolte": { bg: '#d9f99d', text: '#111827', border: '#a3e635' },    // Soft Lime
+                    "Nolte": { bg: '#d9f99d', text: '#111827', border: '#a3e635' },    // Sanftes Lime
                     "Prodehl": { bg: '#99f6e4', text: '#111827', border: '#2dd4bf' },  // Soft Teal
                     "Redieker": { bg: '#fecdd3', text: '#111827', border: '#fb7185' }, // Soft Rose
-                    "Rumpf": { bg: '#fed7aa', text: '#111827', border: '#f97316' },    // Distinct Deep Orange/Amber for Rumpf
+                    "Rumpf": { bg: '#fed7aa', text: '#111827', border: '#f97316' },    // Markantes dunkles Orange/Amber für Rumpf
                     "Trojanski": { bg: '#cbd5e1', text: '#111827', border: '#94a3b8' }, // Soft Slate
-                    "Weber": { bg: '#ddd6fe', text: '#111827', border: '#a78bfa' },    // Soft Violet
+                    "Weber": { bg: '#ddd6fe', text: '#111827', border: '#a78bfa' },    // Sanftes Violett
                     "Wojtanowitsch": { bg: '#a7f3d0', text: '#111827', border: '#34d399' }, // Soft Emerald
                     "van de Loo": { bg: '#bae6fd', text: '#111827', border: '#38bdf8' }  // Soft Sky
                 };
@@ -1055,7 +1056,7 @@
                 function exportStatsCsv() {
                     let csv = "Spieler;Einzel;Doppel;Gesamt Spiele;Doppel-Anteil (%);Kosten\n";
                     sortedPlayerStats.value.forEach(s => {
-                        csv += `${s.name};${s.singles};${s.doppel};${s.total};${s.ratio}%;${s.kosten}\n`;
+                        csv += `${s.name};${s.einzel};${s.doppel};${s.total};${s.ratio}%;${s.kosten}\n`;
                     });
                     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
                     const link = document.createElement("a");
