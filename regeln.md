@@ -22,8 +22,8 @@ Dieses Dokument fasst alle geschäftlichen Regeln, Spielerpräferenzen, Abwesenh
 - **Bereinigung / Roster-Anpassungen**:
   - Entfernte Spieler: *Höttinger*.
   - Übersicht-only Spieler: *Knust* (nimmt erst 2027 teil).
-  - Hinzugefügte Spieler: *Kissner*.
-  - Aktiver bereinigter Spieler-Pool: Beumer, Dedores, Hansmann, Heyn, Hinz, Kissner, Knust, Kuhlhoff, Marschollek, Mönning, Nolte, Prodehl, Redieker, Rumpf, Trojanski, Weber, Wojtanowitsch, van de Loo.
+  - Hinzugefügte Spieler: *Kissner*, *Quante*.
+  - Aktiver bereinigter Spieler-Pool: Beumer, Dedores, Hansmann, Heyn, Hinz, Kissner, Knust, Kuhlhoff, Marschollek, Mönning, Nolte, Prodehl, Quante, Redieker, Rumpf, Trojanski, Weber, Wojtanowitsch, van de Loo.
 - **Eindeutigkeit**: Pro Spielabend nehmen exakt 10 unique Spieler teil (keine Doppelbelegungen pro Spieler an demselben Abend).
 
 ---
@@ -79,6 +79,12 @@ Dieses Dokument fasst alle geschäftlichen Regeln, Spielerpräferenzen, Abwesenh
 
 ### Wojtanowitsch
 - **Slot-Präferenz**: Spielt ausschließlich **Einzel** (0% Doppel, `ratio: 0.0`).
+
+### Nolte
+- **Abwesenheiten**: Spieltag 3 (20.10.2026).
+
+### Quante
+- **Zeitvorgabe**: Spielt exakt 2 mal in der Saison, ausschließlich um 21:00 Uhr (intern / geheim).
 
 ---
 

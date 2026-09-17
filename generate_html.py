@@ -302,6 +302,31 @@ PLAYER_RULES = {
                 "description": "Spielt ausschließlich Einzel (0% Doppel)."
             }
         ]
+    },
+    "Nolte": {
+        "rules": [
+            {
+                "id": "abwesend",
+                "spieltage": [3],
+                "description": "Kann an Spieltag 3 (20.10.2026) nicht teilnehmen."
+            }
+        ]
+    },
+    "Quante": {
+        "rules": [
+            {
+                "id": "allowed_times",
+                "times": ["21:00"],
+                "description": "Spielt nur um 21:00 Uhr.",
+                "visible": False
+            },
+            {
+                "id": "abwesend",
+                "spieltage": [1, 2, 3, 5, 6, 7, 8, 9, 11, 12, 13],
+                "description": "Genau 2 Einsätze in der Saison.",
+                "visible": False
+            }
+        ]
     }
 }
 
@@ -334,6 +359,7 @@ for r in raw_rows:
                 all_excel_players.add(val)
 
 all_excel_players.add("Kissner")
+all_excel_players.add("Quante")
 if "Höttinger" in all_excel_players:
     all_excel_players.remove("Höttinger")
 player_pool = sorted(list(all_excel_players))
@@ -944,7 +970,7 @@ for p, player_data in PLAYER_RULES.items():
 
 # Add general rule/guideline for matchup avoidance
 frontend_rules_by_player["Allgemeine Regeln"] = [
-    "Jeder reguläre Spieler strebt nach Möglichkeit 7 Spiele an.",
+    "Jeder reguläre Spieler strebt nach Möglichkeit bis zu 7 Spiele an.",
     "Doppelte Begegnungen gegen exakt die gleichen Gegner/Paarungen werden über die Saison hinweg minimiert."
 ]
 
@@ -1309,7 +1335,8 @@ html_template = """<!DOCTYPE html>
                     "Trojanski": { bg: '#cbd5e1', text: '#111827', border: '#94a3b8' }, // Soft Slate
                     "Weber": { bg: '#ddd6fe', text: '#111827', border: '#a78bfa' },    // Sanftes Violett
                     "Wojtanowitsch": { bg: '#a7f3d0', text: '#111827', border: '#34d399' }, // Soft Emerald
-                    "van de Loo": { bg: '#bae6fd', text: '#111827', border: '#38bdf8' }  // Soft Sky
+                    "van de Loo": { bg: '#bae6fd', text: '#111827', border: '#38bdf8' },  // Soft Sky
+                    "Quante": { bg: '#e0e7ff', text: '#111827', border: '#818cf8' }
                 };
 
                 const playerColors = {};
