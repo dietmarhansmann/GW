@@ -71,7 +71,7 @@ Dieses Dokument fasst alle geschäftlichen Regeln, Spielerpräferenzen, Abwesenh
 
 ### Kuhlhoff
 - **Slot-Präferenz**: Spielt ausschließlich **Einzel** (0% Doppel, `ratio: 0.0`).
-- **Abwesenheiten**: 10.11.26 (#6, Zeitraum 03.11.–10.11.), 17.11.26 (#7), 24.11.26 (#8), 08.12.26 (#10), 29.12.26 (#13).
+- **Abwesenheiten**: 13.10.26 (#2), 20.10.26 (#3), 10.11.26 (#6, Zeitraum 03.11.–10.11.), 17.11.26 (#7), 24.11.26 (#8), 08.12.26 (#10), 29.12.26 (#13).
 
 ### van de Loo
 - **Frequenz**: Einmal im Monat (mindestens 3 Spieltage Pause / 4 Wochen Abstand).

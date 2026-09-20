@@ -267,8 +267,8 @@ PLAYER_RULES = {
         "rules": [
             {
                 "id": "abwesend",
-                "spieltage": [6, 7, 8, 10, 13],
-                "description": "Kann an folgenden Tagen nicht teilnehmen: 10.11.26 (#6), 17.11.26 (#7), 24.11.26 (#8), 08.12.26 (#10), 29.12.26 (#13)."
+                "spieltage": [2, 3, 6, 7, 8, 10, 13],
+                "description": "Kann an folgenden Tagen nicht teilnehmen: 13.10.26 (#2), 20.10.26 (#3), 10.11.26 (#6), 17.11.26 (#7), 24.11.26 (#8), 08.12.26 (#10), 29.12.26 (#13)."
             },
             {
                 "id": "slot_preference_kuhlhoff",
@@ -385,7 +385,7 @@ for r in raw_rows:
         time_p3 = "21:00"
         time_doppel = "20:30"
 
-        is_doppel_week = (spieltag % 2 == 1)
+        is_doppel_week = False
         if is_doppel_week:
             slot_keys = ['p1_1', 'p1_2', 'p2_1', 'p2_2', 'p3_1', 'p3_2', 'd_t1_1', 'd_t1_2', 'd_t2_1', 'd_t2_2']
             einzel_keys = ['p1_1', 'p1_2', 'p2_1', 'p2_2', 'p3_1', 'p3_2']
@@ -399,7 +399,7 @@ for r in raw_rows:
 
         if spieltag == 13 or date_val == '2026-12-29':
             status = 'Reserviert für alle'
-            is_dw = (spieltag % 2 == 1)
+            is_dw = False
             matches.append({
                 'spieltag': spieltag,
                 'date': date_val,
