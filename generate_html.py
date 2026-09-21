@@ -385,7 +385,7 @@ for r in raw_rows:
         time_p3 = "21:00"
         time_doppel = "20:30"
 
-        is_doppel_week = False
+        is_doppel_week = (spieltag % 2 == 1)
         if is_doppel_week:
             slot_keys = ['p1_1', 'p1_2', 'p2_1', 'p2_2', 'p3_1', 'p3_2', 'd_t1_1', 'd_t1_2', 'd_t2_1', 'd_t2_2']
             einzel_keys = ['p1_1', 'p1_2', 'p2_1', 'p2_2', 'p3_1', 'p3_2']
@@ -399,7 +399,7 @@ for r in raw_rows:
 
         if spieltag == 13 or date_val == '2026-12-29':
             status = 'Reserviert für alle'
-            is_dw = False
+            is_dw = (spieltag % 2 == 1)
             matches.append({
                 'spieltag': spieltag,
                 'date': date_val,
