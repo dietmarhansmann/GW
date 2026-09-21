@@ -306,6 +306,12 @@ PLAYER_RULES = {
     "Nolte": {
         "rules": [
             {
+                "id": "slot_preference_nolte",
+                "target": "doppel_pref",
+                "ratio": 0.0,
+                "description": "Spielt ausschließlich Einzel (0% Doppel)."
+            },
+            {
                 "id": "abwesend",
                 "spieltage": [3],
                 "description": "Kann an Spieltag 3 (20.10.2026) nicht teilnehmen."
