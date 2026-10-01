@@ -99,8 +99,9 @@ Dieses Dokument fasst alle geschäftlichen Regeln, Spielerpräferenzen, Abwesenh
 
 ### Dedores
 - **Slot-Präferenz**: Ausschließlich Einzel (`ratio: 0.0`).
+- **Einsatzumfang**: Bis zu 7 Einsätze reichen.
+- **Abwesenheiten**: 19.01.2027 (Spieltag 16), 26.01.2027 (Spieltag 17), 16.02.2027 (Spieltag 20), 23.02.2027 (Spieltag 21), 23.03.2027 (Spieltag 25), 30.03.2027 (Spieltag 26) und 13.04.2027 (Spieltag 28).
 - **Zeitvorgabe (intern)**: Nur um 19:00 oder 20:00 Uhr.
-- **Weitere Abwesenheiten**: Bisher keine für Spieltage 14–30 gemeldet.
 
 ### Allgemeine Zeitverteilung
 - Für alle Spieler ohne persönliche Zeit-Sonderregel werden Einsätze über **19:00, 20:00, 21:00 und 20:30 Uhr** möglichst gleichmäßig verteilt.
@@ -112,8 +113,8 @@ Dieses Dokument fasst alle geschäftlichen Regeln, Spielerpräferenzen, Abwesenh
 - **Weitere Abwesenheiten**: Bisher keine für Spieltage 14–30 gemeldet.
 
 ### Heyn
-- **Slot-Präferenz**: Wunsch nach 75% Einzel / 25% Doppel (`ratio: 0.25`).
-- **Weitere Abwesenheiten**: Bisher keine für Spieltage 14–30 gemeldet.
+- **Slot-Präferenz**: Wunsch nach 70% Einzel / 30% Doppel (`ratio: 0.30`).
+- **Abwesenheiten**: 12.01.2027 (Spieltag 15), 09.02.2027 (Spieltag 19), 09.03.2027 (Spieltag 23), 30.03.2027 (Spieltag 26), 13.04.2027 (Spieltag 28) und 27.04.2027 (Spieltag 30).
 
 ### Hinz
 - **Slot-Präferenz**: Wunsch nach ca. 50% Doppel / 50% Einzel (`ratio: 0.5`).

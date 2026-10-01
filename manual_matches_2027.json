@@ -1,0 +1,25 @@
+{
+  "_comment": "Optional manual pairings for 2027. Remove this comment property when adding overrides. Keys are matchday numbers 14-30. For odd days enter 3 singles and 2 doubles teams; for even days enter 4 singles and teams: null. Unlisted days remain generated automatically.",
+  "_examples": {
+    "14": {
+      "singles": [
+        ["Player A", "Player B"],
+        ["Player C", "Player D"],
+        ["Player E", "Player F"]
+      ],
+      "teams": [
+        ["Player G", "Player H"],
+        ["Player I", "Player J"]
+      ]
+    },
+    "15": {
+      "singles": [
+        ["Player A", "Player B"],
+        ["Player C", "Player D"],
+        ["Player E", "Player F"],
+        ["Player G", "Player H"]
+      ],
+      "teams": null
+    }
+  }
+}

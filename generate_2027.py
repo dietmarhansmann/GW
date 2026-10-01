@@ -18,7 +18,7 @@ PLAYERS = [
 
 # Doubles share (ratio); 0.0 means singles only. None means no fixed preference.
 RATIOS = {
-    "Beumer": 0.50, "Dedores": 0.0, "Hansmann": 0.30, "Heyn": 0.25,
+    "Beumer": 0.50, "Dedores": 0.0, "Hansmann": 0.30, "Heyn": 0.30,
     "Hinz": 0.50, "Kissner": 0.0, "Kuhlhoff": 0.0, "Marschollek": 0.90,
     "Mönning": 0.0, "Nolte": 0.0, "Prodehl": 0.60, "Trojanski": 0.0,
     "van de Loo": 0.0, "Wojtanowitsch": 0.0,
@@ -26,23 +26,19 @@ RATIOS = {
 
 ABSENCES = {
     "Beumer": {22},
+    "Dedores": {16, 17, 20, 21, 25, 26, 28},
+    "Heyn": {15, 19, 23, 26, 28, 30},
     "Hinz": {30},
     "Marschollek": {16, 24},
 }
 
-# Optional manual pairing overrides keyed by matchday. When populated, a full entry
-# replaces that day's generated singles and teams. The final schedule is validated
-# and all HTML statistics/exports are derived from the resulting matchesData.
-MANUAL_MATCH_OVERRIDES = {
-    # 14: {
-    #     "singles": [["Player A", "Player B"], ["Player C", "Player D"], ["Player E", "Player F"]],
-    #     "teams": [["Player G", "Player H"], ["Player I", "Player J"]],  # odd day
-    # },
-    # 15: {
-    #     "singles": [["Player A", "Player B"], ["Player C", "Player D"], ["Player E", "Player F"], ["Player G", "Player H"]],
-    #     "teams": None,  # even day: fourth pair is Einzel
-    # },
-}
+# A player is not scheduled after reaching their requested number of appearances.
+MAX_APPEARANCES = {"Dedores": 7}
+
+# Manual pairings live in manual_matches_2027.json next to this script.
+# Edit that JSON file, then rerun this generator; overrides are validated and
+# all statistics and exports are generated from the final schedule.
+MANUAL_MATCHES_FILE = Path(__file__).with_name("manual_matches_2027.json")
 
 START_DAY, END_DAY = 14, 30
 DATES = {
@@ -72,6 +68,8 @@ def choose_attendees():
         candidates = []
         for p in PLAYERS:
             if day in ABSENCES.get(p, set()):
+                continue
+            if counts[p] >= MAX_APPEARANCES.get(p, float("inf")):
                 continue
             if p == "Trojanski" and day - last_played[p] < 2:
                 continue
@@ -313,6 +311,36 @@ def optimize_time_slots(matches):
     return matches
 
 
+def apply_manual_overrides(matches):
+    """Apply optional, explicit 2027 pairings from the adjacent JSON file."""
+    if not MANUAL_MATCHES_FILE.exists():
+        return matches
+
+    overrides = json.loads(MANUAL_MATCHES_FILE.read_text(encoding="utf-8"))
+    if not isinstance(overrides, dict):
+        raise ValueError(f"{MANUAL_MATCHES_FILE.name} must contain a JSON object")
+
+    by_day = {match["day"]: match for match in matches}
+    for day_text, override in overrides.items():
+        if str(day_text).startswith("_"):
+            continue  # Reserved for explanatory comments and copyable examples.
+        try:
+            day = int(day_text)
+        except (TypeError, ValueError) as error:
+            raise ValueError(f"Invalid matchday key in {MANUAL_MATCHES_FILE.name}: {day_text!r}") from error
+        if day not in by_day:
+            raise ValueError(f"Manual override references unknown matchday {day}")
+        if not isinstance(override, dict) or "singles" not in override or "teams" not in override:
+            raise ValueError(f"Matchday {day} override must define both 'singles' and 'teams'")
+        by_day[day]["singles"] = [tuple(pair) for pair in override["singles"]]
+        by_day[day]["teams"] = (
+            [tuple(team) for team in override["teams"]]
+            if override["teams"] is not None else None
+        )
+
+    return matches
+
+
 def generate():
     best_schedule, best_score = None, float("inf")
     for _ in range(60):
@@ -345,16 +373,6 @@ def generate():
             break
     if best_schedule is None:
         raise RuntimeError("Could not generate a valid 2027 schedule")
-    if MANUAL_MATCH_OVERRIDES:
-        by_day = {match["day"]: match for match in best_schedule}
-        for day, override in MANUAL_MATCH_OVERRIDES.items():
-            if day not in by_day:
-                raise ValueError(f"Manual override references unknown matchday {day}")
-            by_day[day]["singles"] = [tuple(pair) for pair in override["singles"]]
-            by_day[day]["teams"] = (
-                [tuple(team) for team in override["teams"]]
-                if override.get("teams") is not None else None
-            )
     return best_schedule
 
 
@@ -371,6 +389,8 @@ def validate(matches):
         assert len(attendees) == len(set(attendees)), f"Double booking on #{day}"
         assert not (set(attendees) & {p for p, days in ABSENCES.items() if day in days}), f"Absence violation #{day}"
         assert "Quante" not in attendees, "Quante already has two fixed 2026 appearances"
+        for player, maximum in MAX_APPEARANCES.items():
+            assert games[player] + attendees.count(player) <= maximum, f"{player} exceeds {maximum} appearances"
         if "Dedores" in attendees:
             if day % 2:
                 assert all("Dedores" not in team for team in m["teams"])
@@ -553,198 +573,6 @@ document.querySelectorAll('[data-filter]').forEach(button=>button.addEventListen
 </script></body></html>'''
 
 
-def add_manual_editor(page):
-    """Add a browser-side 2027-only pairing editor backed by localStorage."""
-    editor_button = '''<button @click.stop="editMatch(m)" class="no-print ml-1 rounded border border-emerald-300 px-1 py-0.5 text-[9px] text-emerald-800 hover:bg-emerald-50" title="Paarungen dieses Spieltags bearbeiten">✎</button>'''
-    page = page.replace(
-        '<span class="md:hidden">{{ formatShortDate(m.date) }}</span>',
-        '<span class="md:hidden">{{ formatShortDate(m.date) }}</span>' + editor_button,
-        1,
-    )
-    page = page.replace(
-        '<div class="hidden md:block leading-tight">',
-        '<div class="hidden md:block leading-tight">' + editor_button,
-        1,
-    )
-    page = page.replace(
-        'const rulesByPlayer = ref(playerRules);',
-        'const rulesByPlayer = ref(playerRules);\n                const scheduleMatches = ref(matchesData);',
-        1,
-    )
-
-    # Make all schedule-dependent Vue calculations and exports use the editable source.
-    script_start = page.index('const { createApp')
-    script_end = page.index('</script>', script_start)
-    script = page[script_start:script_end].replace('matchesData', 'scheduleMatches.value')
-    script = script.replace('const scheduleMatches = ref(scheduleMatches.value);', 'const scheduleMatches = ref(matchesData);', 1)
-    script = script.replace('scheduleMatches.value,\n                    currentFilter,', 'matchesData: scheduleMatches,\n                    currentFilter,')
-
-    static_stats = '''const statsArr = Object.keys(playerStats).map(name => ({
-                        name,
-                        ...playerStats[name]
-                    }));'''
-    live_stats = '''const statsArr = Object.entries(livePlayerStats.value).map(([name, stats]) => ({
-                        name,
-                        ...stats
-                    }));'''
-    script = script.replace(static_stats, live_stats, 1)
-    stats_computed = '''const livePlayerStats = computed(() => {
-                    const result = Object.fromEntries(Object.keys(playerStats).map(name => [name, {
-                        einzel: 0, doppel: 0, total: 0, ratio: 0, kosten: 0, zeiten: [0, 0, 0, 0]
-                    }]));
-                    scheduleMatches.value.forEach(match => {
-                        const timeGroups = [match.p1, match.p2, match.p3, match.doppel];
-                        timeGroups.forEach((group, index) => {
-                            const names = index === 3 && match.court2_type !== 'einzel'
-                                ? [...group.team1, ...group.team2]
-                                : [group.p1, group.p2];
-                            names.forEach(name => { if (result[name]) result[name].zeiten[index]++; });
-                        });
-                        const singles = [match.p1, match.p2, match.p3];
-                        if (match.court2_type === 'einzel') singles.push(match.doppel);
-                        singles.forEach(pair => {
-                            if (pair && pair.p1 && pair.p2) {
-                                result[pair.p1].einzel++;
-                                result[pair.p2].einzel++;
-                            }
-                        });
-                        if (match.court2_type !== 'einzel' && match.doppel) {
-                            [...match.doppel.team1, ...match.doppel.team2].forEach(name => result[name].doppel++);
-                        }
-                    });
-                    Object.values(result).forEach(stats => {
-                        stats.total = stats.einzel + stats.doppel;
-                        stats.ratio = stats.total ? Math.round(100 * stats.doppel / stats.total) : 0;
-                        stats.kosten = Math.round((stats.einzel * 0.5 + stats.doppel * 0.375) * 100) / 100;
-                    });
-                    return result;
-                });
-
-                '''
-    script = script.replace('const sortedPlayerStats = computed(() => {', stats_computed + 'const sortedPlayerStats = computed(() => {', 1)
-
-    editor_logic = '''function validateEditedSchedule(candidate) {
-                    const knownPlayers = new Set(Object.keys(playerStats));
-                    const lastPlayed = {};
-                    for (const match of candidate) {
-                        const oddDay = match.spieltag % 2 === 1;
-                        const slotPlayers = [
-                            [match.p1.p1, match.p1.p2], [match.p2.p1, match.p2.p2],
-                            [match.p3.p1, match.p3.p2],
-                            match.court2_type === 'einzel'
-                                ? [match.doppel.p1, match.doppel.p2]
-                                : [...match.doppel.team1, ...match.doppel.team2]
-                        ];
-                        if ((oddDay && match.court2_type !== 'doppel') || (!oddDay && match.court2_type !== 'einzel')) {
-                            throw new Error(`Spieltag #${match.spieltag}: Das Format (Einzel/Doppel) ist fest vorgegeben.`);
-                        }
-                        if (slotPlayers.some(group => group.some(name => !knownPlayers.has(name)))) {
-                            throw new Error(`Spieltag #${match.spieltag}: unbekannter oder leerer Spielername.`);
-                        }
-                        const players = slotPlayers.flat();
-                        if (players.length !== (oddDay ? 10 : 8) || new Set(players).size !== players.length) {
-                            throw new Error(`Spieltag #${match.spieltag}: Anzahl oder Doppelbelegung der Spieler stimmt nicht.`);
-                        }
-                        if (match.spieltag === 22 && players.includes('Beumer')) throw new Error('Beumer ist am Spieltag #22 abwesend.');
-                        if ([16, 24].includes(match.spieltag) && players.includes('Marschollek')) throw new Error('Marschollek ist an diesem Spieltag abwesend.');
-                        if (match.spieltag === 30 && players.includes('Hinz')) throw new Error('Hinz ist am Spieltag #30 abwesend.');
-                        if (players.includes('Quante')) throw new Error('Quante ist für 2027 nicht eingeplant.');
-                        if (match.court2_type === 'doppel') {
-                            const doubles = [...match.doppel.team1, ...match.doppel.team2];
-                            if (doubles.some(name => ['Dedores','Kissner','Kuhlhoff','Mönning','Nolte','Trojanski','van de Loo','Wojtanowitsch'].includes(name))) {
-                                throw new Error(`Spieltag #${match.spieltag}: ein Einzel-Spieler wurde im Doppel eingesetzt.`);
-                            }
-                            if (doubles.includes('Dedores')) throw new Error('Dedores darf nur Einzel spielen.');
-                        }
-                        for (let slot = 0; slot < slotPlayers.length; slot++) {
-                            const time = ['19:00','20:00','21:00','20:30'][slot];
-                            if (slotPlayers[slot].includes('Dedores') && !['19:00','20:00'].includes(time)) {
-                                throw new Error(`Dedores darf am Spieltag #${match.spieltag} nur um 19:00 oder 20:00 Uhr spielen.`);
-                            }
-                        }
-                        if (slotPlayers.some(group => group.includes('Dedores') && group.some(name => ['Prodehl','Beumer','Heyn'].includes(name)))) {
-                            throw new Error(`Spieltag #${match.spieltag}: Topf-A-Regel verletzt.`);
-                        }
-                        for (const name of players) {
-                            if (name === 'Trojanski' && match.spieltag - (lastPlayed[name] ?? -99) < 2) throw new Error('Trojanski benötigt mindestens einen Spieltag Pause.');
-                            if (name === 'van de Loo' && match.spieltag - (lastPlayed[name] ?? -99) < 4) throw new Error('van de Loo benötigt mindestens drei Spieltage Pause.');
-                            lastPlayed[name] = match.spieltag;
-                        }
-                    }
-                }
-
-                function editMatch(match) {
-                    const current = {
-                        singles: [match.p1, match.p2, match.p3].map(pair => [pair.p1, pair.p2]),
-                        court2: match.court2_type === 'einzel'
-                            ? [match.doppel.p1, match.doppel.p2]
-                            : [match.doppel.team1, match.doppel.team2]
-                    };
-                    const text = prompt(
-                        `Spieltag #${match.spieltag}: Paarungen als JSON bearbeiten.\\nFormat: {"singles":[[A,B],[C,D],[E,F]],"court2":[G,H]} für gerade Tage; ungerade Tage court2:[[Team1A,Team1B],[Team2A,Team2B]].`,
-                        JSON.stringify(current)
-                    );
-                    if (text === null) return;
-                    try {
-                        const edited = JSON.parse(text);
-                        const candidate = scheduleMatches.value.map(item => item.spieltag === match.spieltag ? {...item} : item);
-                        const target = candidate.find(item => item.spieltag === match.spieltag);
-                        if (!edited || !Array.isArray(edited.singles) || edited.singles.length !== 3 || edited.singles.some(pair => !Array.isArray(pair) || pair.length !== 2)) {
-                            throw new Error('Bitte genau drei Einzel-Paarungen mit je zwei Spielern eingeben.');
-                        }
-                        target.p1 = {...target.p1, p1: edited.singles[0][0], p2: edited.singles[0][1]};
-                        target.p2 = {...target.p2, p1: edited.singles[1][0], p2: edited.singles[1][1]};
-                        target.p3 = {...target.p3, p1: edited.singles[2][0], p2: edited.singles[2][1]};
-                        if (target.court2_type === 'einzel') {
-                            if (!Array.isArray(edited.court2) || edited.court2.length !== 2) throw new Error('Gerade Spieltage benötigen zwei Spieler auf Platz 2.');
-                            target.doppel = {...target.doppel, p1: edited.court2[0], p2: edited.court2[1]};
-                        } else {
-                            if (!Array.isArray(edited.court2) || edited.court2.length !== 2 || edited.court2.some(team => !Array.isArray(team) || team.length !== 2)) throw new Error('Ungerade Spieltage benötigen zwei Doppel-Teams mit je zwei Spielern.');
-                            target.doppel = {...target.doppel, team1: edited.court2[0], team2: edited.court2[1]};
-                        }
-                        validateEditedSchedule(candidate);
-                        scheduleMatches.value = candidate;
-                        try { localStorage.setItem('tennis-spielplan-2027-edits', JSON.stringify(candidate)); }
-                        catch (storageError) { alert('Änderung übernommen, aber nicht dauerhaft gespeichert: Browser-Speicher nicht verfügbar.'); }
-                    } catch (error) {
-                        alert(`Änderung nicht übernommen: ${error.message}`);
-                    }
-                }
-
-                function resetMatchEdits() {
-                    if (!confirm('Alle gespeicherten manuellen Änderungen für 2027 zurücksetzen?')) return;
-                    scheduleMatches.value = matchesData;
-                    try { localStorage.removeItem('tennis-spielplan-2027-edits'); }
-                    catch (error) { /* The generated schedule is still restored in this page. */ }
-                }
-
-                '''
-    script = script.replace('function printPage() {', editor_logic + 'function printPage() {', 1)
-    script = script.replace('                    exportStatsCsv,', '                    editMatch,\n                    resetMatchEdits,\n                    exportStatsCsv,', 1)
-    script = script.replace(
-        '                onMounted(() => {',
-        '''                onMounted(() => {
-                    try {
-                        const saved = localStorage.getItem('tennis-spielplan-2027-edits');
-                        if (saved) {
-                            const candidate = JSON.parse(saved);
-                            validateEditedSchedule(candidate);
-                            scheduleMatches.value = candidate;
-                        }
-                    } catch (error) {
-                        try { localStorage.removeItem('tennis-spielplan-2027-edits'); }
-                        catch (storageError) { /* Storage may be disabled; keep the generated plan usable. */ }
-                    }
-''', 1)
-    page = page[:script_start] + script + page[script_end:]
-    page = page.replace(
-        '<div class="flex items-center gap-2">\n                    <span class="text-[10px]',
-        '<div class="flex items-center gap-2">\n                    <button @click="resetMatchEdits()" class="no-print bg-amber-100 hover:bg-amber-200 text-amber-900 px-2.5 py-1 rounded text-[11px] font-semibold">↶ Änderungen zurücksetzen</button>\n                    <span class="text-[10px]',
-        1,
-    )
-    return page
-
-
 def render_from_2026_template(schedule, games, doubles):
     template_path = Path(__file__).with_name("index.html")
     page = template_path.read_text(encoding="utf-8")
@@ -771,9 +599,9 @@ def render_from_2026_template(schedule, games, doubles):
 
     rules = {
         "Beumer": ["Wunsch nach 50% Einzel und 50% Doppel.", "Abwesend am 02.03.2027 (Spieltag 22)."],
-        "Dedores": ["Spielt ausschließlich Einzel."],
+        "Dedores": ["Spielt ausschließlich Einzel.", "Abwesend am 19.01.2027 (#16), 26.01.2027 (#17), 16.02.2027 (#20), 23.02.2027 (#21), 23.03.2027 (#25), 30.03.2027 (#26) und 13.04.2027 (#28).", "Bis zu 7 Einsätze reichen."],
         "Hansmann": ["Wunsch nach ca. 70% Einzel und 30% Doppel."],
-        "Heyn": ["Wunsch nach 75% Einzel und 25% Doppel."],
+        "Heyn": ["Wunsch nach 70% Einzel und 30% Doppel.", "Abwesend am 12.01.2027 (Spieltag 15), 09.02.2027 (Spieltag 19), 09.03.2027 (Spieltag 23), 30.03.2027 (Spieltag 26), 13.04.2027 (Spieltag 28) und 27.04.2027 (Spieltag 30)."],
         "Hinz": ["Wunsch nach 50% Einzel und 50% Doppel.", "Abwesend am 27.04.2027 (Spieltag 30)."],
         "Kissner": ["Spielt ausschließlich Einzel."],
         "Knust": ["Nimmt ab 2027 teil."],
@@ -829,11 +657,11 @@ def render_from_2026_template(schedule, games, doubles):
     page = page.replace("tennis_spielplan_statistik_2026_2027.csv", "tennis_spielplan_statistik_2027_zweite_haelfte.csv")
     page = page.replace("tennis_spielplan_gesamtsaison_2026_2027.ics", "tennis_spielplan_2027_zweite_haelfte.ics")
     page = page.replace("Stand: 21.09.2026", "Stand: 01.10.2026")
-    return add_manual_editor(page)
+    return page
 
 
 if __name__ == "__main__":
-    schedule = generate()
+    schedule = apply_manual_overrides(generate())
     games, doubles = validate(schedule)
     output = Path(__file__).with_name("spielplan_2027.html")
     generated_html = render_from_2026_template(schedule, games, doubles)
