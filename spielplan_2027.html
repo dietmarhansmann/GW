@@ -1,0 +1,1430 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tennis-Spielplan zweite Saisonhälfte 2027</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
+        .dark body, body.dark { background-color: #111827; color: #f3f4f6; }
+        .player-name-short { display: none; }
+        @media (max-width: 767px) {
+            #schedule-table td { padding: 0.25rem 0.2rem; }
+            #schedule-table .match-players { gap: 0.15rem; }
+            #schedule-table .player-name-full { display: none; }
+            #schedule-table .player-name-short { display: inline; }
+            #schedule-table .player-badge { padding: 0.15rem 0.3rem; font-size: 10px; }
+        }
+        @media print {
+            .no-print { display: none !important; }
+            body { background: white !important; color: black !important; font-size: 10pt; }
+            table { page-break-inside: auto; }
+            tr { page-break-inside: avoid; page-break-after: auto; }
+            .bg-white, .bg-gray-50 { background-color: white !important; border-color: #ccc !important; }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 antialiased min-h-screen p-2 md:p-3 transition-colors duration-200">
+    <div id="app" class="max-w-[98%] mx-auto">
+        <!-- Quick Stats & Global Export Bar -->
+        <div class="no-print bg-white dark:bg-gray-800 border border-emerald-200 dark:border-emerald-900 rounded-lg px-3 py-2 mb-2.5 shadow-sm text-xs flex flex-wrap justify-between items-center gap-2">
+            <div class="flex items-center gap-3 text-gray-700 dark:text-gray-200 font-medium">
+                <span>📊 <b>17</b> Spieltage (2. Saisonhälfte 2027)</span>
+                <span class="text-gray-300 dark:text-gray-600">•</span>
+                <span>👥 <b>{{ allPlayers.length }}</b> aktive Spieler</span>
+                <span class="text-gray-300 dark:text-gray-600">•</span>
+                <span class="text-emerald-800 dark:text-emerald-400 font-semibold">⭐ Nächster Spieltag: <b>05.01.2027</b> (#14)</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <a href="index.html" class="no-print bg-blue-100 hover:bg-blue-200 text-blue-800 px-2.5 py-1.5 rounded-lg text-xs font-semibold transition border border-blue-300 flex items-center gap-1 shadow-sm" title="Zur ersten Saisonhälfte wechseln">
+                    <span>↩ Spielplan 2026</span>
+                </a>
+                <button @click="printPage()" class="no-print bg-gray-100 hover:bg-gray-200 text-gray-700 px-2.5 py-1.5 rounded-lg text-xs font-semibold transition border border-gray-300 flex items-center gap-1 shadow-sm" title="Spielplan drucken">
+                    <span>🖨️ Drucken</span>
+                </button>
+                <button @click="downloadAllIcs()" class="no-print bg-emerald-800 hover:bg-emerald-900 text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition border border-emerald-700 flex items-center gap-1.5 shadow-sm">
+                    <span>📅 Gesamter Spielplan als ICS</span>
+                </button>
+                <a href="anleitung.html" class="no-print bg-emerald-100 hover:bg-emerald-200 text-emerald-800 px-2.5 py-1.5 rounded-lg text-xs font-semibold transition border border-emerald-300 flex items-center gap-1 shadow-sm" title="Kurzanleitung öffnen">
+                    <span>📖 Anleitung</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Player Legend & Controls Bar -->
+        <div class="no-print bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-2.5 mb-2.5 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-2">
+            <div class="flex-1 w-full">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-1.5 gap-2">
+                    <span class="font-bold text-xs uppercase tracking-wider text-gray-700 dark:text-gray-300">Klick [NAME] = Spiele filtern | 📅 = Kalender-Download für z.B. Google Kalender:</span>
+                    <div class="flex items-center gap-2">
+                        <!-- Search input -->
+                        <div class="relative">
+                            <input type="text" v-model="playerSearchQuery" placeholder="🔍 Spieler suchen..." class="bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded px-2.5 py-1 text-xs text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-1 focus:ring-emerald-600 w-36">
+                        </div>
+                        <span v-if="currentFilter !== 'ALL'" class="text-[11px] text-emerald-700 dark:text-emerald-400 font-semibold whitespace-nowrap">
+                            Filter: {{ currentFilter }} ({{ filteredMatches.length }} Spieltage)
+                        </span>
+                    </div>
+                </div>
+
+                <div class="flex flex-wrap gap-2 items-center pt-1 pb-0.5">
+                    <!-- 'Alle' button -->
+                    <button @click="setFilter('ALL')"
+                        :class="currentFilter === 'ALL' ? 'bg-black dark:bg-white dark:text-gray-900 text-white border-black dark:border-white ring-2 ring-gray-400 scale-105' : 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 border-gray-300 dark:border-gray-600'"
+                        class="px-2.5 py-0.5 rounded text-[10px] font-bold transition flex items-center gap-1 border shadow-sm">
+                        <span>Alle</span>
+                    </button>
+
+                    <!-- Player pills -->
+                    <div v-for="player in displayedPlayers" :key="player"
+                        :style="{ backgroundColor: currentFilter === player ? '#111827' : (playerColors[player] ? playerColors[player].bg : '#eee'), borderColor: playerColors[player] ? playerColors[player].border : '#ccc' }"
+                        :class="currentFilter === player ? 'scale-110 font-black shadow-xl ring-2 ring-emerald-600 ring-offset-1 z-10' : 'hover:opacity-95 shadow-sm border'"
+                        class="inline-flex items-center rounded border transition relative">
+                        <button @click="setFilter(player)"
+                            :style="{ color: currentFilter === player ? '#ffffff' : '#111827' }"
+                            class="px-2 py-1 text-xs font-bold flex items-center gap-1 focus:outline-none">
+                            <span>{{ player }}</span>
+                        </button>
+                        <button @click.stop="downloadPlayerIcs(player)"
+                            :style="{ borderColor: playerColors[player] ? playerColors[player].border : '#ccc', color: currentFilter === player ? '#ffffff' : '#111827' }"
+                            class="px-2 py-1 text-xs border-l transition hover:bg-black/10 focus:outline-none"
+                            :title="'ICS-Kalender für ' + player + ' herunterladen'">
+                            📅
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="no-print flex items-center gap-2">
+                <button @click="togglePastMatches"
+                    :class="showPastMatches ? 'bg-emerald-100 dark:bg-emerald-900/50 hover:bg-emerald-200 text-emerald-800 dark:text-emerald-300 border-emerald-300 dark:border-emerald-700' : 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600'"
+                    class="text-xs font-medium px-3 py-1.5 rounded-lg border transition whitespace-nowrap">
+                    {{ showPastMatches ? '📁 Vergangene Spiele ausblenden' : '📁 Vergangene Spiele anzeigen' }}
+                </button>
+            </div>
+        </div>
+
+        <!-- Ultra-Compact Table -->
+        <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm overflow-x-auto mb-2.5">
+            <table id="schedule-table" class="w-full text-left border-collapse text-xs table-auto">
+                <thead>
+                    <tr class="bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-400 uppercase text-[10px] tracking-wider border-b border-gray-200 dark:border-gray-700">
+                        <th class="py-2 px-1 whitespace-nowrap w-1">Datum</th>
+                        <th class="py-2 px-1.5">19:00 Uhr</th>
+                        <th class="py-2 px-1.5">20:00 Uhr</th>
+                        <th class="py-2 px-1.5">21:00 Uhr</th>
+                        <th class="py-2 px-1.5">Doppel / Einzel <span class="font-normal normal-case text-gray-500 dark:text-gray-400">(20:30)</span></th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                    <tr v-if="displayedMatches.length === 0">
+                        <td colspan="5" class="py-6 text-center text-gray-500 dark:text-gray-400 text-xs">Keine entsprechenden Spiele gefunden (Vergangene Spiele sind ausgeblendet).</td>
+                    </tr>
+                    <tr v-for="(m, idx) in displayedMatches" :key="m.spieltag"
+                        :id="isNextUpcoming(m, idx) ? 'next-match-target' : null"
+                        :class="getRowClass(m, idx)">
+                        <template v-if="m.status === 'Reserviert für alle'">
+                            <td colspan="5" class="py-3 px-3 text-center bg-amber-50 dark:bg-amber-950/40 border-amber-200 dark:border-amber-900">
+                                <div class="flex items-center justify-center gap-2 text-amber-900 dark:text-amber-300 font-bold text-xs md:text-sm whitespace-nowrap">
+                                    <span>🎾 Spieltag #{{ m.spieltag }} — {{ formatFullDate(m.date) }}:</span>
+                                    <span class="bg-amber-200 dark:bg-amber-900 text-amber-900 dark:text-amber-100 px-2.5 py-1 rounded-md shadow-sm border border-amber-300 dark:border-amber-700 font-extrabold uppercase tracking-wide">
+                                        Reserviert für alle
+                                    </span>
+                                </div>
+                            </td>
+                        </template>
+                        <template v-else>
+                        <td class="py-2 px-1" :class="m.status === 'Abgeschlossen' ? 'text-gray-400 dark:text-gray-600' : 'text-gray-600 dark:text-gray-300'">
+                            <span class="md:hidden">{{ formatShortDate(m.date) }}</span><button @click.stop="editMatch(m)" class="no-print ml-1 rounded border border-emerald-300 px-1 py-0.5 text-[9px] text-emerald-800 hover:bg-emerald-50" title="Paarungen dieses Spieltags bearbeiten">✎</button>
+                            <div class="hidden md:block leading-tight"><button @click.stop="editMatch(m)" class="no-print ml-1 rounded border border-emerald-300 px-1 py-0.5 text-[9px] text-emerald-800 hover:bg-emerald-50" title="Paarungen dieses Spieltags bearbeiten">✎</button>
+                                <span class="font-bold text-[10px]">#{{ m.spieltag }}</span>
+                                <div class="text-[11px]">{{ formatFullDate(m.date) }}</div>
+                            </div>
+                        </td>
+                        <!-- Platz 1 (19:00) -->
+                        <td class="py-2 px-1.5">
+                            <div class="match-players flex flex-wrap items-center gap-1">
+                                <span v-html="formatPlayerBadge(m.p1.p1, m.status === 'Abgeschlossen')"></span>
+                                <span v-if="m.p1.p1 && m.p1.p2" class="text-[9px] hidden md:inline" :class="m.status === 'Abgeschlossen' ? 'text-gray-300 dark:text-gray-700' : 'text-gray-400 dark:text-gray-500'">vs</span>
+                                <span v-html="formatPlayerBadge(m.p1.p2, m.status === 'Abgeschlossen')"></span>
+                            </div>
+                        </td>
+                        <!-- Platz 1 (20:00) -->
+                        <td class="py-2 px-1.5">
+                            <div class="match-players flex flex-wrap items-center gap-1">
+                                <span v-html="formatPlayerBadge(m.p2.p1, m.status === 'Abgeschlossen')"></span>
+                                <span v-if="m.p2.p1 && m.p2.p2" class="text-[9px] hidden md:inline" :class="m.status === 'Abgeschlossen' ? 'text-gray-300 dark:text-gray-700' : 'text-gray-400 dark:text-gray-500'">vs</span>
+                                <span v-html="formatPlayerBadge(m.p2.p2, m.status === 'Abgeschlossen')"></span>
+                            </div>
+                        </td>
+                        <!-- Platz 1 (21:00) -->
+                        <td class="py-2 px-1.5">
+                            <div class="match-players flex flex-wrap items-center gap-1">
+                                <span v-html="formatPlayerBadge(m.p3.p1, m.status === 'Abgeschlossen')"></span>
+                                <span v-if="m.p3.p1 && m.p3.p2" class="text-[9px] hidden md:inline" :class="m.status === 'Abgeschlossen' ? 'text-gray-300 dark:text-gray-700' : 'text-gray-400 dark:text-gray-500'">vs</span>
+                                <span v-html="formatPlayerBadge(m.p3.p2, m.status === 'Abgeschlossen')"></span>
+                            </div>
+                        </td>
+                        <!-- Platz 2 - Doppel / Einzel (20:30) -->
+                        <td class="py-2 px-1.5">
+                            <div v-if="m.court2_type !== 'einzel'" class="match-players flex flex-wrap items-center gap-1">
+                                <span class="inline-flex flex-col gap-0.5">
+                                    <span v-html="formatPlayerBadge(m.doppel.team1[0], m.status === 'Abgeschlossen')"></span>
+                                    <span v-html="formatPlayerBadge(m.doppel.team1[1], m.status === 'Abgeschlossen')"></span>
+                                </span>
+                                <span v-if="(m.doppel.team1[0] || m.doppel.team1[1]) && (m.doppel.team2[0] || m.doppel.team2[1])" class="text-[9px] hidden md:inline" :class="m.status === 'Abgeschlossen' ? 'text-gray-300 dark:text-gray-700' : 'text-emerald-700 dark:text-emerald-400 font-bold'">vs</span>
+                                <span class="inline-flex flex-col gap-0.5">
+                                    <span v-html="formatPlayerBadge(m.doppel.team2[0], m.status === 'Abgeschlossen')"></span>
+                                    <span v-html="formatPlayerBadge(m.doppel.team2[1], m.status === 'Abgeschlossen')"></span>
+                                </span>
+                            </div>
+                            <div v-else class="match-players flex flex-wrap items-center gap-1">
+                                <span v-html="formatPlayerBadge(m.doppel.p1, m.status === 'Abgeschlossen')"></span>
+                                <span v-if="m.doppel.p1 && m.doppel.p2" class="text-[9px] hidden md:inline" :class="m.status === 'Abgeschlossen' ? 'text-gray-300 dark:text-gray-700' : 'text-gray-400 dark:text-gray-500'">vs</span>
+                                <span v-html="formatPlayerBadge(m.doppel.p2, m.status === 'Abgeschlossen')"></span>
+                            </div>
+                        </td>
+                        </template>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Player Statistics Matrix Section -->
+        <div class="no-print bg-white dark:bg-gray-800 border border-emerald-200 dark:border-emerald-900 rounded-lg p-3 mb-2.5 shadow-sm">
+            <div class="flex justify-between items-center mb-2 border-b border-gray-100 dark:border-gray-700 pb-1.5">
+                <h3 class="text-xs font-bold uppercase tracking-wider text-emerald-800 dark:text-emerald-400 flex items-center gap-1.5">
+                    <span>📊 Spieler-Statistik-Matrix (Einzel vs. Doppel)</span>
+                </h3>
+                <div class="flex items-center gap-2">
+                    <button @click="resetMatchEdits()" class="no-print bg-amber-100 hover:bg-amber-200 text-amber-900 px-2.5 py-1 rounded text-[11px] font-semibold">↶ Änderungen zurücksetzen</button>
+                    <span class="text-[10px] text-gray-500 dark:text-gray-400 font-medium hidden sm:inline">Klick auf Spaltenköpfe zum Sortieren</span>
+                    <button @click="exportStatsCsv()" class="no-print bg-emerald-800 hover:bg-emerald-900 text-white px-2.5 py-1 rounded text-[11px] font-semibold transition border border-emerald-700 flex items-center gap-1 shadow-xs" title="Statistik als CSV herunterladen">
+                        <span>📥 CSV Export</span>
+                    </button>
+                </div>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse text-xs">
+                    <thead>
+                        <tr class="bg-emerald-800 text-white select-none">
+                            <th @click="sortBy('name')" class="p-2 font-semibold cursor-pointer hover:bg-emerald-700">Spieler {{ sortColumn === 'name' ? (sortDirection === 'asc' ? '▲' : '▼') : '↕' }}</th>
+                            <th @click="sortBy('einzel')" class="p-2 text-center font-semibold cursor-pointer hover:bg-emerald-700">Einzel {{ sortColumn === 'einzel' ? (sortDirection === 'asc' ? '▲' : '▼') : '↕' }}</th>
+                            <th @click="sortBy('doppel')" class="p-2 text-center font-semibold cursor-pointer hover:bg-emerald-700">Doppel {{ sortColumn === 'doppel' ? (sortDirection === 'asc' ? '▲' : '▼') : '↕' }}</th>
+                            <th @click="sortBy('total')" class="p-2 text-center font-semibold cursor-pointer hover:bg-emerald-700">Gesamt Spiele {{ sortColumn === 'total' ? (sortDirection === 'asc' ? '▲' : '▼') : '↕' }}</th>
+                            <th @click="sortBy('ratio')" class="p-2 text-center font-semibold cursor-pointer hover:bg-emerald-700">Doppel-Anteil {{ sortColumn === 'ratio' ? (sortDirection === 'asc' ? '▲' : '▼') : '↕' }}</th>
+                            <th @click="sortBy('kosten')" class="p-2 text-center font-semibold cursor-pointer hover:bg-emerald-700">
+                                <span>Kosten</span>
+                                {{ sortColumn === 'kosten' ? (sortDirection === 'asc' ? '▲' : '▼') : '↕' }}
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+                        <tr v-for="stat in sortedPlayerStats" :key="stat.name" class="border-b border-gray-100 dark:border-gray-700 hover:bg-emerald-50/50 dark:hover:bg-emerald-950/30">
+                            <td class="p-2 font-medium">
+                                <span v-html="formatPlayerBadge(stat.name, false)"></span>
+                            </td>
+                            <td class="p-2 text-center font-semibold text-gray-700 dark:text-gray-300">{{ stat.einzel }}</td>
+                            <td class="p-2 text-center font-semibold text-emerald-700 dark:text-emerald-400">{{ stat.doppel }}</td>
+                            <td class="p-2 text-center font-bold text-gray-900 dark:text-gray-100">{{ stat.total }}</td>
+                            <td class="p-2 text-center">
+                                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200">
+                                    {{ stat.ratio }}%
+                                </span>
+                            </td>
+                            <td class="p-2 text-center font-bold text-emerald-800 dark:text-emerald-400">{{ stat.kosten }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Rules Section -->
+        <div class="no-print bg-white dark:bg-gray-800 border border-emerald-200 dark:border-emerald-900 rounded-lg p-3 shadow-sm">
+            <div class="flex justify-between items-center mb-2 border-b border-gray-100 dark:border-gray-700 pb-1.5">
+                <h3 class="text-xs font-bold uppercase tracking-wider text-emerald-800 dark:text-emerald-400 flex items-center gap-1.5">
+                    <span>📋 Aktive Spielerregeln & Abwesenheiten</span>
+                </h3>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2">
+                <div v-for="(rulesList, player) in rulesByPlayer" :key="player" class="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded p-2.5 text-xs flex flex-col justify-between shadow-2xs">
+                    <div>
+                        <div class="mb-2">
+                            <span :style="{ backgroundColor: playerColors[player] ? playerColors[player].bg : '#eee', borderColor: playerColors[player] ? playerColors[player].border : '#ccc', color: '#111827' }"
+                                class="inline-flex items-center px-2.5 py-0.5 rounded border text-xs font-bold shadow-2xs">
+                                {{ player }}
+                            </span>
+                        </div>
+                        <ul class="list-disc list-inside text-gray-600 dark:text-gray-300 text-[11px] space-y-1 pl-1">
+                            <li v-for="(desc, idx) in rulesList" :key="idx">{{ desc }}</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer / Stand timestamp -->
+        <div class="no-print mt-3 mb-2 text-center text-xs text-gray-500 dark:text-gray-400 py-2 border-t border-gray-200 dark:border-gray-800">
+            Stand: 01.10.2026
+        </div>
+
+    </div>
+
+    <script>
+        const matchesData = [
+    {
+        "spieltag": 14,
+        "date": "2027-01-05",
+        "court2_type": "einzel",
+        "p1": {
+            "p1": "Dedores",
+            "p2": "Kissner",
+            "time": "19:00"
+        },
+        "p2": {
+            "p1": "Nolte",
+            "p2": "Beumer",
+            "time": "20:00"
+        },
+        "p3": {
+            "p1": "Trojanski",
+            "p2": "Redieker",
+            "time": "21:00"
+        },
+        "status": "Geplant",
+        "doppel": {
+            "p1": "van de Loo",
+            "p2": "Marschollek",
+            "time": "20:30"
+        }
+    },
+    {
+        "spieltag": 15,
+        "date": "2027-01-12",
+        "court2_type": "doppel",
+        "p1": {
+            "p1": "Mönning",
+            "p2": "Kuhlhoff",
+            "time": "19:00"
+        },
+        "p2": {
+            "p1": "Weber",
+            "p2": "Hansmann",
+            "time": "20:00"
+        },
+        "p3": {
+            "p1": "Wojtanowitsch",
+            "p2": "Heyn",
+            "time": "21:00"
+        },
+        "status": "Geplant",
+        "doppel": {
+            "team1": [
+                "Hinz",
+                "Prodehl"
+            ],
+            "team2": [
+                "Knust",
+                "Rumpf"
+            ],
+            "time": "20:30"
+        }
+    },
+    {
+        "spieltag": 16,
+        "date": "2027-01-19",
+        "court2_type": "einzel",
+        "p1": {
+            "p1": "Trojanski",
+            "p2": "Rumpf",
+            "time": "19:00"
+        },
+        "p2": {
+            "p1": "Dedores",
+            "p2": "Kuhlhoff",
+            "time": "20:00"
+        },
+        "p3": {
+            "p1": "Beumer",
+            "p2": "Kissner",
+            "time": "21:00"
+        },
+        "status": "Geplant",
+        "doppel": {
+            "p1": "Nolte",
+            "p2": "Redieker",
+            "time": "20:30"
+        }
+    },
+    {
+        "spieltag": 17,
+        "date": "2027-01-26",
+        "court2_type": "doppel",
+        "p1": {
+            "p1": "Hinz",
+            "p2": "Prodehl",
+            "time": "19:00"
+        },
+        "p2": {
+            "p1": "Wojtanowitsch",
+            "p2": "Knust",
+            "time": "20:00"
+        },
+        "p3": {
+            "p1": "Mönning",
+            "p2": "Rumpf",
+            "time": "21:00"
+        },
+        "status": "Geplant",
+        "doppel": {
+            "team1": [
+                "Marschollek",
+                "Heyn"
+            ],
+            "team2": [
+                "Hansmann",
+                "Weber"
+            ],
+            "time": "20:30"
+        }
+    },
+    {
+        "spieltag": 18,
+        "date": "2027-02-02",
+        "court2_type": "einzel",
+        "p1": {
+            "p1": "Redieker",
+            "p2": "Beumer",
+            "time": "19:00"
+        },
+        "p2": {
+            "p1": "Trojanski",
+            "p2": "Dedores",
+            "time": "20:00"
+        },
+        "p3": {
+            "p1": "van de Loo",
+            "p2": "Nolte",
+            "time": "21:00"
+        },
+        "status": "Geplant",
+        "doppel": {
+            "p1": "Kissner",
+            "p2": "Kuhlhoff",
+            "time": "20:30"
+        }
+    },
+    {
+        "spieltag": 19,
+        "date": "2027-02-09",
+        "court2_type": "doppel",
+        "p1": {
+            "p1": "Heyn",
+            "p2": "Wojtanowitsch",
+            "time": "19:00"
+        },
+        "p2": {
+            "p1": "Hansmann",
+            "p2": "Marschollek",
+            "time": "20:00"
+        },
+        "p3": {
+            "p1": "Mönning",
+            "p2": "Rumpf",
+            "time": "21:00"
+        },
+        "status": "Geplant",
+        "doppel": {
+            "team1": [
+                "Hinz",
+                "Knust"
+            ],
+            "team2": [
+                "Weber",
+                "Prodehl"
+            ],
+            "time": "20:30"
+        }
+    },
+    {
+        "spieltag": 20,
+        "date": "2027-02-16",
+        "court2_type": "einzel",
+        "p1": {
+            "p1": "Nolte",
+            "p2": "Dedores",
+            "time": "19:00"
+        },
+        "p2": {
+            "p1": "Redieker",
+            "p2": "Kissner",
+            "time": "20:00"
+        },
+        "p3": {
+            "p1": "Beumer",
+            "p2": "Trojanski",
+            "time": "21:00"
+        },
+        "status": "Geplant",
+        "doppel": {
+            "p1": "Kuhlhoff",
+            "p2": "Wojtanowitsch",
+            "time": "20:30"
+        }
+    },
+    {
+        "spieltag": 21,
+        "date": "2027-02-23",
+        "court2_type": "doppel",
+        "p1": {
+            "p1": "Mönning",
+            "p2": "Hinz",
+            "time": "19:00"
+        },
+        "p2": {
+            "p1": "Dedores",
+            "p2": "Knust",
+            "time": "20:00"
+        },
+        "p3": {
+            "p1": "Prodehl",
+            "p2": "Weber",
+            "time": "21:00"
+        },
+        "status": "Geplant",
+        "doppel": {
+            "team1": [
+                "Heyn",
+                "Rumpf"
+            ],
+            "team2": [
+                "Marschollek",
+                "Hansmann"
+            ],
+            "time": "20:30"
+        }
+    },
+    {
+        "spieltag": 22,
+        "date": "2027-03-02",
+        "court2_type": "einzel",
+        "p1": {
+            "p1": "Trojanski",
+            "p2": "Weber",
+            "time": "19:00"
+        },
+        "p2": {
+            "p1": "van de Loo",
+            "p2": "Kissner",
+            "time": "20:00"
+        },
+        "p3": {
+            "p1": "Redieker",
+            "p2": "Kuhlhoff",
+            "time": "21:00"
+        },
+        "status": "Geplant",
+        "doppel": {
+            "p1": "Nolte",
+            "p2": "Wojtanowitsch",
+            "time": "20:30"
+        }
+    },
+    {
+        "spieltag": 23,
+        "date": "2027-03-09",
+        "court2_type": "doppel",
+        "p1": {
+            "p1": "Dedores",
+            "p2": "Hansmann",
+            "time": "19:00"
+        },
+        "p2": {
+            "p1": "Mönning",
+            "p2": "Heyn",
+            "time": "20:00"
+        },
+        "p3": {
+            "p1": "Hinz",
+            "p2": "Marschollek",
+            "time": "21:00"
+        },
+        "status": "Geplant",
+        "doppel": {
+            "team1": [
+                "Rumpf",
+                "Beumer"
+            ],
+            "team2": [
+                "Knust",
+                "Prodehl"
+            ],
+            "time": "20:30"
+        }
+    },
+    {
+        "spieltag": 24,
+        "date": "2027-03-16",
+        "court2_type": "einzel",
+        "p1": {
+            "p1": "Wojtanowitsch",
+            "p2": "Redieker",
+            "time": "19:00"
+        },
+        "p2": {
+            "p1": "Kuhlhoff",
+            "p2": "Hinz",
+            "time": "20:00"
+        },
+        "p3": {
+            "p1": "Nolte",
+            "p2": "Weber",
+            "time": "21:00"
+        },
+        "status": "Geplant",
+        "doppel": {
+            "p1": "Kissner",
+            "p2": "Trojanski",
+            "time": "20:30"
+        }
+    },
+    {
+        "spieltag": 25,
+        "date": "2027-03-23",
+        "court2_type": "doppel",
+        "p1": {
+            "p1": "Dedores",
+            "p2": "Rumpf",
+            "time": "19:00"
+        },
+        "p2": {
+            "p1": "Prodehl",
+            "p2": "Marschollek",
+            "time": "20:00"
+        },
+        "p3": {
+            "p1": "Mönning",
+            "p2": "Knust",
+            "time": "21:00"
+        },
+        "status": "Geplant",
+        "doppel": {
+            "team1": [
+                "Beumer",
+                "Redieker"
+            ],
+            "team2": [
+                "Hansmann",
+                "Heyn"
+            ],
+            "time": "20:30"
+        }
+    },
+    {
+        "spieltag": 26,
+        "date": "2027-03-30",
+        "court2_type": "einzel",
+        "p1": {
+            "p1": "Weber",
+            "p2": "van de Loo",
+            "time": "19:00"
+        },
+        "p2": {
+            "p1": "Nolte",
+            "p2": "Hinz",
+            "time": "20:00"
+        },
+        "p3": {
+            "p1": "Trojanski",
+            "p2": "Kissner",
+            "time": "21:00"
+        },
+        "status": "Geplant",
+        "doppel": {
+            "p1": "Wojtanowitsch",
+            "p2": "Kuhlhoff",
+            "time": "20:30"
+        }
+    },
+    {
+        "spieltag": 27,
+        "date": "2027-04-06",
+        "court2_type": "doppel",
+        "p1": {
+            "p1": "Knust",
+            "p2": "Marschollek",
+            "time": "19:00"
+        },
+        "p2": {
+            "p1": "Mönning",
+            "p2": "Dedores",
+            "time": "20:00"
+        },
+        "p3": {
+            "p1": "Heyn",
+            "p2": "Hansmann",
+            "time": "21:00"
+        },
+        "status": "Geplant",
+        "doppel": {
+            "team1": [
+                "Rumpf",
+                "Redieker"
+            ],
+            "team2": [
+                "Beumer",
+                "Prodehl"
+            ],
+            "time": "20:30"
+        }
+    },
+    {
+        "spieltag": 28,
+        "date": "2027-04-13",
+        "court2_type": "einzel",
+        "p1": {
+            "p1": "Kuhlhoff",
+            "p2": "Nolte",
+            "time": "19:00"
+        },
+        "p2": {
+            "p1": "Wojtanowitsch",
+            "p2": "Trojanski",
+            "time": "20:00"
+        },
+        "p3": {
+            "p1": "Heyn",
+            "p2": "Hinz",
+            "time": "21:00"
+        },
+        "status": "Geplant",
+        "doppel": {
+            "p1": "Weber",
+            "p2": "Kissner",
+            "time": "20:30"
+        }
+    },
+    {
+        "spieltag": 29,
+        "date": "2027-04-20",
+        "court2_type": "doppel",
+        "p1": {
+            "p1": "Beumer",
+            "p2": "Mönning",
+            "time": "19:00"
+        },
+        "p2": {
+            "p1": "Dedores",
+            "p2": "Rumpf",
+            "time": "20:00"
+        },
+        "p3": {
+            "p1": "Hansmann",
+            "p2": "Prodehl",
+            "time": "21:00"
+        },
+        "status": "Geplant",
+        "doppel": {
+            "team1": [
+                "Redieker",
+                "Hinz"
+            ],
+            "team2": [
+                "Knust",
+                "Marschollek"
+            ],
+            "time": "20:30"
+        }
+    },
+    {
+        "spieltag": 30,
+        "date": "2027-04-27",
+        "court2_type": "einzel",
+        "p1": {
+            "p1": "Heyn",
+            "p2": "Kissner",
+            "time": "19:00"
+        },
+        "p2": {
+            "p1": "Kuhlhoff",
+            "p2": "Weber",
+            "time": "20:00"
+        },
+        "p3": {
+            "p1": "Wojtanowitsch",
+            "p2": "van de Loo",
+            "time": "21:00"
+        },
+        "status": "Geplant",
+        "doppel": {
+            "p1": "Nolte",
+            "p2": "Trojanski",
+            "time": "20:30"
+        }
+    }
+];
+        const playerRules = {
+    "Beumer": [
+        "Wunsch nach 50% Einzel und 50% Doppel.",
+        "Abwesend am 02.03.2027 (Spieltag 22)."
+    ],
+    "Dedores": [
+        "Spielt ausschließlich Einzel."
+    ],
+    "Hansmann": [
+        "Wunsch nach ca. 70% Einzel und 30% Doppel."
+    ],
+    "Heyn": [
+        "Wunsch nach 75% Einzel und 25% Doppel."
+    ],
+    "Hinz": [
+        "Wunsch nach 50% Einzel und 50% Doppel.",
+        "Abwesend am 27.04.2027 (Spieltag 30)."
+    ],
+    "Kissner": [
+        "Spielt ausschließlich Einzel."
+    ],
+    "Knust": [
+        "Nimmt ab 2027 teil."
+    ],
+    "Kuhlhoff": [
+        "Spielt ausschließlich Einzel."
+    ],
+    "Marschollek": [
+        "Wunsch nach ca. 90% Doppel.",
+        "Abwesend am 19.01.2027 (Spieltag 16) und 16.03.2027 (Spieltag 24)."
+    ],
+    "Mönning": [
+        "Spielt ausschließlich Einzel."
+    ],
+    "Nolte": [
+        "Spielt ausschließlich Einzel."
+    ],
+    "Prodehl": [
+        "Wunsch nach ca. 60% Doppel."
+    ],
+    "Redieker": [
+        "Keine besondere Einzel-/Doppelquote festgelegt."
+    ],
+    "Rumpf": [
+        "Keine besondere Einzel-/Doppelquote festgelegt."
+    ],
+    "Trojanski": [
+        "Spielt ausschließlich Einzel.",
+        "Mindestens ein Spieltag Pause zwischen Einsätzen."
+    ],
+    "van de Loo": [
+        "Spielt ausschließlich Einzel.",
+        "Mindestens drei Spieltage Pause zwischen Einsätzen."
+    ],
+    "Weber": [
+        "Keine besondere Einzel-/Doppelquote festgelegt."
+    ],
+    "Wojtanowitsch": [
+        "Spielt ausschließlich Einzel."
+    ],
+    "Allgemeine Regeln": [
+        "Faire Verteilung der Einsätze innerhalb der zweiten Saisonhälfte.",
+        "Spielzeiten 19:00, 20:00, 21:00 und 20:30 werden ohne Sondervorgabe je Spieler möglichst gleichmäßig verteilt.",
+        "Doppelte Begegnungen und Partnerschaften werden möglichst vermieden."
+    ]
+};
+        const playerStats = {
+    "Beumer": {
+        "einzel": 5,
+        "doppel": 3,
+        "total": 8,
+        "ratio": 38,
+        "kosten": 3.62
+    },
+    "Dedores": {
+        "einzel": 9,
+        "doppel": 0,
+        "total": 9,
+        "ratio": 0,
+        "kosten": 4.5
+    },
+    "Hansmann": {
+        "einzel": 5,
+        "doppel": 3,
+        "total": 8,
+        "ratio": 38,
+        "kosten": 3.62
+    },
+    "Heyn": {
+        "einzel": 6,
+        "doppel": 3,
+        "total": 9,
+        "ratio": 33,
+        "kosten": 4.12
+    },
+    "Hinz": {
+        "einzel": 6,
+        "doppel": 3,
+        "total": 9,
+        "ratio": 33,
+        "kosten": 4.12
+    },
+    "Kissner": {
+        "einzel": 9,
+        "doppel": 0,
+        "total": 9,
+        "ratio": 0,
+        "kosten": 4.5
+    },
+    "Knust": {
+        "einzel": 4,
+        "doppel": 4,
+        "total": 8,
+        "ratio": 50,
+        "kosten": 3.5
+    },
+    "Kuhlhoff": {
+        "einzel": 9,
+        "doppel": 0,
+        "total": 9,
+        "ratio": 0,
+        "kosten": 4.5
+    },
+    "Marschollek": {
+        "einzel": 5,
+        "doppel": 3,
+        "total": 8,
+        "ratio": 38,
+        "kosten": 3.62
+    },
+    "Mönning": {
+        "einzel": 8,
+        "doppel": 0,
+        "total": 8,
+        "ratio": 0,
+        "kosten": 4.0
+    },
+    "Nolte": {
+        "einzel": 9,
+        "doppel": 0,
+        "total": 9,
+        "ratio": 0,
+        "kosten": 4.5
+    },
+    "Prodehl": {
+        "einzel": 4,
+        "doppel": 4,
+        "total": 8,
+        "ratio": 50,
+        "kosten": 3.5
+    },
+    "Redieker": {
+        "einzel": 6,
+        "doppel": 3,
+        "total": 9,
+        "ratio": 33,
+        "kosten": 4.12
+    },
+    "Rumpf": {
+        "einzel": 5,
+        "doppel": 4,
+        "total": 9,
+        "ratio": 44,
+        "kosten": 4.0
+    },
+    "Trojanski": {
+        "einzel": 9,
+        "doppel": 0,
+        "total": 9,
+        "ratio": 0,
+        "kosten": 4.5
+    },
+    "van de Loo": {
+        "einzel": 5,
+        "doppel": 0,
+        "total": 5,
+        "ratio": 0,
+        "kosten": 2.5
+    },
+    "Weber": {
+        "einzel": 7,
+        "doppel": 2,
+        "total": 9,
+        "ratio": 22,
+        "kosten": 4.25
+    },
+    "Wojtanowitsch": {
+        "einzel": 9,
+        "doppel": 0,
+        "total": 9,
+        "ratio": 0,
+        "kosten": 4.5
+    }
+};
+        const topfA = ["Prodehl", "Beumer", "Heyn"];
+
+        const { createApp, ref, computed, onMounted, nextTick } = Vue;
+
+        const app = createApp({
+            setup() {
+                const currentFilter = ref('ALL');
+                const showPastMatches = ref(false);
+                const rulesByPlayer = ref(playerRules);
+                const scheduleMatches = ref(matchesData);
+                const playerSearchQuery = ref('');
+                const showTopfA = ref(false);
+
+                function getMatchPlayers(m) {
+                    const players = [
+                        m.p1.p1, m.p1.p2,
+                        m.p2.p1, m.p2.p2,
+                        m.p3.p1, m.p3.p2
+                    ];
+                    if (m.court2_type === 'einzel') {
+                        if (m.doppel.p1) players.push(m.doppel.p1);
+                        if (m.doppel.p2) players.push(m.doppel.p2);
+                    } else {
+                        if (m.doppel.team1) players.push(...m.doppel.team1);
+                        if (m.doppel.team2) players.push(...m.doppel.team2);
+                    }
+                    return players.filter(p => p && p !== 'vs');
+                }
+
+                const allPlayers = computed(() => {
+                    return [...new Set(scheduleMatches.value.flatMap(m => getMatchPlayers(m)))].sort();
+                });
+
+                const displayedPlayers = computed(() => {
+                    if (!playerSearchQuery.value) return allPlayers.value;
+                    const q = playerSearchQuery.value.toLowerCase();
+                    return allPlayers.value.filter(p => p.toLowerCase().includes(q));
+                });
+
+                const explicitPlayerColors = {
+                    "Beumer": { bg: '#bfdbfe', text: '#111827', border: '#60a5fa' },   // Soft Blue
+                    "Dedores": { bg: '#fecaca', text: '#111827', border: '#f87171' },  // Soft Red
+                    "Hansmann": { bg: '#fef08a', text: '#111827', border: '#facc15' }, // Soft Yellow
+                    "Heyn": { bg: '#bbf7d0', text: '#111827', border: '#4ade80' },     // Sanftes Grün
+                    "Hinz": { bg: '#fed7aa', text: '#111827', border: '#fb923c' },     // Sanftes Orange
+                    "Kissner": { bg: '#e9d5ff', text: '#111827', border: '#c084fc' },  // Soft Purple
+                    "Kuhlhoff": { bg: '#a5f3fc', text: '#111827', border: '#22d3ee' }, // Soft Cyan
+                    "Marschollek": { bg: '#fbcfe8', text: '#111827', border: '#f472b6' }, // Soft Pink
+                    "Mönning": { bg: '#c7d2fe', text: '#111827', border: '#818cf8' },  // Soft Indigo
+                    "Nolte": { bg: '#d9f99d', text: '#111827', border: '#a3e635' },    // Sanftes Lime
+                    "Prodehl": { bg: '#99f6e4', text: '#111827', border: '#2dd4bf' },  // Soft Teal
+                    "Redieker": { bg: '#fecdd3', text: '#111827', border: '#fb7185' }, // Soft Rose
+                    "Rumpf": { bg: '#fed7aa', text: '#111827', border: '#f97316' },    // Markantes dunkles Orange/Amber für Rumpf
+                    "Trojanski": { bg: '#cbd5e1', text: '#111827', border: '#94a3b8' }, // Soft Slate
+                    "Weber": { bg: '#ddd6fe', text: '#111827', border: '#a78bfa' },    // Sanftes Violett
+                    "Wojtanowitsch": { bg: '#a7f3d0', text: '#111827', border: '#34d399' }, // Soft Emerald
+                    "van de Loo": { bg: '#bae6fd', text: '#111827', border: '#38bdf8' },  // Soft Sky
+                    "Quante": { bg: '#e0e7ff', text: '#111827', border: '#818cf8' }
+                };
+
+                const playerColors = {};
+                allPlayers.value.forEach((player) => {
+                    if (explicitPlayerColors[player]) {
+                        playerColors[player] = explicitPlayerColors[player];
+                    } else {
+                        // Fallback palette
+                        playerColors[player] = { bg: '#e2e8f0', text: '#111827', border: '#64748b' };
+                    }
+                });
+
+                const filteredMatches = computed(() => {
+                    if (currentFilter.value === 'ALL') return scheduleMatches.value;
+                    return scheduleMatches.value.filter(m => getMatchPlayers(m).includes(currentFilter.value));
+                });
+
+                const displayedMatches = computed(() => {
+                    let matches = scheduleMatches.value;
+                    if (!showPastMatches.value) {
+                        matches = matches.filter(m => m.status !== 'Abgeschlossen');
+                    }
+                    return matches;
+                });
+
+                function matchHasPlayer(m, player) {
+                    if (player === 'ALL') return true;
+                    return getMatchPlayers(m).includes(player);
+                }
+
+                const nextMatch = computed(() => {
+                    const todayStr = new Date().toISOString().split('T')[0];
+                    let m = scheduleMatches.value.find(match => match.date >= todayStr && match.status !== 'Abgeschlossen');
+                    return m || scheduleMatches.value[0];
+                });
+
+                const nextMatchPlayers = computed(() => {
+                    const m = nextMatch.value;
+                    if (!m) return [];
+                    return [...new Set(getMatchPlayers(m))].sort();
+                });
+
+                const nextUpcomingIndex = computed(() => {
+                    const todayStr = new Date().toISOString().split('T')[0];
+                    return displayedMatches.value.findIndex(m => m.date >= todayStr && m.status !== 'Abgeschlossen');
+                });
+
+                function isNextUpcoming(m, idx) {
+                    if (currentFilter.value !== 'ALL') return false;
+                    return idx === nextUpcomingIndex.value;
+                }
+
+                function formatShortDate(dateStr) {
+                    const parts = dateStr.split('-');
+                    if (parts.length === 3) return `${parts[2]}.${parts[1]}.`;
+                    return dateStr;
+                }
+
+                function formatFullDate(dateStr) {
+                    try {
+                        const d = new Date(dateStr);
+                        return d.toLocaleDateString('de-DE', { weekday: 'short', day: '2-digit', month: '2-digit', year: 'numeric' });
+                    } catch (e) {
+                        return dateStr;
+                    }
+                }
+
+                function formatPlayerBadge(player, isFinished) {
+                    if (!player || player === 'vs') return '';
+                    const isFiltered = currentFilter.value === player;
+                    const colors = playerColors[player] || { bg: '#e2e8f0', text: '#111827', border: '#cbd5e1' };
+
+                    let opacityClass = '';
+                    if (currentFilter.value !== 'ALL' && !isFiltered) {
+                        opacityClass = 'opacity-30';
+                    }
+
+                    const shortName = player.length > 4 ? `${player.slice(0, 4)}...` : player;
+                    return `<span title="${player}" style="background-color: ${colors.bg}; border-color: ${colors.border}; color: ${colors.text};" class="player-badge inline-flex items-center px-1.5 py-0.5 rounded border text-[11px] font-semibold shadow-2xs transition ${opacityClass}">
+                        <span class="player-name-full">${player}</span><span class="player-name-short">${shortName}</span>
+                    </span>`;
+                }
+
+                function getRowClass(m, idx) {
+                    if (m.status === 'Abgeschlossen') {
+                        let base = 'bg-gray-50 dark:bg-gray-900/50 text-gray-400 dark:text-gray-600 transition';
+                        if (currentFilter.value !== 'ALL' && !getMatchPlayers(m).includes(currentFilter.value)) {
+                            base += ' opacity-25';
+                        }
+                        return base;
+                    }
+                    let base = 'hover:bg-gray-50 dark:hover:bg-gray-800 transition';
+                    if (isNextUpcoming(m, idx) && currentFilter.value === 'ALL') {
+                        base += ' bg-emerald-50/70 dark:bg-emerald-950/40 border-l-4 border-emerald-600';
+                    }
+                    if (currentFilter.value !== 'ALL' && !getMatchPlayers(m).includes(currentFilter.value)) {
+                        base += ' opacity-25';
+                    }
+                    return base;
+                }
+
+                function setFilter(player) {
+                    currentFilter.value = player;
+                    const url = new URL(window.location.href);
+                    if (player === 'ALL') {
+                        url.searchParams.delete('spieler');
+                    } else {
+                        url.searchParams.set('spieler', player);
+                    }
+                    window.history.replaceState({}, '', url);
+                }
+
+                function togglePastMatches() {
+                    showPastMatches.value = !showPastMatches.value;
+                }
+
+                const sortColumn = ref('kosten');
+                const sortDirection = ref('desc');
+
+                function sortBy(column) {
+                    if (sortColumn.value === column) {
+                        sortDirection.value = sortDirection.value === 'asc' ? 'desc' : 'asc';
+                    } else {
+                        sortColumn.value = column;
+                        sortDirection.value = column === 'name' ? 'asc' : 'desc';
+                    }
+                }
+
+                const livePlayerStats = computed(() => {
+                    const result = Object.fromEntries(Object.keys(playerStats).map(name => [name, {
+                        einzel: 0, doppel: 0, total: 0, ratio: 0, kosten: 0, zeiten: [0, 0, 0, 0]
+                    }]));
+                    scheduleMatches.value.forEach(match => {
+                        const timeGroups = [match.p1, match.p2, match.p3, match.doppel];
+                        timeGroups.forEach((group, index) => {
+                            const names = index === 3 && match.court2_type !== 'einzel'
+                                ? [...group.team1, ...group.team2]
+                                : [group.p1, group.p2];
+                            names.forEach(name => { if (result[name]) result[name].zeiten[index]++; });
+                        });
+                        const singles = [match.p1, match.p2, match.p3];
+                        if (match.court2_type === 'einzel') singles.push(match.doppel);
+                        singles.forEach(pair => {
+                            if (pair && pair.p1 && pair.p2) {
+                                result[pair.p1].einzel++;
+                                result[pair.p2].einzel++;
+                            }
+                        });
+                        if (match.court2_type !== 'einzel' && match.doppel) {
+                            [...match.doppel.team1, ...match.doppel.team2].forEach(name => result[name].doppel++);
+                        }
+                    });
+                    Object.values(result).forEach(stats => {
+                        stats.total = stats.einzel + stats.doppel;
+                        stats.ratio = stats.total ? Math.round(100 * stats.doppel / stats.total) : 0;
+                        stats.kosten = Math.round((stats.einzel * 0.5 + stats.doppel * 0.375) * 100) / 100;
+                    });
+                    return result;
+                });
+
+                const sortedPlayerStats = computed(() => {
+                    const statsArr = Object.entries(livePlayerStats.value).map(([name, stats]) => ({
+                        name,
+                        ...stats
+                    }));
+
+                    return statsArr.sort((a, b) => {
+                        let valA = a[sortColumn.value];
+                        let valB = b[sortColumn.value];
+
+                        if (typeof valA === 'string') {
+                            valA = valA.toLowerCase();
+                            valB = valB.toLowerCase();
+                            if (valA < valB) return sortDirection.value === 'asc' ? -1 : 1;
+                            if (valA > valB) return sortDirection.value === 'asc' ? 1 : -1;
+                            return 0;
+                        } else {
+                            return sortDirection.value === 'asc' ? valA - valB : valB - valA;
+                        }
+                    });
+                });
+
+                function exportStatsCsv() {
+                    let csv = "Spieler;Einzel;Doppel;Gesamt Spiele;Doppel-Anteil (%);Kosten\n";
+                    sortedPlayerStats.value.forEach(s => {
+                        csv += `${s.name};${s.einzel};${s.doppel};${s.total};${s.ratio}%;${s.kosten}\n`;
+                    });
+                    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                    const link = document.createElement("a");
+                    link.href = URL.createObjectURL(blob);
+                    link.setAttribute("download", "tennis_spielplan_statistik_2027_zweite_haelfte.csv");
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }
+
+                function downloadPlayerIcs(player) {
+                    let ics = "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//Tennis Spielplan 2026//DE\n";
+                    scheduleMatches.value.forEach(m => {
+                        const players = getMatchPlayers(m);
+                        if (players.includes(player) && m.status !== 'Reserviert für alle') {
+                            const dateClean = m.date.replace(/-/g, '');
+                            ics += "BEGIN:VEVENT\n";
+                            ics += `SUMMARY:Tennis Spieltag #${m.spieltag} (${player})\n`;
+                            ics += `DTSTART;VALUE=DATE:${dateClean}\n`;
+                            ics += `DTEND;VALUE=DATE:${dateClean}\n`;
+                            ics += `DESCRIPTION:Tennis Match am Spieltag #${m.spieltag}\n`;
+                            ics += "END:VEVENT\n";
+                        }
+                    });
+                    ics += "END:VCALENDAR";
+                    const blob = new Blob([ics.replace(/\n/g, '\r\n')], { type: 'text/calendar;charset=utf-8;' });
+                    const link = document.createElement("a");
+                    link.href = URL.createObjectURL(blob);
+                    link.setAttribute("download", `tennis_spielplan_${player.toLowerCase().replace(/\s+/g, '_')}.ics`);
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }
+
+                function validateEditedSchedule(candidate) {
+                    const knownPlayers = new Set(Object.keys(playerStats));
+                    const lastPlayed = {};
+                    for (const match of candidate) {
+                        const oddDay = match.spieltag % 2 === 1;
+                        const slotPlayers = [
+                            [match.p1.p1, match.p1.p2], [match.p2.p1, match.p2.p2],
+                            [match.p3.p1, match.p3.p2],
+                            match.court2_type === 'einzel'
+                                ? [match.doppel.p1, match.doppel.p2]
+                                : [...match.doppel.team1, ...match.doppel.team2]
+                        ];
+                        if ((oddDay && match.court2_type !== 'doppel') || (!oddDay && match.court2_type !== 'einzel')) {
+                            throw new Error(`Spieltag #${match.spieltag}: Das Format (Einzel/Doppel) ist fest vorgegeben.`);
+                        }
+                        if (slotPlayers.some(group => group.some(name => !knownPlayers.has(name)))) {
+                            throw new Error(`Spieltag #${match.spieltag}: unbekannter oder leerer Spielername.`);
+                        }
+                        const players = slotPlayers.flat();
+                        if (players.length !== (oddDay ? 10 : 8) || new Set(players).size !== players.length) {
+                            throw new Error(`Spieltag #${match.spieltag}: Anzahl oder Doppelbelegung der Spieler stimmt nicht.`);
+                        }
+                        if (match.spieltag === 22 && players.includes('Beumer')) throw new Error('Beumer ist am Spieltag #22 abwesend.');
+                        if ([16, 24].includes(match.spieltag) && players.includes('Marschollek')) throw new Error('Marschollek ist an diesem Spieltag abwesend.');
+                        if (match.spieltag === 30 && players.includes('Hinz')) throw new Error('Hinz ist am Spieltag #30 abwesend.');
+                        if (players.includes('Quante')) throw new Error('Quante ist für 2027 nicht eingeplant.');
+                        if (match.court2_type === 'doppel') {
+                            const doubles = [...match.doppel.team1, ...match.doppel.team2];
+                            if (doubles.some(name => ['Dedores','Kissner','Kuhlhoff','Mönning','Nolte','Trojanski','van de Loo','Wojtanowitsch'].includes(name))) {
+                                throw new Error(`Spieltag #${match.spieltag}: ein Einzel-Spieler wurde im Doppel eingesetzt.`);
+                            }
+                            if (doubles.includes('Dedores')) throw new Error('Dedores darf nur Einzel spielen.');
+                        }
+                        for (let slot = 0; slot < slotPlayers.length; slot++) {
+                            const time = ['19:00','20:00','21:00','20:30'][slot];
+                            if (slotPlayers[slot].includes('Dedores') && !['19:00','20:00'].includes(time)) {
+                                throw new Error(`Dedores darf am Spieltag #${match.spieltag} nur um 19:00 oder 20:00 Uhr spielen.`);
+                            }
+                        }
+                        if (slotPlayers.some(group => group.includes('Dedores') && group.some(name => ['Prodehl','Beumer','Heyn'].includes(name)))) {
+                            throw new Error(`Spieltag #${match.spieltag}: Topf-A-Regel verletzt.`);
+                        }
+                        for (const name of players) {
+                            if (name === 'Trojanski' && match.spieltag - (lastPlayed[name] ?? -99) < 2) throw new Error('Trojanski benötigt mindestens einen Spieltag Pause.');
+                            if (name === 'van de Loo' && match.spieltag - (lastPlayed[name] ?? -99) < 4) throw new Error('van de Loo benötigt mindestens drei Spieltage Pause.');
+                            lastPlayed[name] = match.spieltag;
+                        }
+                    }
+                }
+
+                function editMatch(match) {
+                    const current = {
+                        singles: [match.p1, match.p2, match.p3].map(pair => [pair.p1, pair.p2]),
+                        court2: match.court2_type === 'einzel'
+                            ? [match.doppel.p1, match.doppel.p2]
+                            : [match.doppel.team1, match.doppel.team2]
+                    };
+                    const text = prompt(
+                        `Spieltag #${match.spieltag}: Paarungen als JSON bearbeiten.\nFormat: {"singles":[[A,B],[C,D],[E,F]],"court2":[G,H]} für gerade Tage; ungerade Tage court2:[[Team1A,Team1B],[Team2A,Team2B]].`,
+                        JSON.stringify(current)
+                    );
+                    if (text === null) return;
+                    try {
+                        const edited = JSON.parse(text);
+                        const candidate = scheduleMatches.value.map(item => item.spieltag === match.spieltag ? {...item} : item);
+                        const target = candidate.find(item => item.spieltag === match.spieltag);
+                        if (!edited || !Array.isArray(edited.singles) || edited.singles.length !== 3 || edited.singles.some(pair => !Array.isArray(pair) || pair.length !== 2)) {
+                            throw new Error('Bitte genau drei Einzel-Paarungen mit je zwei Spielern eingeben.');
+                        }
+                        target.p1 = {...target.p1, p1: edited.singles[0][0], p2: edited.singles[0][1]};
+                        target.p2 = {...target.p2, p1: edited.singles[1][0], p2: edited.singles[1][1]};
+                        target.p3 = {...target.p3, p1: edited.singles[2][0], p2: edited.singles[2][1]};
+                        if (target.court2_type === 'einzel') {
+                            if (!Array.isArray(edited.court2) || edited.court2.length !== 2) throw new Error('Gerade Spieltage benötigen zwei Spieler auf Platz 2.');
+                            target.doppel = {...target.doppel, p1: edited.court2[0], p2: edited.court2[1]};
+                        } else {
+                            if (!Array.isArray(edited.court2) || edited.court2.length !== 2 || edited.court2.some(team => !Array.isArray(team) || team.length !== 2)) throw new Error('Ungerade Spieltage benötigen zwei Doppel-Teams mit je zwei Spielern.');
+                            target.doppel = {...target.doppel, team1: edited.court2[0], team2: edited.court2[1]};
+                        }
+                        validateEditedSchedule(candidate);
+                        scheduleMatches.value = candidate;
+                        try { localStorage.setItem('tennis-spielplan-2027-edits', JSON.stringify(candidate)); }
+                        catch (storageError) { alert('Änderung übernommen, aber nicht dauerhaft gespeichert: Browser-Speicher nicht verfügbar.'); }
+                    } catch (error) {
+                        alert(`Änderung nicht übernommen: ${error.message}`);
+                    }
+                }
+
+                function resetMatchEdits() {
+                    if (!confirm('Alle gespeicherten manuellen Änderungen für 2027 zurücksetzen?')) return;
+                    scheduleMatches.value = matchesData;
+                    try { localStorage.removeItem('tennis-spielplan-2027-edits'); }
+                    catch (error) { /* The generated schedule is still restored in this page. */ }
+                }
+
+                function printPage() {
+                    window.print();
+                }
+
+                function downloadAllIcs() {
+                    let ics = "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//Tennis Spielplan 2026//DE\n";
+                    scheduleMatches.value.forEach(m => {
+                        if (m.status !== 'Reserviert für alle') {
+                            const dateClean = m.date.replace(/-/g, '');
+                            ics += "BEGIN:VEVENT\n";
+                            ics += `SUMMARY:Tennis Spieltag #${m.spieltag}\n`;
+                            ics += `DTSTART;VALUE=DATE:${dateClean}\n`;
+                            ics += `DTEND;VALUE=DATE:${dateClean}\n`;
+                            ics += `DESCRIPTION:Tennis Spieltag #${m.spieltag} - Alle Spiele\n`;
+                            ics += "END:VEVENT\n";
+                        }
+                    });
+                    ics += "END:VCALENDAR";
+                    const blob = new Blob([ics.replace(/\n/g, '\r\n')], { type: 'text/calendar;charset=utf-8;' });
+                    const link = document.createElement("a");
+                    link.href = URL.createObjectURL(blob);
+                    link.setAttribute("download", "tennis_spielplan_2027_zweite_haelfte.ics");
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }
+
+                onMounted(() => {
+                    try {
+                        const saved = localStorage.getItem('tennis-spielplan-2027-edits');
+                        if (saved) {
+                            const candidate = JSON.parse(saved);
+                            validateEditedSchedule(candidate);
+                            scheduleMatches.value = candidate;
+                        }
+                    } catch (error) {
+                        try { localStorage.removeItem('tennis-spielplan-2027-edits'); }
+                        catch (storageError) { /* Storage may be disabled; keep the generated plan usable. */ }
+                    }
+
+                    const playerFromUrl = new URLSearchParams(window.location.search).get('spieler');
+                    if (playerFromUrl && allPlayers.value.includes(playerFromUrl)) {
+                        currentFilter.value = playerFromUrl;
+                    }
+                    nextTick(() => {
+                        const el = document.getElementById('next-match-target');
+                        if (el) {
+                            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }
+                    });
+                });
+
+                return {
+                    matchesData: scheduleMatches,
+                    currentFilter,
+                    showPastMatches,
+                    rulesByPlayer,
+                    allPlayers,
+                    displayedPlayers,
+                    playerSearchQuery,
+                    topfA,
+                    showTopfA,
+                    playerColors,
+                    filteredMatches,
+                    displayedMatches,
+                    nextMatchPlayers,
+                    isNextUpcoming,
+                    formatShortDate,
+                    formatFullDate,
+                    formatPlayerBadge,
+                    getRowClass,
+                    setFilter,
+                    togglePastMatches,
+                    sortColumn,
+                    sortDirection,
+                    sortBy,
+                    sortedPlayerStats,
+                    editMatch,
+                    resetMatchEdits,
+                    exportStatsCsv,
+                    downloadPlayerIcs,
+                    printPage,
+                    downloadAllIcs
+                };
+            }
+        });
+        app.config.compilerOptions.delimiters = ['{{', '}}'];
+        app.mount('#app');
+    </script>
+</body>
+</html>

@@ -89,7 +89,98 @@ Dieses Dokument fasst alle geschäftlichen Regeln, Spielerpräferenzen, Abwesenh
 
 ---
 
-## 4. Kostenberechnung & Spielerstatistik
+## 4. Regeln für die 2. Saisonhälfte (Spieltage 14–30)
+
+**Zeitraum:** 05.01.2027 bis 27.04.2027. Die bisherigen dauerhaften Spiel- und Frequenzwünsche gelten weiter. Die folgenden bekannten Abwesenheiten sind bereits eingetragen; weitere Angaben werden ergänzt, sobald sie vorliegen.
+
+### Beumer
+- **Slot-Präferenz**: Wunsch nach 50% Einzel / 50% Doppel (`ratio: 0.5`).
+- **Abwesenheit**: 02.03.2027 (Spieltag 22).
+
+### Dedores
+- **Slot-Präferenz**: Ausschließlich Einzel (`ratio: 0.0`).
+- **Zeitvorgabe (intern)**: Nur um 19:00 oder 20:00 Uhr.
+- **Weitere Abwesenheiten**: Bisher keine für Spieltage 14–30 gemeldet.
+
+### Allgemeine Zeitverteilung
+- Für alle Spieler ohne persönliche Zeit-Sonderregel werden Einsätze über **19:00, 20:00, 21:00 und 20:30 Uhr** möglichst gleichmäßig verteilt.
+- Ziel: Bei vier Einsätzen soll ein Spieler idealerweise je einmal zu jeder Uhrzeit spielen; bei drei Einsätzen auf drei verschiedene Uhrzeiten. Die Abweichung zwischen den Uhrzeiten soll je Spieler so klein wie möglich bleiben.
+- Persönliche Zeitvorgaben haben Vorrang (derzeit: Dedores nur 19:00 oder 20:00 Uhr).
+
+### Hansmann
+- **Slot-Präferenz**: Ca. 70% Einzel / 30% Doppel (`ratio: 0.3`).
+- **Weitere Abwesenheiten**: Bisher keine für Spieltage 14–30 gemeldet.
+
+### Heyn
+- **Slot-Präferenz**: Wunsch nach 75% Einzel / 25% Doppel (`ratio: 0.25`).
+- **Weitere Abwesenheiten**: Bisher keine für Spieltage 14–30 gemeldet.
+
+### Hinz
+- **Slot-Präferenz**: Wunsch nach ca. 50% Doppel / 50% Einzel (`ratio: 0.5`).
+- **Abwesenheit**: 27.04.2027 (Spieltag 30).
+- **Hinweis**: Die bisherige Sperre für Spieltage 1–13 betrifft die erste Saisonhälfte; Hinz kann ab Spieltag 14 grundsätzlich berücksichtigt werden.
+
+### Kissner
+- **Slot-Präferenz**: Ausschließlich Einzel (`ratio: 0.0`).
+- **Weitere Abwesenheiten**: Bisher keine für Spieltage 14–30 gemeldet.
+
+### Knust
+- **Teilnahme**: Ab 2027 vorgesehen.
+- **Weitere Regeln/Abwesenheiten**: Bisher keine für Spieltage 14–30 gemeldet.
+
+### Kuhlhoff
+- **Slot-Präferenz**: Ausschließlich Einzel (`ratio: 0.0`).
+- **Weitere Abwesenheiten**: Bisher keine für Spieltage 14–30 gemeldet.
+
+### Marschollek
+- **Slot-Präferenz**: Wunsch nach ca. 90% Doppel (`ratio: 0.9`).
+- **Abwesenheiten**: 19.01.2027 (Spieltag 16) und 16.03.2027 (Spieltag 24).
+
+### Mönning
+- **Slot-Präferenz**: Ausschließlich Einzel (`ratio: 0.0`).
+- **Weitere Abwesenheiten**: Bisher keine für Spieltage 14–30 gemeldet.
+
+### Nolte
+- **Slot-Präferenz**: Ausschließlich Einzel (`ratio: 0.0`).
+- **Weitere Abwesenheiten**: Bisher keine für Spieltage 14–30 gemeldet.
+
+### Prodehl
+- **Slot-Präferenz**: Wunsch nach ca. 60% Doppel (`ratio: 0.6`).
+- **Weitere Abwesenheiten**: Bisher keine für Spieltage 14–30 gemeldet.
+
+### Quante
+- **Einsatzvorgabe (intern)**: Insgesamt genau 2 Einsätze in der Saison, ausschließlich um 21:00 Uhr.
+- **Termine**: Die beiden Einsatztage sind noch festzulegen; daraus folgt nicht automatisch, dass beide in der zweiten Saisonhälfte stattfinden.
+
+### Redieker
+- **Slot-Präferenz**: Bisher keine besondere Einzel-/Doppelquote festgelegt.
+- **Weitere Abwesenheiten**: Bisher keine für Spieltage 14–30 gemeldet.
+
+### Rumpf
+- **Slot-Präferenz**: Bisher keine besondere Einzel-/Doppelquote festgelegt.
+- **Weitere Abwesenheiten**: Bisher keine für Spieltage 14–30 gemeldet.
+
+### Trojanski
+- **Frequenz**: 2-Wochen-Rhythmus (mindestens ein Spieltag Pause zwischen Einsätzen).
+- **Slot-Präferenz**: Ausschließlich Einzel (`ratio: 0.0`).
+- **Weitere Abwesenheiten**: Bisher keine für Spieltage 14–30 gemeldet.
+
+### van de Loo
+- **Frequenz**: Einmal im Monat (mindestens drei Spieltage Pause / ca. vier Wochen Abstand).
+- **Slot-Präferenz**: Ausschließlich Einzel (`ratio: 0.0`).
+- **Weitere Abwesenheiten**: Bisher keine für Spieltage 14–30 gemeldet.
+
+### Weber
+- **Slot-Präferenz**: Bisher keine besondere Einzel-/Doppelquote festgelegt.
+- **Weitere Abwesenheiten**: Bisher keine für Spieltage 14–30 gemeldet.
+
+### Wojtanowitsch
+- **Slot-Präferenz**: Ausschließlich Einzel (`ratio: 0.0`).
+- **Weitere Abwesenheiten**: Bisher keine für Spieltage 14–30 gemeldet.
+
+---
+
+## 5. Kostenberechnung & Spielerstatistik
 In der UI-Spielerstatistik wird eine Spalte **Kosten** geführt, basierend auf folgender Formel:
 $$\text{Kosten} = (\text{Einzel-Spiele} \times 0.5) + (\text{Doppel-Spiele} \times \frac{1.5}{4})$$
 Die Werte werden über alle gespielten Spieltage hinweg aufsummiert.
