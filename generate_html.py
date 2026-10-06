@@ -1012,6 +1012,9 @@ html_template = """<!DOCTYPE html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#075238">
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
     <title>Tennis-Spielplan Wintersaison 2026/2027</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
@@ -1880,6 +1883,14 @@ html_template = """<!DOCTYPE html>
         });
         app.config.compilerOptions.delimiters = ['{{', '}}'];
         app.mount('#app');
+
+        if ('serviceWorker' in navigator && /^https?:$/.test(window.location.protocol)) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./service-worker.js').catch(error => {
+                    console.error('Service Worker registration failed:', error);
+                });
+            });
+        }
     </script>
 </body>
 </html>"""
