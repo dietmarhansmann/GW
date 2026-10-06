@@ -1212,7 +1212,7 @@ html_template = """<!DOCTYPE html>
                         <button @click="setFilter(player)"
                             :style="{ color: currentFilter === player ? '#ffffff' : '#111827' }"
                             class="player-filter-name text-xs flex items-center gap-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-emerald-700">
-                            <span class="player-filter-avatar" :class="{ 'is-next-match-player': nextMatchTimes[player] }" :style="nextMatchTimes[player] ? { '--next-match-avatar': nextMatchTimes[player].background, '--next-match-avatar-text': nextMatchTimes[player].text } : null" :title="nextMatchTimes[player] ? 'Spielt am nächsten Spieltag um ' + nextMatchTimes[player].time + ' Uhr' : null" aria-hidden="true">{{ player.slice(0, 1) }}</span>
+                            <span v-if="nextMatchTimes[player]" class="player-filter-avatar is-next-match-player" :style="{ '--next-match-avatar': nextMatchTimes[player].background }" :title="'Spielt am nächsten Spieltag um ' + nextMatchTimes[player].time + ' Uhr'" aria-hidden="true"></span>
                             <span>{{ player }}</span>
                         </button>
                         <button @click.stop="downloadPlayerIcs(player)"
