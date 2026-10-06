@@ -1041,6 +1041,13 @@ html_template = """<!DOCTYPE html>
         .schedule-overview a[href='anleitung.html'] { background: #d6f5e4; color: #075238; }
         .schedule-controls, .statistics-card, .rules-card, .schedule-table-card { border-radius: 18px; box-shadow: 0 8px 25px rgba(15, 45, 32, .055); }
         .schedule-controls { border-color: #e2ebe5; }
+        .player-filter-pill { overflow: hidden; border-radius: 999px; box-shadow: 0 2px 5px rgba(15, 45, 32, .1); transition: transform .16s ease, box-shadow .16s ease, opacity .16s ease; }
+        .player-filter-pill:hover { transform: translateY(-2px); box-shadow: 0 5px 12px rgba(15, 45, 32, .16); }
+        .player-filter-pill.is-active { box-shadow: 0 0 0 2px #fff, 0 0 0 4px #059669, 0 5px 14px rgba(5, 150, 105, .22); }
+        .player-filter-name { min-height: 34px; padding: 4px 10px 4px 6px; font-weight: 700; letter-spacing: .01em; }
+        .player-filter-avatar { position: relative; display: inline-grid; width: 25px; height: 25px; flex: 0 0 25px; place-items: center; overflow: hidden; border: 1px solid rgba(17, 24, 39, .16); border-radius: 50%; background: rgba(255, 255, 255, .58); font-size: 10px; font-weight: 800; }
+        .player-filter-calendar { min-height: 34px; padding-inline: 9px; border-left: 1px solid rgba(17, 24, 39, .14); }
+        .dark .player-filter-pill.is-active { box-shadow: 0 0 0 2px #1f2937, 0 0 0 4px #34d399, 0 5px 14px rgba(5, 150, 105, .24); }
         .schedule-table-card { overflow-x: auto; border-color: #dfe9e3; }
         #schedule-table thead th { padding: 12px 14px; color: #dcefe5; background: #174b39; font-size: 10px; letter-spacing: .12em; }
         #schedule-table tbody tr { transition: background-color .18s ease, opacity .18s ease; }
@@ -1135,16 +1142,17 @@ html_template = """<!DOCTYPE html>
                     <!-- Player pills -->
                     <div v-for="player in displayedPlayers" :key="player"
                         :style="{ backgroundColor: currentFilter === player ? '#111827' : (playerColors[player] ? playerColors[player].bg : '#eee'), borderColor: playerColors[player] ? playerColors[player].border : '#ccc' }"
-                        :class="currentFilter === player ? 'scale-110 font-black shadow-xl ring-2 ring-emerald-600 ring-offset-1 z-10' : 'hover:opacity-95 shadow-sm border'"
-                        class="inline-flex items-center rounded border transition relative">
+                        :class="currentFilter === player ? 'is-active z-10' : 'hover:opacity-95'"
+                        class="player-filter-pill inline-flex items-center border transition relative">
                         <button @click="setFilter(player)"
                             :style="{ color: currentFilter === player ? '#ffffff' : '#111827' }"
-                            class="px-2 py-1 text-xs font-bold flex items-center gap-1 focus:outline-none">
+                            class="player-filter-name text-xs flex items-center gap-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-emerald-700">
+                            <span class="player-filter-avatar" aria-hidden="true">{{ player.slice(0, 1) }}</span>
                             <span>{{ player }}</span>
                         </button>
                         <button @click.stop="downloadPlayerIcs(player)"
                             :style="{ borderColor: playerColors[player] ? playerColors[player].border : '#ccc', color: currentFilter === player ? '#ffffff' : '#111827' }"
-                            class="px-2 py-1 text-xs border-l transition hover:bg-black/10 focus:outline-none"
+                            class="player-filter-calendar text-xs transition hover:bg-black/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-emerald-700"
                             :title="'ICS-Kalender für ' + player + ' herunterladen'">
                             📅
                         </button>
