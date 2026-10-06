@@ -1059,9 +1059,6 @@ html_template = """<!DOCTYPE html>
                 <button @click="printPage()" class="no-print bg-gray-100 hover:bg-gray-200 text-gray-700 px-2.5 py-1.5 rounded-lg text-xs font-semibold transition border border-gray-300 flex items-center gap-1 shadow-sm" title="Spielplan drucken">
                     <span>🖨️ Drucken</span>
                 </button>
-                <button @click="downloadAllIcs()" class="no-print bg-emerald-800 hover:bg-emerald-900 text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition border border-emerald-700 flex items-center gap-1.5 shadow-sm">
-                    <span>📅 Gesamter Spielplan als ICS</span>
-                </button>
                 <a href="anleitung.html" class="no-print bg-emerald-100 hover:bg-emerald-200 text-emerald-800 px-2.5 py-1.5 rounded-lg text-xs font-semibold transition border border-emerald-300 flex items-center gap-1 shadow-sm" title="Kurzanleitung öffnen">
                     <span>📖 Anleitung</span>
                 </a>
@@ -1598,24 +1595,6 @@ html_template = """<!DOCTYPE html>
                     window.print();
                 }
 
-                function downloadAllIcs() {
-                    const ics = createIcsCalendar();
-                    const dtstamp = formatIcsTimestamp();
-                    matchesData.forEach(match => {
-                        if (match.status === 'Reserviert für alle') return;
-                        getMatchSlots(match).forEach(slot => {
-                            appendIcsEvent(ics, match, slot, dtstamp);
-                        });
-                    });
-                    ics.push("END:VCALENDAR");
-                    const blob = new Blob([ics.join('\\r\\n')], { type: 'text/calendar;charset=utf-8;' });
-                    const link = document.createElement("a");
-                    link.href = URL.createObjectURL(blob);
-                    link.setAttribute("download", "tennis_spielplan_gesamtsaison_2026_2027.ics");
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                }
 
                 onMounted(() => {
                     const playerFromUrl = new URLSearchParams(window.location.search).get('spieler');
@@ -1657,8 +1636,7 @@ html_template = """<!DOCTYPE html>
                     sortedPlayerStats,
                     exportStatsCsv,
                     downloadPlayerIcs,
-                    printPage,
-                    downloadAllIcs
+                    printPage
                 };
             }
         });
