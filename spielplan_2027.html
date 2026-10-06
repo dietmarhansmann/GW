@@ -327,7 +327,7 @@
                     <button type="button" class="matchday-nav-button" :disabled="!hasAdjacentMatchday(1)" @click="navigateMatchday(1)" aria-label="Nächster Spieltag">›</button>
                     <button type="button" class="matchday-close" @click="closeMatchday()" aria-label="Spieltag schließen">✕</button>
                 </div>
-                <div class="matchday-swipetip">← nach links: vorheriger · nach rechts: nächster →</div>
+                <div class="matchday-swipetip">← nach links: nächster · nach rechts: vorheriger →</div>
                 <div v-if="selectedMatchday.status === 'Reserviert für alle'" class="matchday-reserved">🎾 Dieser Spieltag ist für alle reserviert.</div>
                 <div v-else class="matchday-cards">
                     <article v-for="slot in matchdaySlots(selectedMatchday)" :key="slot.time" class="matchday-slot-card">
@@ -1251,7 +1251,7 @@
                 function handleMatchdayTouchEnd(event) {
                     if (touchStartX.value === null) return;
                     const deltaX = event.changedTouches[0].clientX - touchStartX.value;
-                    if (Math.abs(deltaX) >= 55) navigateMatchday(deltaX > 0 ? 1 : -1);
+                    if (Math.abs(deltaX) >= 55) navigateMatchday(deltaX < 0 ? 1 : -1);
                     touchStartX.value = null;
                 }
 
