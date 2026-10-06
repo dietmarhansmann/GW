@@ -1051,6 +1051,11 @@ html_template = """<!DOCTYPE html>
         .schedule-table-card { overflow-x: auto; border-color: #dfe9e3; }
         #schedule-table thead th { padding: 12px 14px; color: #dcefe5; background: #174b39; font-size: 10px; letter-spacing: .12em; }
         #schedule-table tbody tr { transition: background-color .18s ease, opacity .18s ease; }
+        #schedule-table tbody tr.is-next-match { background-color: #ecfdf5 !important; }
+        #schedule-table tbody tr.is-next-match td:first-child { box-shadow: inset 4px 0 #059669; }
+        .next-match-label { display: inline-flex; align-items: center; gap: 4px; margin-top: 4px; padding: 2px 7px; border-radius: 999px; background: #047857; color: #fff; font-size: 9px; font-weight: 800; letter-spacing: .04em; white-space: nowrap; }
+        .dark #schedule-table tbody tr.is-next-match { background-color: rgba(6, 78, 59, .45) !important; }
+        .dark #schedule-table tbody tr.is-next-match td:first-child { box-shadow: inset 4px 0 #34d399; }
         #schedule-table td { padding: 11px 14px; }
         .statistics-card, .rules-card { border-color: #dfe9e3; }
         .statistics-card thead tr { background: #174b39; }
@@ -1186,11 +1191,12 @@ html_template = """<!DOCTYPE html>
                     </tr>
                     <tr v-for="(m, idx) in displayedMatches" :key="m.spieltag"
                         :id="isNextUpcoming(m, idx) ? 'next-match-target' : null"
-                        :class="getRowClass(m, idx)">
+                        :class="[getRowClass(m, idx), { 'is-next-match': isNextUpcoming(m, idx) }]">
                         <template v-if="m.status === 'Reserviert für alle'">
                             <td colspan="5" class="py-3 px-3 text-center bg-amber-50 dark:bg-amber-950/40 border-amber-200 dark:border-amber-900">
                                 <div class="flex items-center justify-center gap-2 text-amber-900 dark:text-amber-300 font-bold text-xs md:text-sm whitespace-nowrap">
                                     <span>🎾 Spieltag #{{ m.spieltag }} — {{ formatFullDate(m.date) }}:</span>
+                                    <span v-if="isNextUpcoming(m, idx)" class="next-match-label">★ Als Nächstes</span>
                                     <span class="bg-amber-200 dark:bg-amber-900 text-amber-900 dark:text-amber-100 px-2.5 py-1 rounded-md shadow-sm border border-amber-300 dark:border-amber-700 font-extrabold uppercase tracking-wide">
                                         Reserviert für alle
                                     </span>
@@ -1199,10 +1205,11 @@ html_template = """<!DOCTYPE html>
                         </template>
                         <template v-else>
                         <td class="py-2 px-1" :class="m.status === 'Abgeschlossen' ? 'text-gray-400 dark:text-gray-600' : 'text-gray-600 dark:text-gray-300'">
-                            <span class="md:hidden">{{ formatShortDate(m.date) }}</span>
+                            <span class="md:hidden">{{ formatShortDate(m.date) }}<span v-if="isNextUpcoming(m, idx)" class="next-match-label ml-1">★ Als Nächstes</span></span>
                             <div class="hidden md:block leading-tight">
                                 <span class="font-bold text-[10px]">#{{ m.spieltag }}</span>
                                 <div class="text-[11px]">{{ formatFullDate(m.date) }}</div>
+                                <span v-if="isNextUpcoming(m, idx)" class="next-match-label">★ Als Nächstes</span>
                             </div>
                         </td>
                         <!-- Platz 1 (19:00) -->
