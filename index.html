@@ -37,6 +37,7 @@
         .player-filter-pill.is-active { box-shadow: 0 0 0 2px #fff, 0 0 0 4px #059669, 0 5px 14px rgba(5, 150, 105, .22); }
         .player-filter-name { min-height: 34px; padding: 4px 10px 4px 6px; font-weight: 700; letter-spacing: .01em; }
         .player-filter-avatar { position: relative; display: inline-grid; width: 25px; height: 25px; flex: 0 0 25px; place-items: center; overflow: hidden; border: 1px solid rgba(17, 24, 39, .16); border-radius: 50%; background: rgba(255, 255, 255, .58); font-size: 10px; font-weight: 800; }
+        .player-filter-avatar.is-next-match-player { border-color: #047857; background: var(--next-match-avatar, #047857); color: var(--next-match-avatar-text, #fff); }
         .player-filter-calendar { min-height: 34px; padding-inline: 9px; border-left: 1px solid rgba(17, 24, 39, .14); }
         .dark .player-filter-pill.is-active { box-shadow: 0 0 0 2px #1f2937, 0 0 0 4px #34d399, 0 5px 14px rgba(5, 150, 105, .24); }
         .schedule-table-card { overflow-x: auto; border-color: #dfe9e3; }
@@ -100,7 +101,7 @@
             .matchday-overlay { position: fixed; inset: 0; z-index: 1000; display: flex; align-items: flex-end; justify-content: center; padding: 12px; background: rgba(6, 22, 15, .68); backdrop-filter: blur(5px); }
             .matchday-sheet { width: min(100%, 620px); max-height: min(88dvh, 780px); overflow-y: auto; padding: 18px 16px 14px; border: 1px solid #d5e8dc; border-radius: 24px 24px 18px 18px; background: #fff; color: #18352a; box-shadow: 0 24px 80px rgba(0, 0, 0, .3); overscroll-behavior: contain; }
             .dark .matchday-sheet { border-color: #3c594a; background: #17231c; color: #ecfdf5; }
-            .matchday-sheet-header { display: grid; grid-template-columns: 44px 1fr 44px 38px; align-items: center; gap: 8px; }
+            .matchday-sheet-header { display: grid; grid-template-columns: 44px minmax(0, 1fr) 44px 38px; align-items: center; gap: 8px; }
             .matchday-title-group { flex: 1; text-align: center; }
             .matchday-title-group h2 { margin: 2px 0 0; font-size: 23px; font-weight: 800; letter-spacing: -.03em; }
             .matchday-date { color: #537265; font-size: 12px; font-weight: 600; }
@@ -202,7 +203,7 @@
                         <button @click="setFilter(player)"
                             :style="{ color: currentFilter === player ? '#ffffff' : '#111827' }"
                             class="player-filter-name text-xs flex items-center gap-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-emerald-700">
-                            <span class="player-filter-avatar" aria-hidden="true">{{ player.slice(0, 1) }}</span>
+                            <span class="player-filter-avatar" :class="{ 'is-next-match-player': nextMatchTimes[player] }" :style="nextMatchTimes[player] ? { '--next-match-avatar': nextMatchTimes[player].background, '--next-match-avatar-text': nextMatchTimes[player].text } : null" :title="nextMatchTimes[player] ? 'Spielt am nächsten Spieltag um ' + nextMatchTimes[player].time + ' Uhr' : null" aria-hidden="true">{{ player.slice(0, 1) }}</span>
                             <span>{{ player }}</span>
                         </button>
                         <button @click.stop="downloadPlayerIcs(player)"
@@ -225,9 +226,8 @@
 
         <!-- Ultra-Compact Table -->
         <p class="schedule-table-hint" aria-hidden="true">← Tabelle seitlich wischen für weitere Zeiten →</p>
-        <div class="schedule-table-card bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm overflow-x-auto mb-3">
+        <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm overflow-x-auto mb-2.5">
             <table id="schedule-table" class="w-full text-left border-collapse text-xs table-auto">
-                <caption class="sr-only">Spielplan mit Spieltagen und Begegnungen nach Uhrzeit</caption>
                 <thead>
                     <tr class="bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-400 uppercase text-[10px] tracking-wider border-b border-gray-200 dark:border-gray-700">
                         <th class="py-2 px-1 whitespace-nowrap w-1">Datum</th>
@@ -347,7 +347,7 @@
         </section>
 
         <!-- Player Statistics Matrix Section -->
-        <div class="no-print statistics-card bg-white dark:bg-gray-800 border border-emerald-200 dark:border-emerald-900 p-4 mb-3">
+        <div class="no-print bg-white dark:bg-gray-800 border border-emerald-200 dark:border-emerald-900 rounded-lg p-3 mb-2.5 shadow-sm">
             <div class="flex justify-between items-center mb-2 border-b border-gray-100 dark:border-gray-700 pb-1.5">
                 <h3 class="text-xs font-bold uppercase tracking-wider text-emerald-800 dark:text-emerald-400 flex items-center gap-1.5">
                     <span>📊 Spieler-Statistik-Matrix (Einzel vs. Doppel)</span>
@@ -395,7 +395,7 @@
         </div>
 
         <!-- Rules Section -->
-        <div class="no-print rules-card bg-white dark:bg-gray-800 border border-emerald-200 dark:border-emerald-900 p-4">
+        <div class="no-print bg-white dark:bg-gray-800 border border-emerald-200 dark:border-emerald-900 rounded-lg p-3 shadow-sm">
             <div class="flex justify-between items-center mb-2 border-b border-gray-100 dark:border-gray-700 pb-1.5">
                 <h3 class="text-xs font-bold uppercase tracking-wider text-emerald-800 dark:text-emerald-400 flex items-center gap-1.5">
                     <span>📋 Aktive Spielerregeln & Abwesenheiten</span>
@@ -420,7 +420,7 @@
 
         <!-- Footer / Stand timestamp -->
         <div class="no-print mt-3 mb-2 text-center text-xs text-gray-500 dark:text-gray-400 py-2 border-t border-gray-200 dark:border-gray-800">
-            Stand: 21.09.2026
+            Stand: 06.10.2026
         </div>
 
     </div>
@@ -1167,6 +1167,24 @@
                     return [...new Set(getMatchPlayers(m))].sort();
                 });
 
+                const nextMatchTimes = computed(() => {
+                    const colorsByTime = {
+                        '19:00': { background: '#bbf7d0', text: '#14532d' },
+                        '20:00': { background: '#86efac', text: '#14532d' },
+                        '20:30': { background: '#22c55e', text: '#052e16' },
+                        '21:00': { background: '#047857', text: '#ffffff' }
+                    };
+                    const times = {};
+                    matchdaySlots(nextMatch.value).forEach(slot => {
+                        slot.teams.flat().forEach(player => {
+                            if (!times[player] || slot.time < times[player].time) {
+                                times[player] = { ...colorsByTime[slot.time], time: slot.time };
+                            }
+                        });
+                    });
+                    return times;
+                });
+
                 const nextUpcomingIndex = computed(() => {
                     const todayStr = new Date().toISOString().split('T')[0];
                     return displayedMatches.value.findIndex(m => m.date >= todayStr && m.status !== 'Abgeschlossen');
@@ -1335,7 +1353,7 @@
                 }
 
                 function appendIcsEvent(ics, match, slot, dtstamp, player = null) {
-                    const uid = `spieltag-${match.spieltag}-${match.date}-${slot.time.replace(':', '')}@gw-tennis`;
+                    const uid = `spieltag-${match.spieltag}-${match.date}-${slot.time.split(':').join('')}@gw-tennis`;
                     const players = getSlotPlayers(slot);
                     if (player && players.includes(player)) {
                         players.splice(players.indexOf(player), 1);
@@ -1377,6 +1395,7 @@
                     window.print();
                 }
 
+
                 onMounted(() => {
                     const playerFromUrl = new URLSearchParams(window.location.search).get('spieler');
                     if (playerFromUrl && allPlayers.value.includes(playerFromUrl)) {
@@ -1413,6 +1432,7 @@
                     filteredMatches,
                     displayedMatches,
                     nextMatchPlayers,
+                    nextMatchTimes,
                     isNextUpcoming,
                     formatShortDate,
                     formatFullDate,
