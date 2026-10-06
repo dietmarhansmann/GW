@@ -1082,25 +1082,85 @@
                     document.body.removeChild(link);
                 }
 
+                function createIcsCalendar() {
+                    return [
+                        "BEGIN:VCALENDAR",
+                        "VERSION:2.0",
+                        "PRODID:-//Tennis Spielplan//DE",
+                        "X-WR-CALNAME:GW Tennis",
+                        "BEGIN:VTIMEZONE",
+                        "TZID:Europe/Berlin",
+                        "X-LIC-LOCATION:Europe/Berlin",
+                        "BEGIN:DAYLIGHT",
+                        "TZOFFSETFROM:+0100",
+                        "TZOFFSETTO:+0200",
+                        "TZNAME:CEST",
+                        "DTSTART:19970330T020000",
+                        "RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=-1SU",
+                        "END:DAYLIGHT",
+                        "BEGIN:STANDARD",
+                        "TZOFFSETFROM:+0200",
+                        "TZOFFSETTO:+0100",
+                        "TZNAME:CET",
+                        "DTSTART:19971026T030000",
+                        "RRULE:FREQ=YEARLY;BYMONTH=10;BYDAY=-1SU",
+                        "END:STANDARD",
+                        "END:VTIMEZONE",
+                    ];
+                }
+
+                function formatIcsDateTime(date, time) {
+                    return date.split("-").join("") + "T" + time.split(":").join("") + "00";
+                }
+
+                function formatIcsTimestamp(date = new Date()) {
+                    return date.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}Z$/, 'Z');
+                }
+
+                function getMatchSlots(match) {
+                    const slots = [match.p1, match.p2, match.p3];
+                    if (match.doppel) slots.push(match.doppel);
+                    return slots.filter(Boolean);
+                }
+
+                function getSlotPlayers(slot) {
+                    return slot.team1 ? [...slot.team1, ...slot.team2] : [slot.p1, slot.p2];
+                }
+
+                function appendIcsEvent(ics, match, slot, dtstamp, player = null) {
+                    const uid = `spieltag-${match.spieltag}-${match.date}-${slot.time.replace(':', '')}@gw-tennis`;
+                    const players = getSlotPlayers(slot);
+                    if (player && players.includes(player)) {
+                        players.splice(players.indexOf(player), 1);
+                        players.push(player);
+                    }
+                    const participants = players.join('-');
+                    ics.push("BEGIN:VEVENT");
+                    ics.push(`UID:${uid}`);
+                    ics.push(`DTSTAMP:${dtstamp}`);
+                    ics.push(`SUMMARY:GW Tennis #${match.spieltag} ${participants}`);
+                    ics.push(`DTSTART;TZID=Europe/Berlin:${formatIcsDateTime(match.date, slot.time)}`);
+                    ics.push("DURATION:PT1H");
+                    ics.push(`DESCRIPTION:Tennis Spieltag #${match.spieltag}`);
+                    ics.push("END:VEVENT");
+                }
+
                 function downloadPlayerIcs(player) {
-                    let ics = "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//Tennis Spielplan 2026//DE\n";
-                    matchesData.forEach(m => {
-                        const players = getMatchPlayers(m);
-                        if (players.includes(player) && m.status !== 'Reserviert für alle') {
-                            const dateClean = m.date.replace(/-/g, '');
-                            ics += "BEGIN:VEVENT\n";
-                            ics += `SUMMARY:Tennis Spieltag #${m.spieltag} (${player})\n`;
-                            ics += `DTSTART;VALUE=DATE:${dateClean}\n`;
-                            ics += `DTEND;VALUE=DATE:${dateClean}\n`;
-                            ics += `DESCRIPTION:Tennis Match am Spieltag #${m.spieltag}\n`;
-                            ics += "END:VEVENT\n";
-                        }
+                    const ics = createIcsCalendar();
+                    const dtstamp = formatIcsTimestamp();
+                    matchesData.forEach(match => {
+                        if (match.status === 'Reserviert für alle') return;
+                        getMatchSlots(match).forEach(slot => {
+                            if (getSlotPlayers(slot).includes(player)) {
+                                appendIcsEvent(ics, match, slot, dtstamp, player);
+                            }
+                        });
                     });
-                    ics += "END:VCALENDAR";
-                    const blob = new Blob([ics.replace(/\n/g, '\r\n')], { type: 'text/calendar;charset=utf-8;' });
+                    ics.push("END:VCALENDAR");
+                    const blob = new Blob([ics.join('\r\n')], { type: 'text/calendar;charset=utf-8;' });
                     const link = document.createElement("a");
                     link.href = URL.createObjectURL(blob);
-                    link.setAttribute("download", `tennis_spielplan_${player.toLowerCase().replace(/\s+/g, '_')}.ics`);
+                    link.setAttribute("download", `tennis_spielplan_${player.toLowerCase().split(' ').join('_')}.ics`);
                     document.body.appendChild(link);
                     link.click();
                     document.body.removeChild(link);
@@ -1111,20 +1171,16 @@
                 }
 
                 function downloadAllIcs() {
-                    let ics = "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//Tennis Spielplan 2026//DE\n";
-                    matchesData.forEach(m => {
-                        if (m.status !== 'Reserviert für alle') {
-                            const dateClean = m.date.replace(/-/g, '');
-                            ics += "BEGIN:VEVENT\n";
-                            ics += `SUMMARY:Tennis Spieltag #${m.spieltag}\n`;
-                            ics += `DTSTART;VALUE=DATE:${dateClean}\n`;
-                            ics += `DTEND;VALUE=DATE:${dateClean}\n`;
-                            ics += `DESCRIPTION:Tennis Spieltag #${m.spieltag} - Alle Spiele\n`;
-                            ics += "END:VEVENT\n";
-                        }
+                    const ics = createIcsCalendar();
+                    const dtstamp = formatIcsTimestamp();
+                    matchesData.forEach(match => {
+                        if (match.status === 'Reserviert für alle') return;
+                        getMatchSlots(match).forEach(slot => {
+                            appendIcsEvent(ics, match, slot, dtstamp);
+                        });
                     });
-                    ics += "END:VCALENDAR";
-                    const blob = new Blob([ics.replace(/\n/g, '\r\n')], { type: 'text/calendar;charset=utf-8;' });
+                    ics.push("END:VCALENDAR");
+                    const blob = new Blob([ics.join('\r\n')], { type: 'text/calendar;charset=utf-8;' });
                     const link = document.createElement("a");
                     link.href = URL.createObjectURL(blob);
                     link.setAttribute("download", "tennis_spielplan_gesamtsaison_2026_2027.ics");
