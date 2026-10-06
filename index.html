@@ -15,7 +15,43 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
         body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
         .dark body, body.dark { background-color: #111827; color: #f3f4f6; }
+        body { background: radial-gradient(ellipse at 12% 0%, rgba(16, 185, 129, .11), transparent 34%), #f4f7f5; }
+        #app { max-width: 1480px; margin-inline: auto; }
+        .page-heading { display: flex; align-items: end; justify-content: space-between; gap: 16px; padding: 18px 4px 14px; }
+        .page-heading h1 { margin: 2px 0 0; color: #123b2d; font-size: clamp(1.55rem, 3vw, 2.35rem); font-weight: 750; letter-spacing: -.045em; line-height: 1.05; }
+        .page-heading p { margin: 7px 0 0; color: #64776e; font-size: .88rem; }
+        .page-heading-mark { display: grid; width: 46px; height: 46px; place-items: center; border: 1px solid #d2e8dc; border-radius: 16px; background: linear-gradient(145deg, #fff, #e4f4eb); color: #08744f; font-size: 1.45rem; box-shadow: 0 8px 20px rgba(15, 75, 50, .08); }
+        .schedule-overview { overflow: hidden; position: relative; min-height: 76px; padding: 16px 20px; border: 1px solid rgba(167, 243, 208, .32); border-radius: 20px; background: linear-gradient(115deg, #073d2e 0%, #08704f 68%, #16805a 100%); color: #f0fdf4; box-shadow: 0 14px 34px rgba(6, 78, 59, .17); }
+        .schedule-overview::after { position: absolute; top: -62px; right: 13%; width: 180px; height: 180px; border: 1px solid rgba(255,255,255,.11); border-radius: 50%; content: ''; box-shadow: 0 0 0 24px rgba(255,255,255,.035), 0 0 0 48px rgba(255,255,255,.025); pointer-events: none; }
+        .schedule-overview .overview-copy { position: relative; z-index: 1; color: #e7fff2; }
+        .schedule-overview .overview-copy .text-gray-300 { color: rgba(236, 253, 245, .35); }
+        .schedule-overview .overview-copy .text-emerald-800 { color: #d1fae5; }
+        .schedule-overview .overview-copy b { color: #fff; }
+        .schedule-overview a { border-color: rgba(255,255,255,.22); background: rgba(255,255,255,.1); color: #f0fdf4; }
+        .schedule-overview a:hover { background: rgba(255,255,255,.2); }
+        .schedule-overview a[href='anleitung.html'] { background: #d6f5e4; color: #075238; }
+        .schedule-controls, .statistics-card, .rules-card, .schedule-table-card { border-radius: 18px; box-shadow: 0 8px 25px rgba(15, 45, 32, .055); }
+        .schedule-controls { border-color: #e2ebe5; }
+        .schedule-table-card { overflow-x: auto; border-color: #dfe9e3; }
+        #schedule-table thead th { padding: 12px 14px; color: #dcefe5; background: #174b39; font-size: 10px; letter-spacing: .12em; }
+        #schedule-table tbody tr { transition: background-color .18s ease, opacity .18s ease; }
+        #schedule-table td { padding: 11px 14px; }
+        .statistics-card, .rules-card { border-color: #dfe9e3; }
+        .statistics-card thead tr { background: #174b39; }
+        .statistics-card thead th { padding-block: 11px; letter-spacing: .04em; }
+        body.dark { background: radial-gradient(ellipse at 12% 0%, rgba(16, 185, 129, .08), transparent 34%), #111827 !important; }
+        .dark .page-heading h1 { color: #e5f5ec; }
+        .dark .page-heading p { color: #a5b8ae; }
+        .dark .page-heading-mark { border-color: #345344; background: linear-gradient(145deg, #263b31, #17271f); color: #a7f3d0; }
+        .dark .schedule-controls, .dark .statistics-card, .dark .rules-card, .dark .schedule-table-card { border-color: #37483e; }
+        .dark #schedule-table thead th, .dark .statistics-card thead tr { background: #123b2d; }
         .player-name-short { display: none; }
+        @media (max-width: 640px) {
+            .page-heading { align-items: center; padding: 14px 2px 12px; }
+            .page-heading-mark { width: 40px; height: 40px; }
+            .schedule-overview { padding: 14px 16px; }
+            .schedule-overview > div:last-child { width: 100%; flex-wrap: wrap; }
+        }
         @media (max-width: 767px) {
             #schedule-table td { padding: 0.25rem 0.2rem; }
             #schedule-table .match-players { gap: 0.15rem; }
@@ -34,9 +70,16 @@
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 antialiased min-h-screen p-2 md:p-3 transition-colors duration-200">
     <div id="app" class="max-w-[98%] mx-auto">
+        <header class="page-heading">
+            <div>
+                <h1>GW Tennis Spielplan</h1>
+            </div>
+            <div class="page-heading-mark" aria-hidden="true">🎾</div>
+        </header>
+
         <!-- Quick Stats & Global Export Bar -->
-        <div class="no-print bg-white dark:bg-gray-800 border border-emerald-200 dark:border-emerald-900 rounded-lg px-3 py-2 mb-2.5 shadow-sm text-xs flex flex-wrap justify-between items-center gap-2">
-            <div class="flex items-center gap-3 text-gray-700 dark:text-gray-200 font-medium">
+        <div class="no-print schedule-overview mb-3 flex flex-wrap justify-between items-center gap-3">
+            <div class="overview-copy flex flex-wrap items-center gap-3 text-xs font-medium">
                 <span>📊 <b>13</b> Spieltage (Saison 2026/2027)</span>
                 <span class="text-gray-300 dark:text-gray-600">•</span>
                 <span>👥 <b>{{ allPlayers.length }}</b> aktive Spieler</span>
@@ -57,7 +100,7 @@
         </div>
 
         <!-- Player Legend & Controls Bar -->
-        <div class="no-print bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-2.5 mb-2.5 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-2">
+        <div class="no-print schedule-controls bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-3 mb-3 flex flex-col md:flex-row justify-between items-start md:items-center gap-2.5">
             <div class="flex-1 w-full">
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-1.5 gap-2">
                     <span class="font-bold text-xs uppercase tracking-wider text-gray-700 dark:text-gray-300">Klick [NAME] = Spiele filtern | 📅 = Kalender-Download für z.B. Google Kalender:</span>
@@ -109,8 +152,9 @@
         </div>
 
         <!-- Ultra-Compact Table -->
-        <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm overflow-x-auto mb-2.5">
+        <div class="schedule-table-card bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm overflow-x-auto mb-3">
             <table id="schedule-table" class="w-full text-left border-collapse text-xs table-auto">
+                <caption class="sr-only">Spielplan mit Spieltagen und Begegnungen nach Uhrzeit</caption>
                 <thead>
                     <tr class="bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-400 uppercase text-[10px] tracking-wider border-b border-gray-200 dark:border-gray-700">
                         <th class="py-2 px-1 whitespace-nowrap w-1">Datum</th>
@@ -195,7 +239,7 @@
         </div>
 
         <!-- Player Statistics Matrix Section -->
-        <div class="no-print bg-white dark:bg-gray-800 border border-emerald-200 dark:border-emerald-900 rounded-lg p-3 mb-2.5 shadow-sm">
+        <div class="no-print statistics-card bg-white dark:bg-gray-800 border border-emerald-200 dark:border-emerald-900 p-4 mb-3">
             <div class="flex justify-between items-center mb-2 border-b border-gray-100 dark:border-gray-700 pb-1.5">
                 <h3 class="text-xs font-bold uppercase tracking-wider text-emerald-800 dark:text-emerald-400 flex items-center gap-1.5">
                     <span>📊 Spieler-Statistik-Matrix (Einzel vs. Doppel)</span>
@@ -243,7 +287,7 @@
         </div>
 
         <!-- Rules Section -->
-        <div class="no-print bg-white dark:bg-gray-800 border border-emerald-200 dark:border-emerald-900 rounded-lg p-3 shadow-sm">
+        <div class="no-print rules-card bg-white dark:bg-gray-800 border border-emerald-200 dark:border-emerald-900 p-4">
             <div class="flex justify-between items-center mb-2 border-b border-gray-100 dark:border-gray-700 pb-1.5">
                 <h3 class="text-xs font-bold uppercase tracking-wider text-emerald-800 dark:text-emerald-400 flex items-center gap-1.5">
                     <span>📋 Aktive Spielerregeln & Abwesenheiten</span>
