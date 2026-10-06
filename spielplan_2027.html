@@ -45,6 +45,7 @@
         #schedule-table tbody tr.is-next-match { background-color: #ecfdf5 !important; }
         #schedule-table tbody tr.is-next-match td:first-child { box-shadow: inset 4px 0 #059669; }
         .next-match-label { display: inline-flex; align-items: center; gap: 4px; margin-top: 4px; padding: 2px 7px; border-radius: 999px; background: #047857; color: #fff; font-size: 9px; font-weight: 800; letter-spacing: .04em; white-space: nowrap; }
+        .schedule-table-hint { display: none; }
         .dark #schedule-table tbody tr.is-next-match { background-color: rgba(6, 78, 59, .45) !important; }
         .dark #schedule-table tbody tr.is-next-match td:first-child { box-shadow: inset 4px 0 #34d399; }
         #schedule-table td { padding: 11px 14px; }
@@ -65,11 +66,35 @@
             .schedule-overview > div:last-child { width: 100%; flex-wrap: wrap; }
         }
         @media (max-width: 767px) {
-            #schedule-table td { padding: 0.25rem 0.2rem; }
-            #schedule-table .match-players { gap: 0.15rem; }
+            .schedule-controls { padding: 12px; }
+            .schedule-controls > div:first-child > div:first-child { align-items: stretch; }
+            .schedule-controls > div:first-child > div:first-child > div { flex-wrap: wrap; }
+            .schedule-controls input[type='text'] { width: min(100%, 220px); min-height: 42px; font-size: 14px; }
+            .schedule-controls > div:last-child { width: 100%; }
+            .schedule-controls > div:last-child button { width: 100%; min-height: 42px; justify-content: center; white-space: normal; }
+            .player-filters { gap: 8px; }
+            .player-filters > button, .player-filter-pill, .player-filter-name, .player-filter-calendar { min-height: 42px; }
+            .player-filter-name { padding-inline: 10px; }
+            .player-filter-calendar { min-width: 44px; }
+            .schedule-overview { align-items: flex-start; }
+            .schedule-overview .overview-copy { gap: 8px 10px; }
+            .schedule-overview > div:last-child { gap: 8px; }
+            .schedule-overview > div:last-child a, .schedule-overview > div:last-child button { min-height: 42px; justify-content: center; }
+            .schedule-table-hint { display: block; margin: 0 4px 6px; color: #64776e; font-size: 11px; }
+            .dark .schedule-table-hint { color: #a5b8ae; }
+            #schedule-table { min-width: 680px; }
+            #schedule-table thead th:first-child { position: sticky; left: 0; z-index: 3; min-width: 82px; }
+            #schedule-table tbody td:first-child:not([colspan]) { position: sticky; left: 0; z-index: 1; min-width: 82px; background-color: inherit; }
+            #schedule-table td { padding: 0.5rem 0.35rem; }
+            #schedule-table .match-players { gap: 0.2rem; }
             #schedule-table .player-name-full { display: none; }
             #schedule-table .player-name-short { display: inline; }
-            #schedule-table .player-badge { padding: 0.15rem 0.3rem; font-size: 10px; }
+            #schedule-table .player-badge { padding: 0.2rem 0.35rem; font-size: 10px; }
+            .next-match-label { font-size: 8px; padding: 2px 5px; }
+            .statistics-card, .rules-card { padding: 12px; }
+            .statistics-card > div:first-child { align-items: flex-start; gap: 8px; }
+            .statistics-card h3 { line-height: 1.4; }
+            .statistics-card table { min-width: 560px; }
         }
         @media print {
             .no-print { display: none !important; }
@@ -127,7 +152,7 @@
                     </div>
                 </div>
 
-                <div class="flex flex-wrap gap-2 items-center pt-1 pb-0.5">
+                <div class="player-filters flex flex-wrap gap-2 items-center pt-1 pb-0.5">
                     <!-- 'Alle' button -->
                     <button @click="setFilter('ALL')"
                         :class="currentFilter === 'ALL' ? 'bg-black dark:bg-white dark:text-gray-900 text-white border-black dark:border-white ring-2 ring-gray-400 scale-105' : 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 border-gray-300 dark:border-gray-600'"
@@ -165,6 +190,7 @@
         </div>
 
         <!-- Ultra-Compact Table -->
+        <p class="schedule-table-hint" aria-hidden="true">← Tabelle seitlich wischen für weitere Zeiten →</p>
         <div class="schedule-table-card bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm overflow-x-auto mb-3">
             <table id="schedule-table" class="w-full text-left border-collapse text-xs table-auto">
                 <caption class="sr-only">Spielplan mit Spieltagen und Begegnungen nach Uhrzeit</caption>
