@@ -1068,6 +1068,7 @@ html_template = """<!DOCTYPE html>
         .dark .schedule-controls, .dark .statistics-card, .dark .rules-card, .dark .schedule-table-card { border-color: #37483e; }
         .dark #schedule-table thead th, .dark .statistics-card thead tr { background: #123b2d; }
         .player-name-short { display: none; }
+        .matchday-overlay { display: none; }
         @media (max-width: 640px) {
             .page-heading { align-items: center; padding: 14px 2px 12px; }
             .page-heading-mark { width: 40px; height: 40px; }
@@ -1104,6 +1105,39 @@ html_template = """<!DOCTYPE html>
             .statistics-card > div:first-child { align-items: flex-start; gap: 8px; }
             .statistics-card h3 { line-height: 1.4; }
             .statistics-card table { min-width: 560px; }
+            body.matchday-open { overflow: hidden; }
+            .matchday-overlay { position: fixed; inset: 0; z-index: 1000; display: flex; align-items: flex-end; justify-content: center; padding: 12px; background: rgba(6, 22, 15, .68); backdrop-filter: blur(5px); }
+            .matchday-sheet { width: min(100%, 620px); max-height: min(88dvh, 780px); overflow-y: auto; padding: 18px 16px 14px; border: 1px solid #d5e8dc; border-radius: 24px 24px 18px 18px; background: #fff; color: #18352a; box-shadow: 0 24px 80px rgba(0, 0, 0, .3); overscroll-behavior: contain; }
+            .dark .matchday-sheet { border-color: #3c594a; background: #17231c; color: #ecfdf5; }
+            .matchday-sheet-header { display: grid; grid-template-columns: 44px minmax(0, 1fr) 44px 38px; align-items: center; gap: 8px; }
+            .matchday-title-group { flex: 1; text-align: center; }
+            .matchday-title-group h2 { margin: 2px 0 0; font-size: 23px; font-weight: 800; letter-spacing: -.03em; }
+            .matchday-date { color: #537265; font-size: 12px; font-weight: 600; }
+            .dark .matchday-date { color: #a8c4b5; }
+            .matchday-nav-button, .matchday-close { display: grid; width: 44px; height: 44px; flex: 0 0 44px; place-items: center; border: 1px solid #d5e5db; border-radius: 14px; background: #f1f8f4; color: #075238; font-size: 26px; font-weight: 700; }
+            .dark .matchday-nav-button, .dark .matchday-close { border-color: #3b5848; background: #20352a; color: #d1fae5; }
+            .matchday-nav-button:disabled { opacity: .35; }
+            .matchday-close { width: 38px; height: 38px; flex-basis: 38px; font-size: 17px; }
+            .matchday-nav-button[aria-label="Nächster Spieltag"] { grid-column: 3; grid-row: 1; }
+            .matchday-close { grid-column: 4; grid-row: 1; }
+            .matchday-swipetip { margin: 12px 0 14px; color: #6b8277; font-size: 11px; text-align: center; }
+            .dark .matchday-swipetip { color: #a1b7aa; }
+            .matchday-cards { display: grid; gap: 10px; }
+            .matchday-slot-card { padding: 13px 14px; border: 1px solid #dcebe1; border-radius: 16px; background: #f8fbf9; }
+            .dark .matchday-slot-card { border-color: #354b3d; background: #1c2b22; }
+            .matchday-slot-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 11px; color: #47685a; font-size: 12px; font-weight: 750; }
+            .dark .matchday-slot-heading { color: #b5d3c1; }
+            .matchday-slot-time { padding: 4px 8px; border-radius: 999px; background: #d9f3e4; color: #075238; font-size: 12px; font-weight: 800; white-space: nowrap; }
+            .dark .matchday-slot-time { background: #244b38; color: #d1fae5; }
+            .matchday-slot-players { display: flex; align-items: center; justify-content: center; gap: 12px; min-height: 38px; }
+            .matchday-team { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
+            .matchday-team .player-badge { padding: 6px 10px; font-size: 14px; }
+            .matchday-vs { color: #72897d; font-size: 11px; font-weight: 800; }
+            .matchday-reserved { padding: 28px 12px; border-radius: 16px; background: #fff8e7; color: #795500; font-weight: 750; text-align: center; }
+            .matchday-footer { display: flex; justify-content: space-between; margin-top: 14px; padding-top: 10px; border-top: 1px solid #e5eee8; color: #6b8277; font-size: 11px; }
+            .dark .matchday-footer { border-color: #354b3d; color: #a1b7aa; }
+            .matchday-row { cursor: pointer; }
+            .matchday-row:focus-visible { outline: 3px solid #059669; outline-offset: -3px; }
         }
         @media print {
             .no-print { display: none !important; }
@@ -1217,7 +1251,10 @@ html_template = """<!DOCTYPE html>
                     </tr>
                     <tr v-for="(m, idx) in displayedMatches" :key="m.spieltag"
                         :id="isNextUpcoming(m, idx) ? 'next-match-target' : null"
-                        :class="[getRowClass(m, idx), { 'is-next-match': isNextUpcoming(m, idx) }]">
+                        :class="[getRowClass(m, idx), { 'is-next-match': isNextUpcoming(m, idx) }]"
+                        class="matchday-row" role="button" tabindex="0"
+                        :aria-label="`Spieltag ${m.spieltag} öffnen`"
+                        @click="openMatchday(m)" @keydown.enter="openMatchday(m)" @keydown.space.prevent="openMatchday(m)">
                         <template v-if="m.status === 'Reserviert für alle'">
                             <td colspan="5" class="py-3 px-3 text-center bg-amber-50 dark:bg-amber-950/40 border-amber-200 dark:border-amber-900">
                                 <div class="flex items-center justify-center gap-2 text-amber-900 dark:text-amber-300 font-bold text-xs md:text-sm whitespace-nowrap">
@@ -1286,6 +1323,36 @@ html_template = """<!DOCTYPE html>
                 </tbody>
             </table>
         </div>
+
+        <section v-if="selectedMatchday" class="matchday-overlay" role="dialog" aria-modal="true" tabindex="-1" :aria-label="`Spieltag ${selectedMatchday.spieltag}`" @click.self="closeMatchday()" @keydown.esc="closeMatchday()" @touchstart="handleMatchdayTouchStart" @touchend="handleMatchdayTouchEnd">
+            <div class="matchday-sheet">
+                <div class="matchday-sheet-header">
+                    <button type="button" class="matchday-nav-button" :disabled="!hasAdjacentMatchday(-1)" @click="navigateMatchday(-1)" aria-label="Vorheriger Spieltag">‹</button>
+                    <div class="matchday-title-group">
+                        <span class="matchday-date">{{ formatFullDate(selectedMatchday.date) }}</span>
+                        <h2>Spieltag #{{ selectedMatchday.spieltag }}</h2>
+                    </div>
+                    <button type="button" class="matchday-nav-button" :disabled="!hasAdjacentMatchday(1)" @click="navigateMatchday(1)" aria-label="Nächster Spieltag">›</button>
+                    <button type="button" class="matchday-close" @click="closeMatchday()" aria-label="Spieltag schließen">✕</button>
+                </div>
+                <div class="matchday-swipetip">← nach links: vorheriger · nach rechts: nächster →</div>
+                <div v-if="selectedMatchday.status === 'Reserviert für alle'" class="matchday-reserved">🎾 Dieser Spieltag ist für alle reserviert.</div>
+                <div v-else class="matchday-cards">
+                    <article v-for="slot in matchdaySlots(selectedMatchday)" :key="slot.time" class="matchday-slot-card">
+                        <div class="matchday-slot-heading"><span>{{ slot.label }}</span><span class="matchday-slot-time">{{ slot.time }} Uhr</span></div>
+                        <div class="matchday-slot-players">
+                            <template v-for="(team, teamIndex) in slot.teams" :key="teamIndex">
+                                <div class="matchday-team">
+                                    <span v-for="player in team" :key="player" v-html="formatPlayerBadge(player, selectedMatchday.status === 'Abgeschlossen')"></span>
+                                </div>
+                                <span v-if="teamIndex < slot.teams.length - 1" class="matchday-vs">vs</span>
+                            </template>
+                        </div>
+                    </article>
+                </div>
+                <div class="matchday-footer"><span>{{ selectedMatchday.status }}</span><span>{{ selectedMatchdayIndex + 1 }} / {{ displayedMatches.length }}</span></div>
+            </div>
+        </section>
 
         <!-- Player Statistics Matrix Section -->
         <div class="no-print bg-white dark:bg-gray-800 border border-emerald-200 dark:border-emerald-900 rounded-lg p-3 mb-2.5 shadow-sm">
@@ -1381,6 +1448,8 @@ html_template = """<!DOCTYPE html>
                 const rulesByPlayer = ref(playerRules);
                 const playerSearchQuery = ref('');
                 const showTopfA = ref(false);
+                const selectedMatchday = ref(null);
+                const touchStartX = ref(null);
 
                 function getMatchPlayers(m) {
                     const players = [
@@ -1451,6 +1520,62 @@ html_template = """<!DOCTYPE html>
                     }
                     return matches;
                 });
+
+                const selectedMatchdayIndex = computed(() => selectedMatchday.value
+                    ? displayedMatches.value.findIndex(match => match.spieltag === selectedMatchday.value.spieltag)
+                    : -1);
+
+                function openMatchday(match) {
+                    if (!window.matchMedia('(max-width: 767px)').matches) return;
+                    selectedMatchday.value = match;
+                    document.body.classList.add('matchday-open');
+                    nextTick(() => document.querySelector('.matchday-overlay')?.focus());
+                }
+
+                function closeMatchday() {
+                    selectedMatchday.value = null;
+                    touchStartX.value = null;
+                    document.body.classList.remove('matchday-open');
+                }
+
+                function navigateMatchday(direction) {
+                    const nextIndex = selectedMatchdayIndex.value + direction;
+                    if (nextIndex >= 0 && nextIndex < displayedMatches.value.length) {
+                        selectedMatchday.value = displayedMatches.value[nextIndex];
+                    }
+                }
+
+                function hasAdjacentMatchday(direction) {
+                    const nextIndex = selectedMatchdayIndex.value + direction;
+                    return nextIndex >= 0 && nextIndex < displayedMatches.value.length;
+                }
+
+                function matchdaySlots(match) {
+                    if (!match || match.status === 'Reserviert für alle') return [];
+                    const asTeams = (first, second) => [[first].filter(Boolean), [second].filter(Boolean)].filter(team => team.length);
+                    const slots = [
+                        { time: '19:00', label: 'Platz 1 · Einzel', teams: asTeams(match.p1.p1, match.p1.p2) },
+                        { time: '20:00', label: 'Platz 1 · Einzel', teams: asTeams(match.p2.p1, match.p2.p2) },
+                        { time: '21:00', label: 'Platz 1 · Einzel', teams: asTeams(match.p3.p1, match.p3.p2) }
+                    ];
+                    if (match.court2_type === 'einzel') {
+                        slots.push({ time: '20:30', label: 'Platz 2 · Einzel', teams: asTeams(match.doppel.p1, match.doppel.p2) });
+                    } else {
+                        slots.push({ time: '20:30', label: 'Platz 2 · Doppel', teams: [match.doppel.team1 || [], match.doppel.team2 || []].filter(team => team.length) });
+                    }
+                    return slots.filter(slot => slot.teams.length);
+                }
+
+                function handleMatchdayTouchStart(event) {
+                    touchStartX.value = event.changedTouches[0].clientX;
+                }
+
+                function handleMatchdayTouchEnd(event) {
+                    if (touchStartX.value === null) return;
+                    const deltaX = event.changedTouches[0].clientX - touchStartX.value;
+                    if (Math.abs(deltaX) >= 55) navigateMatchday(deltaX > 0 ? 1 : -1);
+                    touchStartX.value = null;
+                }
 
                 function matchHasPlayer(m, player) {
                     if (player === 'ALL') return true;
@@ -1697,6 +1822,15 @@ html_template = """<!DOCTYPE html>
                     matchesData,
                     currentFilter,
                     showPastMatches,
+                    selectedMatchday,
+                    selectedMatchdayIndex,
+                    openMatchday,
+                    closeMatchday,
+                    navigateMatchday,
+                    hasAdjacentMatchday,
+                    matchdaySlots,
+                    handleMatchdayTouchStart,
+                    handleMatchdayTouchEnd,
                     rulesByPlayer,
                     allPlayers,
                     displayedPlayers,
