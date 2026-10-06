@@ -20,7 +20,7 @@ PLAYERS = [
 RATIOS = {
     "Beumer": 0.50, "Dedores": 0.0, "Hansmann": 0.30, "Heyn": 0.30,
     "Hinz": 0.50, "Kissner": 0.0, "Kuhlhoff": 0.0, "Marschollek": 0.90,
-    "Mönning": 0.0, "Nolte": 0.0, "Prodehl": 0.60, "Trojanski": 0.0,
+    "Mönning": 0.0, "Nolte": 0.0, "Prodehl": 0.60, "Rumpf": 0.0, "Trojanski": 0.0,
     "van de Loo": 0.0, "Wojtanowitsch": 0.0,
 }
 
@@ -93,6 +93,8 @@ def doubles_choices(day, attendees, doubles_so_far, games_so_far, time_counts):
     if day % 2 == 0:
         return set()
     eligible = [p for p in attendees if RATIOS.get(p, None) != 0.0]
+    if len(eligible) < 4:
+        raise RuntimeError(f"Not enough doubles-eligible players on matchday {day}")
     best, best_score = None, float("inf")
     for choice in combinations(eligible, 4):
         score = 0.0
@@ -343,7 +345,7 @@ def apply_manual_overrides(matches):
 
 def generate():
     best_schedule, best_score = None, float("inf")
-    for _ in range(60):
+    for _ in range(300):
         try:
             candidate = generate_once()
         except RuntimeError:
@@ -358,6 +360,12 @@ def generate():
                              if match["teams"] else match["singles"][3])
             for player in final_players:
                 counts[player][TIME_SLOTS.index("20:30")] += 1
+        if any(
+            max(values) - min(values) > 3
+            for player, values in counts.items()
+            if player not in TIME_RULES
+        ):
+            continue
         score = 0
         for player, values in counts.items():
             if player in TIME_RULES:
@@ -611,7 +619,7 @@ def render_from_2026_template(schedule, games, doubles):
         "Nolte": ["Spielt ausschließlich Einzel."],
         "Prodehl": ["Wunsch nach ca. 60% Doppel."],
         "Redieker": ["Keine besondere Einzel-/Doppelquote festgelegt."],
-        "Rumpf": ["Keine besondere Einzel-/Doppelquote festgelegt."],
+        "Rumpf": ["Spielt ausschließlich Einzel."],
         "Trojanski": ["Spielt ausschließlich Einzel.", "Mindestens ein Spieltag Pause zwischen Einsätzen."],
         "van de Loo": ["Spielt ausschließlich Einzel.", "Mindestens drei Spieltage Pause zwischen Einsätzen."],
         "Weber": ["Keine besondere Einzel-/Doppelquote festgelegt."],

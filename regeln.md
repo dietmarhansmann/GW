@@ -158,7 +158,7 @@ Dieses Dokument fasst alle geschäftlichen Regeln, Spielerpräferenzen, Abwesenh
 - **Weitere Abwesenheiten**: Bisher keine für Spieltage 14–30 gemeldet.
 
 ### Rumpf
-- **Slot-Präferenz**: Bisher keine besondere Einzel-/Doppelquote festgelegt.
+- **Slot-Präferenz**: Ausschließlich Einzel (`ratio: 0.0`).
 - **Weitere Abwesenheiten**: Bisher keine für Spieltage 14–30 gemeldet.
 
 ### Trojanski
