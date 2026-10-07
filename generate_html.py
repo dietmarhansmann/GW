@@ -1089,6 +1089,7 @@ html_template = """<!DOCTYPE html>
             .schedule-overview > div:last-child { width: 100%; flex-wrap: wrap; }
         }
         @media (max-width: 767px) {
+            .schedule-overview, .schedule-table-hint, .player-filter-instructions, .filter-status { display: none !important; }
             .schedule-controls { padding: 12px; }
             .schedule-controls > div:first-child > div:first-child { align-items: stretch; }
             .schedule-controls > div:first-child > div:first-child > div { flex-wrap: wrap; }
@@ -1120,8 +1121,8 @@ html_template = """<!DOCTYPE html>
             .statistics-card h3 { line-height: 1.4; }
             .statistics-card table { min-width: 560px; }
             body.matchday-open { overflow: hidden; }
-            .matchday-overlay { position: fixed; inset: 0; z-index: 1000; display: flex; align-items: flex-end; justify-content: center; padding: 12px; background: rgba(6, 22, 15, .68); backdrop-filter: blur(5px); }
-            .matchday-sheet { width: min(100%, 620px); max-height: min(88dvh, 780px); overflow-y: auto; padding: 18px 16px 14px; border: 1px solid #d5e8dc; border-radius: 24px 24px 18px 18px; background: #fff; color: #18352a; box-shadow: 0 24px 80px rgba(0, 0, 0, .3); overscroll-behavior: contain; }
+            .matchday-overlay { position: fixed; inset: 0; z-index: 1000; display: flex; align-items: stretch; justify-content: center; padding: 0; background: rgba(6, 22, 15, .68); backdrop-filter: blur(5px); }
+            .matchday-sheet { width: 100%; max-height: 100dvh; overflow-y: auto; padding: max(18px, env(safe-area-inset-top)) 16px max(14px, env(safe-area-inset-bottom)); border: 0; border-radius: 0; background: #fff; color: #18352a; box-shadow: none; overscroll-behavior: contain; }
             .dark .matchday-sheet { border-color: #3c594a; background: #17231c; color: #ecfdf5; }
             .matchday-sheet-header { display: grid; grid-template-columns: 44px minmax(0, 1fr) 44px 38px; align-items: center; gap: 8px; }
             .matchday-title-group { flex: 1; text-align: center; }
@@ -1193,9 +1194,9 @@ html_template = """<!DOCTYPE html>
         <div class="no-print schedule-controls bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-3 mb-3 flex flex-col md:flex-row justify-between items-start md:items-center gap-2.5">
             <div class="flex-1 w-full">
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-1.5 gap-2">
-                    <span class="font-bold text-xs uppercase tracking-wider text-gray-700 dark:text-gray-300">Klick [NAME] = Spiele filtern | 📅 = Kalender herunterladen:</span>
+                    <span class="player-filter-instructions font-bold text-xs uppercase tracking-wider text-gray-700 dark:text-gray-300">Klick [NAME] = Spiele filtern | 📅 = Kalender herunterladen:</span>
                     <div class="flex items-center gap-2">
-                        <span v-if="currentFilter !== 'ALL'" class="text-[11px] text-emerald-700 dark:text-emerald-400 font-semibold whitespace-nowrap">
+                        <span v-if="currentFilter !== 'ALL'" class="filter-status text-[11px] text-emerald-700 dark:text-emerald-400 font-semibold whitespace-nowrap">
                             Filter: {{ currentFilter }} ({{ filteredMatches.length }} Spieltage)
                         </span>
                     </div>
@@ -1827,6 +1828,10 @@ html_template = """<!DOCTYPE html>
                         currentFilter.value = playerFromUrl;
                     }
                     nextTick(() => {
+                        if (window.matchMedia('(max-width: 767px)').matches && nextMatch.value) {
+                            openMatchday(nextMatch.value);
+                            return;
+                        }
                         const el = document.getElementById('next-match-target');
                         if (el) {
                             el.scrollIntoView({ behavior: 'smooth', block: 'center' });
