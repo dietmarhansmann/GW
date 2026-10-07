@@ -21,7 +21,11 @@
         body { background: radial-gradient(ellipse at 12% 0%, rgba(16, 185, 129, .11), transparent 34%), #f4f7f5; }
         #app { max-width: 1480px; margin-inline: auto; }
         .page-heading { display: flex; align-items: end; justify-content: space-between; gap: 16px; padding: 18px 4px 14px; }
-        .page-heading h1 { margin: 2px 0 0; color: #123b2d; font-size: clamp(1.55rem, 3vw, 2.35rem); font-weight: 750; letter-spacing: -.045em; line-height: 1.05; }
+        .page-heading h1 { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin: 2px 0 0; color: #123b2d; font-size: clamp(1.55rem, 3vw, 2.35rem); font-weight: 750; letter-spacing: -.045em; line-height: 1.05; }
+        .year-switch { display: inline-flex; align-items: center; padding: 6px 10px; border: 1px solid #b7d9c6; border-radius: 999px; background: #eaf5ee; color: #08744f; font-size: .42em; font-weight: 650; letter-spacing: 0; transition: background-color .2s, color .2s; }
+        .year-switch:hover { background: #d8ede0; color: #075238; }
+        .dark .year-switch { border-color: #456b56; background: #203b2d; color: #a7f3d0; }
+        .dark .year-switch:hover { background: #294b38; color: #d1fae5; }
         .page-heading p { margin: 7px 0 0; color: #64776e; font-size: .88rem; }
         .page-heading-mark { display: grid; width: 46px; height: 46px; place-items: center; border: 1px solid #d2e8dc; border-radius: 16px; background: linear-gradient(145deg, #fff, #e4f4eb); color: #08744f; font-size: 1.45rem; box-shadow: 0 8px 20px rgba(15, 75, 50, .08); }
         .schedule-overview { overflow: hidden; position: relative; min-height: 76px; padding: 16px 20px; border: 1px solid rgba(167, 243, 208, .32); border-radius: 20px; background: linear-gradient(115deg, #073d2e 0%, #08704f 68%, #16805a 100%); color: #f0fdf4; box-shadow: 0 14px 34px rgba(6, 78, 59, .17); }
@@ -153,7 +157,7 @@
     <div id="app" class="max-w-[98%] mx-auto">
         <header class="page-heading">
             <div>
-                <h1>GW Tennis Spielplan</h1>
+                <h1>GW Halle 2027<a href="index.html" class="year-switch no-print" title="Zum Spielplan 2026 wechseln" aria-label="Zum Spielplan 2026 wechseln">↗ 2026</a></h1>
             </div>
             <div class="page-heading-mark" aria-hidden="true">🎾</div>
         </header>
@@ -168,9 +172,6 @@
                 <span class="text-emerald-800 dark:text-emerald-400 font-semibold">⭐ Nächster Spieltag: <b>{{ nextMatch ? formatFullDate(nextMatch.date) : 'Keiner' }}</b><span v-if="nextMatch"> (#{{ nextMatch.spieltag }})</span></span>
             </div>
             <div class="flex items-center gap-2">
-                <a href="index.html" class="no-print bg-blue-100 hover:bg-blue-200 text-blue-800 px-2.5 py-1.5 rounded-lg text-xs font-semibold transition border border-blue-300 flex items-center gap-1 shadow-sm" title="Zur ersten Saisonhälfte wechseln">
-                    <span>↩ Spielplan 2026</span>
-                </a>
                 <button @click="printPage()" class="no-print bg-gray-100 hover:bg-gray-200 text-gray-700 px-2.5 py-1.5 rounded-lg text-xs font-semibold transition border border-gray-300 flex items-center gap-1 shadow-sm" title="Spielplan drucken">
                     <span>🖨️ Drucken</span>
                 </button>
