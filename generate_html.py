@@ -1432,11 +1432,6 @@ html_template = """<!DOCTYPE html>
             </div>
         </div>
 
-        <!-- Footer / Stand timestamp -->
-        <div class="no-print mt-3 mb-2 text-center text-xs text-gray-500 dark:text-gray-400 py-2 border-t border-gray-200 dark:border-gray-800">
-            Stand: /*UPDATE_DATE_PLACEHOLDER*/
-        </div>
-
     </div>
 
     <script>
