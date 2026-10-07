@@ -1691,8 +1691,8 @@ html_template = """<!DOCTYPE html>
                     showPastMatches.value = !showPastMatches.value;
                 }
 
-                const sortColumn = ref('kosten');
-                const sortDirection = ref('desc');
+                const sortColumn = ref('name');
+                const sortDirection = ref('asc');
 
                 function sortBy(column) {
                     if (sortColumn.value === column) {
@@ -1714,11 +1714,9 @@ html_template = """<!DOCTYPE html>
                         let valB = b[sortColumn.value];
 
                         if (typeof valA === 'string') {
-                            valA = valA.toLowerCase();
-                            valB = valB.toLowerCase();
-                            if (valA < valB) return sortDirection.value === 'asc' ? -1 : 1;
-                            if (valA > valB) return sortDirection.value === 'asc' ? 1 : -1;
-                            return 0;
+                            return sortDirection.value === 'asc'
+                                ? valA.localeCompare(valB, 'de', { sensitivity: 'base' })
+                                : valB.localeCompare(valA, 'de', { sensitivity: 'base' });
                         } else {
                             return sortDirection.value === 'asc' ? valA - valB : valB - valA;
                         }
