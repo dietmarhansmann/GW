@@ -1521,11 +1521,10 @@ html_template = """<!DOCTYPE html>
                 });
 
                 const displayedMatches = computed(() => {
-                    let matches = matchesData;
-                    if (!showPastMatches.value) {
-                        matches = matches.filter(m => m.status !== 'Abgeschlossen');
-                    }
-                    return matches;
+                    if (showPastMatches.value) return matchesData;
+                    const today = new Date();
+                    const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+                    return matchesData.filter(m => m.date >= todayStr && m.status !== 'Abgeschlossen');
                 });
 
                 const selectedMatchdayIndex = computed(() => selectedMatchday.value
