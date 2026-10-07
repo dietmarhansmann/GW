@@ -85,7 +85,7 @@ Dieses Dokument fasst alle geschäftlichen Regeln, Spielerpräferenzen, Abwesenh
 - **Abwesenheiten**: Spieltag 3 (20.10.2026).
 
 ### Quante
-- **Zeitvorgabe**: Spielt exakt 2 mal in der Saison, ausschließlich um 21:00 Uhr (intern / geheim).
+- **Zeitvorgabe**: Für 2026 bleibt die Vorgabe von genau 2 Einsätzen um 21:00 Uhr bestehen; zusätzlich gelten für die zweite Saisonhälfte 2027 drei Doppel- und ein Einzel-Einsatz.
 
 ---
 
@@ -143,15 +143,14 @@ Dieses Dokument fasst alle geschäftlichen Regeln, Spielerpräferenzen, Abwesenh
 
 ### Nolte
 - **Slot-Präferenz**: Ausschließlich Einzel (`ratio: 0.0`).
-- **Weitere Abwesenheiten**: Bisher keine für Spieltage 14–30 gemeldet.
+- **Abwesenheiten**: 02.03.2027 (Spieltag 22), 23.03.2027 (Spieltag 25), 20.04.2027 (Spieltag 29) und 27.04.2027 (Spieltag 30).
 
 ### Prodehl
 - **Slot-Präferenz**: Wunsch nach ca. 60% Doppel (`ratio: 0.6`).
 - **Weitere Abwesenheiten**: Bisher keine für Spieltage 14–30 gemeldet.
 
 ### Quante
-- **Einsatzvorgabe (intern)**: Insgesamt genau 2 Einsätze in der Saison, ausschließlich um 21:00 Uhr.
-- **Termine**: Die beiden Einsatztage sind noch festzulegen; daraus folgt nicht automatisch, dass beide in der zweiten Saisonhälfte stattfinden.
+- **Einsatzvorgabe (intern)**: Genau 3 Einsätze als Doppel und 1 Einsatz als Einzel in der zweiten Saisonhälfte 2027.
 
 ### Redieker
 - **Slot-Präferenz**: Bisher keine besondere Einzel-/Doppelquote festgelegt.
