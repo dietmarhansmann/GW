@@ -1168,7 +1168,6 @@ html_template = """<!DOCTYPE html>
             <div>
                 <h1>GW Halle 2026<a href="spielplan_2027.html" class="year-switch no-print" title="Zum Spielplan 2027 wechseln" aria-label="Zum Spielplan 2027 wechseln">↗ 2027</a></h1>
             </div>
-            <div class="page-heading-mark" aria-hidden="true">🎾</div>
         </header>
 
         <!-- Quick Stats & Global Export Bar -->
