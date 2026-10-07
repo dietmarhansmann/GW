@@ -1048,8 +1048,11 @@ html_template = """<!DOCTYPE html>
         .player-filter-pill:hover { transform: translateY(-2px); box-shadow: 0 5px 12px rgba(15, 45, 32, .16); }
         .player-filter-pill.is-active { box-shadow: 0 0 0 2px #fff, 0 0 0 4px #059669, 0 5px 14px rgba(5, 150, 105, .22); }
         .player-filter-name { min-height: 34px; padding: 4px 10px 4px 6px; font-weight: 700; letter-spacing: .01em; }
-        .player-filter-avatar { position: relative; display: inline-grid; width: 25px; height: 25px; flex: 0 0 25px; place-items: center; overflow: hidden; border: 1px solid rgba(17, 24, 39, .16); border-radius: 50%; background: rgba(255, 255, 255, .58); font-size: 10px; font-weight: 800; }
-        .player-filter-avatar.is-next-match-player { border-color: #047857; background: var(--next-match-avatar, #047857); color: var(--next-match-avatar-text, #fff); }
+        .player-filter-avatar { position: relative; display: inline-grid; width: 28px; height: 28px; flex: 0 0 28px; place-items: center; overflow: hidden; border: 1px solid rgba(17, 24, 39, .16); border-radius: 50%; background: rgba(255, 255, 255, .58); font-size: 10px; font-weight: 800; }
+        .player-filter-avatar.is-next-match-player { border-color: var(--next-match-avatar); background: var(--next-match-avatar); color: var(--next-match-avatar-text, #fff); }
+        .player-filter-avatar.is-half-hour { grid-template-rows: 1fr 1px 1fr; gap: 1px; padding: 3px 0; font-size: 8px; line-height: 1; }
+        .player-filter-avatar.is-half-hour span { display: block; }
+        .player-filter-avatar.is-half-hour .time-divider { width: 12px; height: 1px; background: currentColor; }
         .player-filter-calendar { min-height: 34px; padding-inline: 9px; border-left: 1px solid rgba(17, 24, 39, .14); }
         .dark .player-filter-pill.is-active { box-shadow: 0 0 0 2px #1f2937, 0 0 0 4px #34d399, 0 5px 14px rgba(5, 150, 105, .24); }
         .schedule-table-card { overflow-x: auto; border-color: #dfe9e3; }
@@ -1215,7 +1218,7 @@ html_template = """<!DOCTYPE html>
                         <button @click="setFilter(player)"
                             :style="{ color: currentFilter === player ? '#ffffff' : '#111827' }"
                             class="player-filter-name text-xs flex items-center gap-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-emerald-700">
-                            <span v-if="nextMatchTimes[player]" class="player-filter-avatar is-next-match-player" :style="{ '--next-match-avatar': nextMatchTimes[player].background }" :title="'Spielt am nächsten Spieltag um ' + nextMatchTimes[player].time + ' Uhr'" aria-hidden="true"></span>
+                            <span v-if="nextMatchTimes[player]" class="player-filter-avatar is-next-match-player" :class="{ 'is-half-hour': nextMatchTimes[player].time === '20:30' }" :style="{ '--next-match-avatar': nextMatchTimes[player].background, '--next-match-avatar-text': nextMatchTimes[player].text }" :title="'Spielt am nächsten Spieltag um ' + nextMatchTimes[player].time + ' Uhr'" aria-hidden="true"><template v-if="nextMatchTimes[player].time === '20:30'"><span>20</span><span class="time-divider"></span><span>30</span></template><template v-else>{{ nextMatchTimes[player].label }}</template></span>
                             <span>{{ player }}</span>
                         </button>
                         <button @click.stop="downloadPlayerIcs(player)"
@@ -1600,10 +1603,10 @@ html_template = """<!DOCTYPE html>
 
                 const nextMatchTimes = computed(() => {
                     const colorsByTime = {
-                        '19:00': { background: '#bbf7d0', text: '#14532d' },
-                        '20:00': { background: '#86efac', text: '#14532d' },
-                        '20:30': { background: '#22c55e', text: '#052e16' },
-                        '21:00': { background: '#047857', text: '#ffffff' }
+                        '19:00': { background: '#facc15', text: '#422006', label: '19' },
+                        '20:00': { background: '#f97316', text: '#431407', label: '20' },
+                        '20:30': { background: '#2563eb', text: '#ffffff', label: '20:30' },
+                        '21:00': { background: '#dc2626', text: '#ffffff', label: '21' }
                     };
                     const times = {};
                     matchdaySlots(nextMatch.value).forEach(slot => {
