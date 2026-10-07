@@ -45,7 +45,8 @@
         .player-filter-avatar.is-half-hour { grid-template-rows: 1fr 1px 1fr; gap: 1px; padding: 3px 0; font-size: 8px; line-height: 1; }
         .player-filter-avatar.is-half-hour span { display: block; }
         .player-filter-avatar.is-half-hour .time-divider { width: 12px; height: 1px; background: currentColor; }
-        .player-filter-calendar { min-height: 34px; padding-inline: 9px; border-left: 1px solid rgba(17, 24, 39, .14); }
+        .player-filter-calendar { display: grid; width: 38px; min-height: 34px; place-items: center; padding-inline: 8px; border-left: 1px solid rgba(17, 24, 39, .14); }
+        .player-filter-calendar svg { width: 19px; height: 19px; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
         .dark .player-filter-pill.is-active { box-shadow: 0 0 0 2px #1f2937, 0 0 0 4px #34d399, 0 5px 14px rgba(5, 150, 105, .24); }
         .schedule-table-card { overflow-x: auto; border-color: #dfe9e3; }
         #schedule-table thead th { padding: 12px 14px; color: #dcefe5; background: #174b39; font-size: 10px; letter-spacing: .12em; }
@@ -185,10 +186,6 @@
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-1.5 gap-2">
                     <span class="font-bold text-xs uppercase tracking-wider text-gray-700 dark:text-gray-300">Klick [NAME] = Spiele filtern | 📅 = Kalender herunterladen:</span>
                     <div class="flex items-center gap-2">
-                        <!-- Search input -->
-                        <div class="relative">
-                            <input type="text" v-model="playerSearchQuery" placeholder="🔍 Spieler suchen..." class="bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded px-2.5 py-1 text-xs text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-1 focus:ring-emerald-600 w-36">
-                        </div>
                         <span v-if="currentFilter !== 'ALL'" class="text-[11px] text-emerald-700 dark:text-emerald-400 font-semibold whitespace-nowrap">
                             Filter: {{ currentFilter }} ({{ filteredMatches.length }} Spieltage)
                         </span>
@@ -217,8 +214,8 @@
                         <button @click.stop="downloadPlayerIcs(player)"
                             :style="{ borderColor: playerColors[player] ? playerColors[player].border : '#ccc', color: currentFilter === player ? '#ffffff' : '#111827' }"
                             class="player-filter-calendar text-xs transition hover:bg-black/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-emerald-700"
-                            :title="'ICS-Kalender für ' + player + ' herunterladen'">
-                            📅
+                            :title="'Kalenderdatei für ' + player + ' herunterladen'" aria-label="Kalenderdatei für Spieler herunterladen">
+                            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3.5" y="5" width="17" height="16" rx="2.5"></rect><path d="M7.5 3.5v3M16.5 3.5v3M3.5 9.5h17M7.5 13h2M12 13h2M16.5 13h.01M7.5 17h2M12 17h2"></path></svg>
                         </button>
                     </div>
                 </div>
@@ -1133,7 +1130,6 @@
                 const currentFilter = ref('ALL');
                 const showPastMatches = ref(false);
                 const rulesByPlayer = ref(playerRules);
-                const playerSearchQuery = ref('');
                 const showTopfA = ref(false);
                 const selectedMatchday = ref(null);
                 const touchStartX = ref(null);
@@ -1158,11 +1154,7 @@
                     return [...new Set(matchesData.flatMap(m => getMatchPlayers(m)))].sort();
                 });
 
-                const displayedPlayers = computed(() => {
-                    if (!playerSearchQuery.value) return allPlayers.value;
-                    const q = playerSearchQuery.value.toLowerCase();
-                    return allPlayers.value.filter(p => p.toLowerCase().includes(q));
-                });
+                const displayedPlayers = computed(() => allPlayers.value);
 
                 const explicitPlayerColors = {
                     "Beumer": { bg: '#bfdbfe', text: '#111827', border: '#60a5fa' },   // Soft Blue
@@ -1542,7 +1534,6 @@
                     rulesByPlayer,
                     allPlayers,
                     displayedPlayers,
-                    playerSearchQuery,
                     topfA,
                     showTopfA,
                     playerColors,
