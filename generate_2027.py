@@ -20,7 +20,7 @@ PLAYERS = [
 RATIOS = {
     "Beumer": 0.50, "Dedores": 0.0, "Hansmann": 0.30, "Heyn": 0.30,
     "Hinz": 0.50, "Kissner": 0.0, "Kuhlhoff": 0.0, "Marschollek": 0.90,
-    "Mönning": 0.0, "Nolte": 0.0, "Prodehl": 0.60, "Quante": 0.75, "Rumpf": 0.0, "Trojanski": 0.0,
+    "Mönning": 0.0, "Nolte": 0.0, "Prodehl": 0.60, "Quante": 0.75, "Redieker": 0.20, "Rumpf": 0.0, "Trojanski": 0.0,
     "Van de Looh": 0.0, "Wojtanowitsch": 0.0,
 }
 
@@ -642,7 +642,7 @@ def render_from_2026_template(schedule, games, doubles):
         "Nolte": ["Spielt ausschließlich Einzel.", "Abwesend am 02.03.2027 (#22), 23.03.2027 (#25), 20.04.2027 (#29) und 27.04.2027 (#30)."],
         "Prodehl": ["Wunsch nach ca. 60% Doppel."],
         "Quante": ["Genau drei Doppel-Einsätze und ein Einzel-Einsatz in der zweiten Saisonhälfte 2027."],
-        "Redieker": ["Keine besondere Einzel-/Doppelquote festgelegt."],
+        "Redieker": ["Wunsch nach 80% Einzel und 20% Doppel."],
         "Rumpf": ["Spielt ausschließlich Einzel."],
         "Trojanski": ["Spielt ausschließlich Einzel.", "Mindestens ein Spieltag Pause zwischen Einsätzen.", "Abwesend am 16.02.2027 (Spieltag 20)."],
         "Van de Looh": ["Spielt ausschließlich Einzel.", "Mindestens drei Spieltage Pause zwischen Einsätzen."],
@@ -701,9 +701,18 @@ def render_from_2026_template(schedule, games, doubles):
     page = re.sub(r"<title>.*?</title>", "<title>Tennis-Spielplan zweite Saisonhälfte 2027</title>", page, count=1)
     page = page.replace("<b>13</b> Spieltage (Saison 2026/2027)", "<b>17</b> Spieltage (2. Saisonhälfte 2027)")
     page = page.replace("Nächster Spieltag: <b>06.10.2026</b> (#1)", "Nächster Spieltag: <b>05.01.2027</b> (#14)")
-    page = page.replace("href=\"spielplan_2027.html\"", "href=\"index.html\"")
-    page = page.replace("Spielplan zweite Saisonhälfte 2027 öffnen", "Zur ersten Saisonhälfte wechseln")
-    page = page.replace("<span>📅 2027</span>", "<span>↩ Spielplan 2026</span>")
+    heading = (
+        '<h1>GW Halle 2026<a href="spielplan_2027.html" class="year-switch no-print" '
+        'title="Zum Spielplan 2027 wechseln" aria-label="Zum Spielplan 2027 wechseln">↗ 2027</a></h1>'
+    )
+    replacement = (
+        '<h1>GW Halle 2027<a href="index.html" class="year-switch no-print" '
+        'title="Zum Spielplan 2026 wechseln" aria-label="Zum Spielplan 2026 wechseln">↗ 2026</a></h1>'
+    )
+    count = page.count(heading)
+    if count != 1:
+        raise RuntimeError("Could not replace year-switch heading in index.html")
+    page = page.replace(heading, replacement)
     page = page.replace("tennis_spielplan_statistik_2026_2027.csv", "tennis_spielplan_statistik_2027_zweite_haelfte.csv")
     page = page.replace("tennis_spielplan_gesamtsaison_2026_2027.ics", "tennis_spielplan_2027_zweite_haelfte.ics")
     page = page.replace("Stand: 21.09.2026", "Stand: 01.10.2026")

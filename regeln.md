@@ -153,7 +153,7 @@ Dieses Dokument fasst alle geschäftlichen Regeln, Spielerpräferenzen, Abwesenh
 - **Einsatzvorgabe (intern)**: Genau 3 Einsätze als Doppel und 1 Einsatz als Einzel in der zweiten Saisonhälfte 2027.
 
 ### Redieker
-- **Slot-Präferenz**: Bisher keine besondere Einzel-/Doppelquote festgelegt.
+- **Slot-Präferenz**: Wunsch nach 80% Einzel / 20% Doppel (`ratio: 0.20`).
 - **Weitere Abwesenheiten**: Bisher keine für Spieltage 14–30 gemeldet.
 
 ### Rumpf
