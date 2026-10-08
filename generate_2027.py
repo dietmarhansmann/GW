@@ -13,7 +13,7 @@ random.seed(20270105)
 PLAYERS = [
     "Beumer", "Dedores", "Hansmann", "Heyn", "Hinz", "Kissner", "Knust",
     "Kuhlhoff", "Marschollek", "Mönning", "Nolte", "Prodehl", "Quante", "Redieker",
-    "Rumpf", "Trojanski", "van de Loo", "Weber", "Wojtanowitsch",
+    "Rumpf", "Trojanski", "Van de Looh", "Weber", "Wojtanowitsch",
 ]
 
 # Doubles share (ratio); 0.0 means singles only. None means no fixed preference.
@@ -21,7 +21,7 @@ RATIOS = {
     "Beumer": 0.50, "Dedores": 0.0, "Hansmann": 0.30, "Heyn": 0.30,
     "Hinz": 0.50, "Kissner": 0.0, "Kuhlhoff": 0.0, "Marschollek": 0.90,
     "Mönning": 0.0, "Nolte": 0.0, "Prodehl": 0.60, "Quante": 0.75, "Rumpf": 0.0, "Trojanski": 0.0,
-    "van de Loo": 0.0, "Wojtanowitsch": 0.0,
+    "Van de Looh": 0.0, "Wojtanowitsch": 0.0,
 }
 
 ABSENCES = {
@@ -29,8 +29,11 @@ ABSENCES = {
     "Dedores": {16, 17, 20, 21, 25, 26, 28},
     "Heyn": {15, 19, 23, 26, 28, 30},
     "Hinz": {30},
+    "Kuhlhoff": {14, 18},
     "Marschollek": {16, 24},
+    "Mönning": {14, 15},
     "Nolte": {22, 25, 29, 30},
+    "Trojanski": {20},
 }
 
 # A player is not scheduled after reaching their requested number of appearances.
@@ -82,7 +85,7 @@ def choose_attendees():
                 continue
             if p == "Trojanski" and day - last_played[p] < 2:
                 continue
-            if p == "van de Loo" and day - last_played[p] < 4:
+            if p == "Van de Looh" and day - last_played[p] < 4:
                 continue
             # Prefer fewer appearances; tie-break toward those resting longest.
             score = counts[p] + (0.55 if last_played[p] == day - 1 else 0)
@@ -448,9 +451,9 @@ def validate(matches):
         if "Trojanski" in attendees:
             assert day - last.get("Trojanski", -99) >= 2
             last["Trojanski"] = day
-        if "van de Loo" in attendees:
-            assert day - last.get("van de Loo", -99) >= 4
-            last["van de Loo"] = day
+        if "Van de Looh" in attendees:
+            assert day - last.get("Van de Looh", -99) >= 4
+            last["Van de Looh"] = day
     time_counts = defaultdict(lambda: [0, 0, 0, 0])
     for match in matches:
         for slot, pair in zip(TIME_SLOTS[:3], match["singles"][:3]):
@@ -523,7 +526,7 @@ def render_matching_2026(schedule, games, doubles):
         "Beumer": "#bfdbfe", "Dedores": "#fecaca", "Hansmann": "#fef08a", "Heyn": "#bbf7d0",
         "Hinz": "#fed7aa", "Kissner": "#e9d5ff", "Knust": "#e2e8f0", "Kuhlhoff": "#a5f3fc",
         "Marschollek": "#fbcfe8", "Mönning": "#c7d2fe", "Nolte": "#d9f99d", "Prodehl": "#99f6e4", "Quante": "#fde68a",
-        "Redieker": "#fecdd3", "Rumpf": "#fed7aa", "Trojanski": "#cbd5e1", "van de Loo": "#bae6fd",
+        "Redieker": "#fecdd3", "Rumpf": "#fed7aa", "Trojanski": "#cbd5e1", "Van de Looh": "#bae6fd",
         "Weber": "#ddd6fe", "Wojtanowitsch": "#a7f3d0",
     }
 
@@ -567,10 +570,10 @@ def render_matching_2026(schedule, games, doubles):
         "Hansmann: ca. 70% Einzel / 30% Doppel.",
         "Heyn: 75% Einzel / 25% Doppel.",
         "Hinz: 50% Einzel / 50% Doppel; abwesend am 27.04.2027 (#30).",
-        "Kissner, Kuhlhoff, Mönning, Nolte und Wojtanowitsch: ausschließlich Einzel.",
+        "Kissner: ausschließlich Einzel. Kuhlhoff: ausschließlich Einzel; abwesend am 05.01.2027 (#14) und 02.02.2027 (#18). Mönning: ausschließlich Einzel; abwesend am 05.01.2027 (#14) und 12.01.2027 (#15). Nolte und Wojtanowitsch: ausschließlich Einzel.",
         "Marschollek: ca. 90% Doppel; abwesend am 19.01.2027 (#16) und 16.03.2027 (#24).",
-        "Prodehl: ca. 60% Doppel. Trojanski: Einzel, mindestens ein Spieltag Pause.",
-        "van de Loo: Einzel, mindestens drei Spieltage Pause. Knust nimmt ab 2027 teil.",
+        "Prodehl: ca. 60% Doppel. Trojanski: Einzel, mindestens ein Spieltag Pause; abwesend am 16.02.2027 (#20).",
+        "Van de Looh: Einzel, mindestens drei Spieltage Pause. Knust nimmt ab 2027 teil.",
         "Quante: drei Doppel-Einsätze und ein Einzel-Einsatz in der zweiten Saisonhälfte 2027.",
     ]
     player_chips = "".join(
@@ -633,16 +636,16 @@ def render_from_2026_template(schedule, games, doubles):
         "Hinz": ["Wunsch nach 50% Einzel und 50% Doppel.", "Abwesend am 27.04.2027 (Spieltag 30)."],
         "Kissner": ["Spielt ausschließlich Einzel."],
         "Knust": ["Nimmt ab 2027 teil."],
-        "Kuhlhoff": ["Spielt ausschließlich Einzel."],
+        "Kuhlhoff": ["Spielt ausschließlich Einzel.", "Abwesend am 05.01.2027 (Spieltag 14) und 02.02.2027 (Spieltag 18)."],
         "Marschollek": ["Wunsch nach ca. 90% Doppel.", "Abwesend am 19.01.2027 (Spieltag 16) und 16.03.2027 (Spieltag 24)."],
-        "Mönning": ["Spielt ausschließlich Einzel."],
+        "Mönning": ["Spielt ausschließlich Einzel.", "Abwesend am 05.01.2027 (Spieltag 14) und 12.01.2027 (Spieltag 15)."],
         "Nolte": ["Spielt ausschließlich Einzel.", "Abwesend am 02.03.2027 (#22), 23.03.2027 (#25), 20.04.2027 (#29) und 27.04.2027 (#30)."],
         "Prodehl": ["Wunsch nach ca. 60% Doppel."],
         "Quante": ["Genau drei Doppel-Einsätze und ein Einzel-Einsatz in der zweiten Saisonhälfte 2027."],
         "Redieker": ["Keine besondere Einzel-/Doppelquote festgelegt."],
         "Rumpf": ["Spielt ausschließlich Einzel."],
-        "Trojanski": ["Spielt ausschließlich Einzel.", "Mindestens ein Spieltag Pause zwischen Einsätzen."],
-        "van de Loo": ["Spielt ausschließlich Einzel.", "Mindestens drei Spieltage Pause zwischen Einsätzen."],
+        "Trojanski": ["Spielt ausschließlich Einzel.", "Mindestens ein Spieltag Pause zwischen Einsätzen.", "Abwesend am 16.02.2027 (Spieltag 20)."],
+        "Van de Looh": ["Spielt ausschließlich Einzel.", "Mindestens drei Spieltage Pause zwischen Einsätzen."],
         "Weber": ["Keine besondere Einzel-/Doppelquote festgelegt."],
         "Wojtanowitsch": ["Spielt ausschließlich Einzel."],
         "Allgemeine Regeln": ["Faire Verteilung der Einsätze innerhalb der zweiten Saisonhälfte.", "Spielzeiten 19:00, 20:00, 21:00 und 20:30 werden ohne Sondervorgabe je Spieler möglichst gleichmäßig verteilt.", "Doppelte Begegnungen und Partnerschaften werden möglichst vermieden."],
@@ -668,6 +671,7 @@ def render_from_2026_template(schedule, games, doubles):
             raise RuntimeError(f"Could not replace {name} data in index.html")
         return updated
 
+    page = page.replace('"van de Loo": { bg: \'#bae6fd\', text: \'#111827\', border: \'#38bdf8\' }', '"Van de Looh": { bg: \'#bae6fd\', text: \'#111827\', border: \'#38bdf8\' }')
     page = replace_assignment(page, "matchesData", "playerRules", matches_data)
     page = replace_assignment(page, "playerRules", "playerStats", rules)
     page = replace_assignment(page, "playerStats", "topfA", stats)

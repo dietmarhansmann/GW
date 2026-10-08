@@ -18,12 +18,12 @@ Dieses Dokument fasst alle geschäftlichen Regeln, Spielerpräferenzen, Abwesenh
 ## 2. Kader & Spieler-Pool
 - **Basis**: Einlesen der Rohdaten aus der Excel-Datei (`Tennis_Spielplan_Google_Drive_Native_Fix.xlsx`).
 - **Alle in der Excel-Quelle enthaltenen Spieler (Rohdaten)**:
-  - Beumer, Dedores, Hansmann, Heyn, Hinz, Höttinger, Knust, Kuhlhoff, Marschollek, Mönning, Nolte, Prodehl, Redieker, Rumpf, Trojanski, Weber, Wojtanowitsch, van de Loo.
+  - Beumer, Dedores, Hansmann, Heyn, Hinz, Höttinger, Knust, Kuhlhoff, Marschollek, Mönning, Nolte, Prodehl, Redieker, Rumpf, Trojanski, Van de Looh, Weber, Wojtanowitsch.
 - **Bereinigung / Roster-Anpassungen**:
   - Entfernte Spieler: *Höttinger*.
   - Übersicht-only Spieler: *Knust* (nimmt erst 2027 teil).
   - Hinzugefügte Spieler: *Kissner*, *Quante*.
-  - Aktiver bereinigter Spieler-Pool: Beumer, Dedores, Hansmann, Heyn, Hinz, Kissner, Knust, Kuhlhoff, Marschollek, Mönning, Nolte, Prodehl, Quante, Redieker, Rumpf, Trojanski, Weber, Wojtanowitsch, van de Loo.
+  - Aktiver bereinigter Spieler-Pool: Beumer, Dedores, Hansmann, Heyn, Hinz, Kissner, Knust, Kuhlhoff, Marschollek, Mönning, Nolte, Prodehl, Quante, Redieker, Rumpf, Trojanski, Van de Looh, Weber, Wojtanowitsch.
 - **Eindeutigkeit**: Pro Spielabend nehmen exakt 10 unique Spieler teil (keine Doppelbelegungen pro Spieler an demselben Abend).
 
 ---
@@ -73,7 +73,7 @@ Dieses Dokument fasst alle geschäftlichen Regeln, Spielerpräferenzen, Abwesenh
 - **Slot-Präferenz**: Spielt ausschließlich **Einzel** (0% Doppel, `ratio: 0.0`).
 - **Abwesenheiten**: 13.10.26 (#2), 20.10.26 (#3), 10.11.26 (#6, Zeitraum 03.11.–10.11.), 17.11.26 (#7), 24.11.26 (#8), 08.12.26 (#10), 29.12.26 (#13).
 
-### van de Loo
+### Van de Looh
 - **Frequenz**: Einmal im Monat (mindestens 3 Spieltage Pause / 4 Wochen Abstand).
 - **Slot-Präferenz**: Spielt ausschließlich **Einzel** (0% Doppel, `ratio: 0.0`).
 
@@ -131,7 +131,7 @@ Dieses Dokument fasst alle geschäftlichen Regeln, Spielerpräferenzen, Abwesenh
 
 ### Kuhlhoff
 - **Slot-Präferenz**: Ausschließlich Einzel (`ratio: 0.0`).
-- **Weitere Abwesenheiten**: Bisher keine für Spieltage 14–30 gemeldet.
+- **Abwesenheiten**: 05.01.2027 (Spieltag 14) und 02.02.2027 (Spieltag 18).
 
 ### Marschollek
 - **Slot-Präferenz**: Wunsch nach ca. 90% Doppel (`ratio: 0.9`).
@@ -139,7 +139,7 @@ Dieses Dokument fasst alle geschäftlichen Regeln, Spielerpräferenzen, Abwesenh
 
 ### Mönning
 - **Slot-Präferenz**: Ausschließlich Einzel (`ratio: 0.0`).
-- **Weitere Abwesenheiten**: Bisher keine für Spieltage 14–30 gemeldet.
+- **Abwesenheiten**: 05.01.2027 (Spieltag 14) und 12.01.2027 (Spieltag 15).
 
 ### Nolte
 - **Slot-Präferenz**: Ausschließlich Einzel (`ratio: 0.0`).
@@ -163,9 +163,9 @@ Dieses Dokument fasst alle geschäftlichen Regeln, Spielerpräferenzen, Abwesenh
 ### Trojanski
 - **Frequenz**: 2-Wochen-Rhythmus (mindestens ein Spieltag Pause zwischen Einsätzen).
 - **Slot-Präferenz**: Ausschließlich Einzel (`ratio: 0.0`).
-- **Weitere Abwesenheiten**: Bisher keine für Spieltage 14–30 gemeldet.
+- **Abwesenheit**: 16.02.2027 (Spieltag 20).
 
-### van de Loo
+### Van de Looh
 - **Frequenz**: Einmal im Monat (mindestens drei Spieltage Pause / ca. vier Wochen Abstand).
 - **Slot-Präferenz**: Ausschließlich Einzel (`ratio: 0.0`).
 - **Weitere Abwesenheiten**: Bisher keine für Spieltage 14–30 gemeldet.
@@ -225,7 +225,7 @@ Für jeden Spieltag (beschränkt auf Saison 2026, Spieltage 1–13) läuft folge
    - Spieler mit 100% Doppel (`ratio >= 1.0`) oder 0% Doppel (`ratio <= 0.0`) werden vorab in die korrekten Kategorien (Einzel vs. Doppel) gelenkt.
 3. **Regel-Applikation (`PLAYER_RULES`)**:
    - **Abwesenheiten**: Abgleich mit den spezifischen Spieltags-IDs je Spieler. Bei Abwesenheit wird automatisch ein valider Ersatzspieler (`get_substitute`) ermittelt.
-   - **Frequenz & Pausen (`max_frequency_gap`, `tshirt_size_frequency`)**: Einhaltung von Mindestabständen (z. B. Trojanski im 2-Wochen-Rhythmus, van de Loo monatlich).
+   - **Frequenz & Pausen (`max_frequency_gap`, `tshirt_size_frequency`)**: Einhaltung von Mindestabständen (z. B. Trojanski im 2-Wochen-Rhythmus, Van de Looh monatlich).
    - **Slot-Präferenzen & Quoten (`ratio`)**: Dynamischer Ausgleich von Einzel- und Doppelspielen basierend auf kumulierten Ist-Zahlen.
 4. **Doppelbuchungs-Schutz & Auffüllung**:
    - Prüfung auf Mehrfachbelegung (`occupied_today`) und automatisches Ersetzen durch freie Spieler unter Berücksichtigung der Slot-Typen (Einzel/Doppel).
