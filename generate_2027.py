@@ -672,6 +672,23 @@ def render_from_2026_template(schedule, games, doubles):
         return updated
 
     page = page.replace('"van de Loo": { bg: \'#bae6fd\', text: \'#111827\', border: \'#38bdf8\' }', '"Van de Looh": { bg: \'#bae6fd\', text: \'#111827\', border: \'#38bdf8\' }')
+    page = re.sub(
+        r"formatPlayerBadge\(([^,\n]+), (m\.status === 'Abgeschlossen')\)",
+        lambda match: f"formatPlayerBadge({match.group(1)}, {match.group(2)}, getSlotPlayers(m.{match.group(1).split('.')[1]}))",
+        page,
+    )
+    page = page.replace(
+        "function formatPlayerBadge(player, isFinished) {",
+        "function formatPlayerBadge(player, isFinished, matchPlayers = []) {",
+    )
+    page = page.replace(
+        """let opacityClass = '';\n                    if (currentFilter.value !== 'ALL' && !isFiltered) {\n                        opacityClass = 'opacity-30';\n                    }""",
+        """const opacity = currentFilter.value === 'ALL' || isFiltered\n                        ? 1\n                        : (matchPlayers.includes(currentFilter.value) ? 0.7 : 0.4);""",
+    )
+    page = page.replace("color: ${colors.text};\"", "color: ${colors.text}; opacity: ${opacity} !important;\"")
+    page = page.replace("shadow-2xs transition ${opacityClass}", "shadow-2xs transition")
+    page = page.replace(" opacity-25", "")
+    page = page.replace("                    formatPlayerBadge,\n                    getRowClass,", "                    formatPlayerBadge,\n                    getSlotPlayers,\n                    getRowClass,")
     page = replace_assignment(page, "matchesData", "playerRules", matches_data)
     page = replace_assignment(page, "playerRules", "playerStats", rules)
     page = replace_assignment(page, "playerStats", "topfA", stats)
