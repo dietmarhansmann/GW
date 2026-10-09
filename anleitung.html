@@ -32,13 +32,19 @@
             <!-- 1. Player filters -->
             <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
                 <h2 class="font-bold text-emerald-800 text-base mb-2 flex items-center gap-2">
-                    <span>🔍</span> 1. Nur die eigenen glorreichen Auftritte sehen
+                    <span>🔍</span> 1. Spielerfilter und Kalender-Download
                 </h2>
+                <figure class="mb-4">
+                    <img src="docs/images/spielerfilter.png" alt="Spielerfilter mit Zeitmarkierungen, Kalender-Downloads und Schaltfläche für vergangene Spiele" class="block w-full h-auto rounded-lg border border-gray-200 shadow-sm">
+                    <figcaption class="mt-1.5 text-xs text-gray-500">Die Spielerleiste oberhalb des Spielplans. Namen und Zeitmarkierungen helfen beim Filtern und bei der Orientierung.</figcaption>
+                </figure>
                 <ul class="list-disc list-inside space-y-1.5 text-gray-600 text-xs md:text-sm pl-1">
                     <li><b>Namens-Klick:</b> Ein Klick auf deinen Namen (oder dein farbiges Badge) oben in der Legende filtert sofort alle irrelevanten Matches weg. Klickst du denselben Namen erneut an, wird der Filter aufgehoben.</li>
-                    <li><b>Nächster Spieltag:</b> Neben Spielern, die am nächsten Spieltag spielen, erscheint die Startzeit im farbigen Kreis: 19 Uhr gelb, 20 Uhr orange, 21 Uhr rot und 20:30 Uhr blau (mit der Zeit übereinander im Kreis).</li>
+                    <li><b>Nächster Spieltag:</b> Der farbige Kreis am Spieler-Badge zeigt bei Teilnehmenden des nächsten Spieltags die Startzeit: 19 Uhr gelb, 20 Uhr orange, 21 Uhr rot und 20:30 Uhr blau (mit der Zeit übereinander im Kreis). Die Farben der Namens-Badges unterscheiden die Spieler; die Zeitfarben im Kreis sind separat zu verstehen.</li>
+                    <li><b>Kalender herunterladen:</b> Das Kalender-Symbol rechts am jeweiligen Spielernamen lädt die persönlichen Spieltermine als <code class="bg-gray-200 px-1 py-0.5 rounded">.ics</code>-Datei herunter.</li>
+                    <li><b>Vergangene Spiele:</b> Mit der Schaltfläche <b>„Vergangene Spiele anzeigen“</b> blendest du bereits gespielte Termine ein oder wieder aus.</li>
                     <li><b>Direktfilter per URL:</b> Der Spielername kann als URL-Parameter übergeben werden, z. B. <code class="bg-gray-200 px-1 py-0.5 rounded">index.html?spieler=Hansmann</code>. Beim Öffnen wird automatisch nur dieser Spieler angezeigt. Ein Klick auf ein anderes Spieler-Badge aktualisiert die URL ebenfalls.</li>
-                    <li><b>Alles auf Anfang:</b> Der schwarze <b class="text-black">„Alle“</b>-Button holt den restlichen Wahnsinn wieder zurück auf den Bildschirm und entfernt den URL-Filter.</li>
+                    <li><b>Alles auf Anfang:</b> Der schwarze <b class="text-black">„Alle“</b>-Button holt alle Spiele wieder auf den Bildschirm und entfernt den URL-Filter.</li>
                 </ul>
             </div>
 
@@ -47,11 +53,21 @@
                 <h2 class="font-bold text-emerald-800 text-base mb-2 flex items-center gap-2">
                     <span>📱</span> 2. Spielplan auf dem Handy bedienen
                 </h2>
+                <figure class="mb-4 max-w-sm mx-auto">
+                    <img src="docs/images/mobile-spieltag.png" alt="Mobile Spieltag-Ansicht mit Begegnungen, Uhrzeiten und Navigation zwischen Spieltagen" class="block w-full h-auto rounded-lg border border-gray-200 shadow-sm">
+                    <figcaption class="mt-1.5 text-xs text-gray-500">Die mobile Spieltag-Ansicht zeigt den nächsten Spieltag mit Begegnungen, Plätzen und Startzeiten.</figcaption>
+                </figure>
                 <ul class="list-disc list-inside space-y-1.5 text-gray-600 text-xs md:text-sm pl-1">
-                    <li><b>Als App ablegen:</b> Öffne den Spielplan über den verschickten Link und füge ihn zum Startbildschirm hinzu. Auf dem iPhone: in Safari auf „Teilen“ → „Zum Home-Bildschirm“. Auf Android: in Chrome im Menü „App installieren“ oder „Zum Startbildschirm hinzufügen“ wählen.</li>
-                    <li><b>Spieltag groß öffnen:</b> Tippe in der Spielplan-Tabelle auf einen Spieltag. Es öffnet sich eine hervorgehobene Ansicht mit den Begegnungen gut lesbar nach Uhrzeit und Platz sortiert.</li>
+                    <li>
+                        <b>Als App ablegen:</b> Öffne den Spielplan über den verschickten Link und füge ihn zum Startbildschirm hinzu. Auf dem iPhone: in Safari auf „Teilen“ → „Zum Home-Bildschirm“. Auf Android: in Chrome im Menü „App installieren“ oder „Zum Startbildschirm hinzufügen“ wählen.
+                        <figure class="mt-3 max-w-[240px]">
+                            <img src="docs/images/gw-tennis-app-icon-neu.png" alt="Neues GW Tennis-App-Symbol mit Tennisplatz, Tennisball und GW-Monogramm" class="block w-full h-auto rounded-lg border border-gray-200 shadow-sm">
+                            <figcaption class="mt-1.5 text-xs text-gray-500">Das neue GW Tennis-App-Symbol mit stilisiertem Tennisplatz, Ball und GW-Monogramm.</figcaption>
+                        </figure>
+                    </li>
+                    <li><b>Spieltag auf dem Handy:</b> Beim Öffnen des Kalenders auf dem Handy wird die mobile Ansicht mit dem nächsten Spieltag und seinen Begegnungen angezeigt. Platz, Uhrzeit und Paarungen sind übersichtlich angeordnet.</li>
                     <li><b>Zwischen Spieltagen wischen:</b> Wische in der geöffneten Ansicht nach links, um den nächsten Spieltag zu sehen, und nach rechts für den vorherigen. Die Pfeile neben der Überschrift funktionieren genauso.</li>
-                    <li><b>Ansicht schließen:</b> Tippe auf <b>✕</b> oder auf den abgedunkelten Bereich außerhalb der Spieltag-Karte. Mit der Esc-Taste lässt sich die Ansicht ebenfalls schließen.</li>
+                    <li><b>Ansicht schließen:</b> Tippe auf <b>✕</b>, um die mobile Spieltag-Ansicht zu schließen und zur Spielplan-Übersicht zurückzukehren. Mit der Esc-Taste lässt sich die Ansicht ebenfalls schließen.</li>
                     <li><b>Tabelle seitlich bewegen:</b> In der normalen Tabellenansicht kannst du horizontal wischen, um weitere Spielzeiten zu sehen; die Datumsspalte bleibt dabei sichtbar.</li>
                     <li><b>Große Touch-Flächen:</b> Filter, Kalender- und Navigationsschaltflächen sind für die Bedienung per Fingertipp ausgelegt.</li>
                 </ul>

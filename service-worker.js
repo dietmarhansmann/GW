@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gw-tennis-v2';
+const CACHE_NAME = 'gw-tennis-v3';
 const APP_SHELL = [
     './',
     './index.html',
@@ -7,7 +7,8 @@ const APP_SHELL = [
     './manifest.webmanifest',
     './icons/icon-192.png',
     './icons/icon-512.png',
-    './icons/icon-maskable-512.png'
+    './icons/icon-maskable-512.png',
+    './docs/images/gw-tennis-app-icon-neu.png'
 ];
 
 self.addEventListener('install', event => {
