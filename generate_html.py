@@ -1063,6 +1063,8 @@ html_template = """<!DOCTYPE html>
         .dark .player-filter-pill.is-active { box-shadow: 0 0 0 2px #1f2937, 0 0 0 4px #34d399, 0 5px 14px rgba(5, 150, 105, .24); }
         .schedule-table-card { overflow-x: auto; border-color: #dfe9e3; }
         #schedule-table thead th { padding: 12px 14px; color: #dcefe5; background: #174b39; font-size: 10px; letter-spacing: .12em; }
+        #schedule-table thead th:last-child,
+        #schedule-table thead th:last-child span { color: #fff !important; }
         #schedule-table tbody tr { transition: background-color .18s ease, opacity .18s ease; }
         #schedule-table tbody tr.is-next-match { background-color: #ecfdf5 !important; }
         #schedule-table tbody tr.is-next-match td:first-child { box-shadow: inset 4px 0 #059669; }
@@ -1249,7 +1251,7 @@ html_template = """<!DOCTYPE html>
                         <th class="py-2 px-1.5">19:00 Uhr</th>
                         <th class="py-2 px-1.5">20:00 Uhr</th>
                         <th class="py-2 px-1.5">21:00 Uhr</th>
-                        <th class="py-2 px-1.5">Doppel / Einzel <span class="font-normal normal-case text-gray-500 dark:text-gray-400">(20:30)</span></th>
+                        <th class="py-2 px-1.5">Doppel / Einzel <span>(20:30)</span></th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
