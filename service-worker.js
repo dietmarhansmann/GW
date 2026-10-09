@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gw-tennis-v3';
+const CACHE_NAME = 'gw-tennis-v4';
 const APP_SHELL = [
     './',
     './index.html',
