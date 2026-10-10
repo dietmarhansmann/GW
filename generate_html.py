@@ -158,15 +158,8 @@ PLAYER_RULES = {
     "Hinz": {
         "rules": [
             {
-                "id": "slot_preference_hinz",
-                "target": "doppel_pref",
-                "ratio": 0.5,
-                "description": "50% Einzel, 50% Doppel."
-            },
-            {
-                "id": "abwesend",
-                "spieltage": list(range(1, 14)) + [30],
-                "description": "Abwesend: Spieltage 1–13 und 30."
+                "id": "info_hinz",
+                "description": "Nimmt erst 2027 teil."
             }
         ]
     },
@@ -205,8 +198,8 @@ PLAYER_RULES = {
             },
             {
                 "id": "abwesend",
-                "spieltage": [2, 3, 5, 10, 16, 24],
-                "description": "Abwesend: 13.10.26 (#2), 20.10.26 (#3), 03.11.26 (#5), 08.12.26 (#10), 19.01.27 (#16), 16.03.27 (#24)."
+                "spieltage": [2, 3, 5, 10],
+                "description": "Abwesend: 13.10.26 (#2), 20.10.26 (#3), 03.11.26 (#5), 08.12.26 (#10)."
             }
         ]
     },
