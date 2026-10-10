@@ -779,18 +779,32 @@ def render_from_2026_template(schedule, games, doubles):
     page = page.replace("d.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' })", "d.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' })")
     heading = (
         '<h1><img src="icons/icon-192.png" alt="" class="h-11 w-11 rounded-xl shadow-sm">'
-        'GW Halle 2026<a href="spielplan_2027.html" class="year-switch no-print" '
-        'title="Zum Spielplan 2027 wechseln" aria-label="Zum Spielplan 2027 wechseln">↗ 2027</a></h1>'
+        'GW Halle 2026</h1>'
     )
     replacement = (
         '<h1><img src="icons/icon-192.png" alt="" class="h-11 w-11 rounded-xl shadow-sm">'
-        'GW Halle 2027<a href="index.html" class="year-switch no-print" '
-        'title="Zum Spielplan 2026 wechseln" aria-label="Zum Spielplan 2026 wechseln">↗ 2026</a></h1>'
+        'GW Halle 2027</h1>'
     )
     count = page.count(heading)
     if count != 1:
-        raise RuntimeError("Could not replace year-switch heading in index.html")
+        raise RuntimeError("Could not replace plan heading in index.html")
     page = page.replace(heading, replacement)
+    old_switcher = (
+        '<nav class="year-switcher no-print" aria-label="Spielplanjahr">\n'
+        '                    <span aria-current="page">Plan 2026</span>\n'
+        '                    <a href="spielplan_2027.html">Plan 2027</a>\n'
+        '                </nav>'
+    )
+    new_switcher = (
+        '<nav class="year-switcher no-print" aria-label="Spielplanjahr">\n'
+        '                    <a href="index.html">Plan 2026</a>\n'
+        '                    <span aria-current="page">Plan 2027</span>\n'
+        '                </nav>'
+    )
+    count = page.count(old_switcher)
+    if count != 1:
+        raise RuntimeError("Could not update plan year switcher in index.html")
+    page = page.replace(old_switcher, new_switcher)
     page = page.replace("tennis_spielplan_statistik_2026_2027.csv", "tennis_spielplan_statistik_2027_zweite_haelfte.csv")
     page = page.replace("tennis_spielplan_gesamtsaison_2026_2027.ics", "tennis_spielplan_2027_zweite_haelfte.ics")
     page = page.replace("Stand: 21.09.2026", "Stand: 01.10.2026")
