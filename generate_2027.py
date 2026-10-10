@@ -777,28 +777,35 @@ def render_from_2026_template(schedule, games, doubles):
     page = page.replace("<b>13</b> Spieltage (Saison 2026/2027)", "<b>17</b> Spieltage (2. Saisonhälfte 2027)")
     page = page.replace("Nächster Spieltag: <b>06.10.2026</b> (#1)", "Nächster Spieltag: <b>05.01.2027</b> (#14)")
     page = page.replace("d.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' })", "d.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' })")
+    page = page.replace(
+        ".page-heading h1 { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin: 2px 0 0; color: #123b2d; font-size: clamp(1.55rem, 3vw, 2.35rem); font-weight: 750; letter-spacing: -.045em; line-height: 1.05; }",
+        ".page-heading h1 { display: flex; align-items: center; gap: 12px; margin: 2px 0 0; color: #123b2d; font-size: clamp(1.35rem, 2.4vw, 1.8rem); font-weight: 750; letter-spacing: -.045em; line-height: 1.05; }",
+    )
+    page = page.replace(
+        ".year-switcher { display: inline-flex; align-items: center; gap: 3px; margin-top: 10px; padding: 3px; border: 1px solid #d5e6dc; border-radius: 999px; background: #eaf3ed; }",
+        ".year-switcher { display: inline-flex; align-items: center; gap: 2px; margin: 0; padding: 2px; border: 1px solid #d5e6dc; border-radius: 999px; background: #eaf3ed; }",
+    )
+    page = page.replace(
+        ".year-switcher a, .year-switcher span { display: inline-flex; align-items: center; min-height: 30px; padding: 5px 12px; border-radius: 999px; color: #456457; font-size: .76rem; font-weight: 700; text-decoration: none; transition: background-color .2s, color .2s; }",
+        ".year-switcher a, .year-switcher span { display: inline-flex; align-items: center; min-height: 27px; padding: 4px 9px; border-radius: 999px; color: #456457; font-size: .78rem; font-weight: 700; text-decoration: none; transition: background-color .2s, color .2s; }",
+    )
     heading = (
-        '<h1><img src="icons/icon-192.png" alt="" class="h-11 w-11 rounded-xl shadow-sm">'
-        'GW Halle 2026</h1>'
+        '<div class="heading-title">\n'
+        '                <h1><img src="icons/icon-192.png" alt="" class="h-11 w-11 rounded-xl shadow-sm">'
+        'GW Tennis</h1>'
     )
-    replacement = (
-        '<h1><img src="icons/icon-192.png" alt="" class="h-11 w-11 rounded-xl shadow-sm">'
-        'GW Halle 2027</h1>'
-    )
-    count = page.count(heading)
-    if count != 1:
-        raise RuntimeError("Could not replace plan heading in index.html")
-    page = page.replace(heading, replacement)
+    if page.count(heading) != 1:
+        raise RuntimeError("Could not locate plan heading in index.html")
     old_switcher = (
         '<nav class="year-switcher no-print" aria-label="Spielplanjahr">\n'
-        '                    <span aria-current="page">Plan 2026</span>\n'
-        '                    <a href="spielplan_2027.html">Plan 2027</a>\n'
+        '                    <span aria-current="page">2026</span>\n'
+        '                    <a href="spielplan_2027.html">2027</a>\n'
         '                </nav>'
     )
     new_switcher = (
         '<nav class="year-switcher no-print" aria-label="Spielplanjahr">\n'
-        '                    <a href="index.html">Plan 2026</a>\n'
-        '                    <span aria-current="page">Plan 2027</span>\n'
+        '                    <a href="index.html">2026</a>\n'
+        '                    <span aria-current="page">2027</span>\n'
         '                </nav>'
     )
     count = page.count(old_switcher)

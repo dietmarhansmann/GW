@@ -1036,11 +1036,16 @@ html_template = """<!DOCTYPE html>
         body { background: radial-gradient(ellipse at 12% 0%, rgba(16, 185, 129, .11), transparent 34%), #f4f7f5; }
         #app { max-width: 1480px; margin-inline: auto; }
         .page-heading { display: flex; align-items: end; justify-content: space-between; gap: 16px; padding: 18px 4px 14px; }
-        .page-heading h1 { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin: 2px 0 0; color: #123b2d; font-size: clamp(1.55rem, 3vw, 2.35rem); font-weight: 750; letter-spacing: -.045em; line-height: 1.05; }
-        .year-switch { display: inline-flex; align-items: center; padding: 6px 10px; border: 1px solid #b7d9c6; border-radius: 999px; background: #eaf5ee; color: #08744f; font-size: .42em; font-weight: 650; letter-spacing: 0; transition: background-color .2s, color .2s; }
-        .year-switch:hover { background: #d8ede0; color: #075238; }
-        .dark .year-switch { border-color: #456b56; background: #203b2d; color: #a7f3d0; }
-        .dark .year-switch:hover { background: #294b38; color: #d1fae5; }
+        .heading-title { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; }
+        .page-heading h1 { display: flex; align-items: center; gap: 12px; margin: 2px 0 0; color: #123b2d; font-size: clamp(1.35rem, 2.4vw, 1.8rem); font-weight: 750; letter-spacing: -.045em; line-height: 1.05; }
+        .year-switcher { display: inline-flex; align-items: center; gap: 2px; margin: 0; padding: 2px; border: 1px solid #d5e6dc; border-radius: 999px; background: #eaf3ed; }
+        .year-switcher a, .year-switcher span { display: inline-flex; align-items: center; min-height: 27px; padding: 4px 9px; border-radius: 999px; color: #456457; font-size: .78rem; font-weight: 700; text-decoration: none; transition: background-color .2s, color .2s; }
+        .year-switcher a:hover { background: #d8ede0; color: #075238; }
+        .year-switcher [aria-current="page"] { background: #08744f; color: #fff; box-shadow: 0 1px 3px rgba(6, 78, 59, .2); }
+        .dark .year-switcher { border-color: #3b5848; background: #17271f; }
+        .dark .year-switcher a, .dark .year-switcher span { color: #b7cbbf; }
+        .dark .year-switcher a:hover { background: #294b38; color: #d1fae5; }
+        .dark .year-switcher [aria-current="page"] { background: #08744f; color: #fff; }
         .page-heading p { margin: 7px 0 0; color: #64776e; font-size: .88rem; }
         .page-heading-mark { display: grid; width: 46px; height: 46px; place-items: center; border: 1px solid #d2e8dc; border-radius: 16px; background: linear-gradient(145deg, #fff, #e4f4eb); color: #08744f; font-size: 1.45rem; box-shadow: 0 8px 20px rgba(15, 75, 50, .08); }
         .schedule-overview { overflow: hidden; position: relative; min-height: 76px; padding: 16px 20px; border: 1px solid rgba(167, 243, 208, .32); border-radius: 20px; background: linear-gradient(115deg, #073d2e 0%, #08704f 68%, #16805a 100%); color: #f0fdf4; box-shadow: 0 14px 34px rgba(6, 78, 59, .17); }
@@ -1174,8 +1179,12 @@ html_template = """<!DOCTYPE html>
 <body class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 antialiased min-h-screen p-2 md:p-3 transition-colors duration-200">
     <div id="app" class="max-w-[98%] mx-auto">
         <header class="page-heading">
-            <div>
-                <h1><img src="icons/icon-192.png" alt="" class="h-11 w-11 rounded-xl shadow-sm">GW Halle 2026<a href="spielplan_2027.html" class="year-switch no-print" title="Zum Spielplan 2027 wechseln" aria-label="Zum Spielplan 2027 wechseln">↗ 2027</a></h1>
+            <div class="heading-title">
+                <h1><img src="icons/icon-192.png" alt="" class="h-11 w-11 rounded-xl shadow-sm">GW Tennis</h1>
+                <nav class="year-switcher no-print" aria-label="Spielplanjahr">
+                    <span aria-current="page">2026</span>
+                    <a href="spielplan_2027.html">2027</a>
+                </nav>
             </div>
         </header>
 

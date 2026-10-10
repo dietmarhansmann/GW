@@ -22,9 +22,10 @@
         body { background: radial-gradient(ellipse at 12% 0%, rgba(16, 185, 129, .11), transparent 34%), #f4f7f5; }
         #app { max-width: 1480px; margin-inline: auto; }
         .page-heading { display: flex; align-items: end; justify-content: space-between; gap: 16px; padding: 18px 4px 14px; }
-        .page-heading h1 { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin: 2px 0 0; color: #123b2d; font-size: clamp(1.55rem, 3vw, 2.35rem); font-weight: 750; letter-spacing: -.045em; line-height: 1.05; }
-        .year-switcher { display: inline-flex; align-items: center; gap: 3px; margin-top: 10px; padding: 3px; border: 1px solid #d5e6dc; border-radius: 999px; background: #eaf3ed; }
-        .year-switcher a, .year-switcher span { display: inline-flex; align-items: center; min-height: 30px; padding: 5px 12px; border-radius: 999px; color: #456457; font-size: .76rem; font-weight: 700; text-decoration: none; transition: background-color .2s, color .2s; }
+        .heading-title { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; }
+        .page-heading h1 { display: flex; align-items: center; gap: 12px; margin: 2px 0 0; color: #123b2d; font-size: clamp(1.35rem, 2.4vw, 1.8rem); font-weight: 750; letter-spacing: -.045em; line-height: 1.05; }
+        .year-switcher { display: inline-flex; align-items: center; gap: 2px; margin: 0; padding: 2px; border: 1px solid #d5e6dc; border-radius: 999px; background: #eaf3ed; }
+        .year-switcher a, .year-switcher span { display: inline-flex; align-items: center; min-height: 27px; padding: 4px 9px; border-radius: 999px; color: #456457; font-size: .78rem; font-weight: 700; text-decoration: none; transition: background-color .2s, color .2s; }
         .year-switcher a:hover { background: #d8ede0; color: #075238; }
         .year-switcher [aria-current="page"] { background: #08744f; color: #fff; box-shadow: 0 1px 3px rgba(6, 78, 59, .2); }
         .dark .year-switcher { border-color: #3b5848; background: #17271f; }
@@ -164,11 +165,11 @@
 <body class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 antialiased min-h-screen p-2 md:p-3 transition-colors duration-200">
     <div id="app" class="max-w-[98%] mx-auto">
         <header class="page-heading">
-            <div>
-                <h1><img src="icons/icon-192.png" alt="" class="h-11 w-11 rounded-xl shadow-sm">GW Halle 2027</h1>
+            <div class="heading-title">
+                <h1><img src="icons/icon-192.png" alt="" class="h-11 w-11 rounded-xl shadow-sm">GW Tennis</h1>
                 <nav class="year-switcher no-print" aria-label="Spielplanjahr">
-                    <a href="index.html">Plan 2026</a>
-                    <span aria-current="page">Plan 2027</span>
+                    <a href="index.html">2026</a>
+                    <span aria-current="page">2027</span>
                 </nav>
             </div>
         </header>
@@ -243,7 +244,7 @@
 
         <!-- Ultra-Compact Table -->
         <p class="schedule-table-hint" aria-hidden="true">← Tabelle seitlich wischen für weitere Zeiten →</p>
-        <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm overflow-x-auto mb-2.5">
+        <div class="schedule-table-card bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm overflow-x-auto mb-2.5">
             <table id="schedule-table" class="w-full text-left border-collapse text-xs table-auto">
                 <thead>
                     <tr class="bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-400 uppercase text-[10px] tracking-wider border-b border-gray-200 dark:border-gray-700">
@@ -452,23 +453,23 @@
         "date": "2027-01-05",
         "court2_type": "einzel",
         "p1": {
-            "p1": "Van de Looh",
-            "p2": "Knust",
+            "p1": "Rumpf",
+            "p2": "Heyn",
             "time": "19:00"
         },
         "p2": {
-            "p1": "Dedores",
-            "p2": "Marschollek",
+            "p1": "Prodehl",
+            "p2": "Knust",
             "time": "20:00"
         },
         "p3": {
-            "p1": "Redieker",
-            "p2": "Heyn",
+            "p1": "Kissner",
+            "p2": "Van de Looh",
             "time": "21:00"
         },
         "status": "Geplant",
         "doppel": {
-            "p1": "Kissner",
+            "p1": "Wojtanowitsch",
             "p2": "Trojanski",
             "time": "20:30"
         }
@@ -478,29 +479,29 @@
         "date": "2027-01-12",
         "court2_type": "doppel",
         "p1": {
-            "p1": "Kissner",
-            "p2": "Redieker",
+            "p1": "Dedores",
+            "p2": "Kissner",
             "time": "19:00"
         },
         "p2": {
-            "p1": "Wojtanowitsch",
-            "p2": "Kuhlhoff",
+            "p1": "Nolte",
+            "p2": "Redieker",
             "time": "20:00"
         },
         "p3": {
             "p1": "Hansmann",
-            "p2": "Nolte",
+            "p2": "Kuhlhoff",
             "time": "21:00"
         },
         "status": "Geplant",
         "doppel": {
             "team1": [
-                "Prodehl",
-                "Weber"
+                "Beumer",
+                "Hinz"
             ],
             "team2": [
-                "Hinz",
-                "Beumer"
+                "Marschollek",
+                "Weber"
             ],
             "time": "20:30"
         }
@@ -510,12 +511,12 @@
         "date": "2027-01-19",
         "court2_type": "einzel",
         "p1": {
-            "p1": "Hinz",
-            "p2": "Beumer",
+            "p1": "Nolte",
+            "p2": "Wojtanowitsch",
             "time": "19:00"
         },
         "p2": {
-            "p1": "Trojanski",
+            "p1": "Prodehl",
             "p2": "Mönning",
             "time": "20:00"
         },
@@ -526,7 +527,7 @@
         },
         "status": "Geplant",
         "doppel": {
-            "p1": "Wojtanowitsch",
+            "p1": "Trojanski",
             "p2": "Heyn",
             "time": "20:30"
         }
@@ -536,29 +537,29 @@
         "date": "2027-01-26",
         "court2_type": "doppel",
         "p1": {
-            "p1": "Prodehl",
-            "p2": "Kuhlhoff",
+            "p1": "Kuhlhoff",
+            "p2": "Weber",
             "time": "19:00"
         },
         "p2": {
             "p1": "Kissner",
-            "p2": "Nolte",
+            "p2": "Beumer",
             "time": "20:00"
         },
         "p3": {
-            "p1": "Beumer",
-            "p2": "Mönning",
+            "p1": "Mönning",
+            "p2": "Hinz",
             "time": "21:00"
         },
         "status": "Geplant",
         "doppel": {
             "team1": [
-                "Marschollek",
-                "Redieker"
+                "Redieker",
+                "Marschollek"
             ],
             "team2": [
-                "Weber",
-                "Hansmann"
+                "Hansmann",
+                "Prodehl"
             ],
             "time": "20:30"
         }
@@ -568,24 +569,24 @@
         "date": "2027-02-02",
         "court2_type": "einzel",
         "p1": {
-            "p1": "Wojtanowitsch",
-            "p2": "Dedores",
+            "p1": "Van de Looh",
+            "p2": "Trojanski",
             "time": "19:00"
         },
         "p2": {
-            "p1": "Heyn",
-            "p2": "Rumpf",
+            "p1": "Dedores",
+            "p2": "Knust",
             "time": "20:00"
         },
         "p3": {
-            "p1": "Hinz",
-            "p2": "Trojanski",
+            "p1": "Wojtanowitsch",
+            "p2": "Heyn",
             "time": "21:00"
         },
         "status": "Geplant",
         "doppel": {
-            "p1": "Van de Looh",
-            "p2": "Knust",
+            "p1": "Nolte",
+            "p2": "Rumpf",
             "time": "20:30"
         }
     },
@@ -594,29 +595,29 @@
         "date": "2027-02-09",
         "court2_type": "doppel",
         "p1": {
-            "p1": "Nolte",
+            "p1": "Kissner",
             "p2": "Mönning",
             "time": "19:00"
         },
         "p2": {
             "p1": "Dedores",
-            "p2": "Weber",
+            "p2": "Kuhlhoff",
             "time": "20:00"
         },
         "p3": {
-            "p1": "Kuhlhoff",
-            "p2": "Kissner",
+            "p1": "Redieker",
+            "p2": "Marschollek",
             "time": "21:00"
         },
         "status": "Geplant",
         "doppel": {
             "team1": [
-                "Marschollek",
+                "Beumer",
                 "Hansmann"
             ],
             "team2": [
-                "Prodehl",
-                "Beumer"
+                "Weber",
+                "Hinz"
             ],
             "time": "20:30"
         }
@@ -626,23 +627,23 @@
         "date": "2027-02-16",
         "court2_type": "einzel",
         "p1": {
-            "p1": "Mönning",
-            "p2": "Heyn",
+            "p1": "Redieker",
+            "p2": "Hinz",
             "time": "19:00"
         },
         "p2": {
-            "p1": "Redieker",
-            "p2": "Hinz",
+            "p1": "Beumer",
+            "p2": "Heyn",
             "time": "20:00"
         },
         "p3": {
-            "p1": "Marschollek",
-            "p2": "Wojtanowitsch",
+            "p1": "Nolte",
+            "p2": "Prodehl",
             "time": "21:00"
         },
         "status": "Geplant",
         "doppel": {
-            "p1": "Kuhlhoff",
+            "p1": "Wojtanowitsch",
             "p2": "Rumpf",
             "time": "20:30"
         }
@@ -652,29 +653,29 @@
         "date": "2027-02-23",
         "court2_type": "doppel",
         "p1": {
-            "p1": "Trojanski",
+            "p1": "Mönning",
             "p2": "Hansmann",
             "time": "19:00"
         },
         "p2": {
-            "p1": "Nolte",
-            "p2": "Wojtanowitsch",
+            "p1": "Kuhlhoff",
+            "p2": "Hinz",
             "time": "20:00"
         },
         "p3": {
-            "p1": "Mönning",
+            "p1": "Trojanski",
             "p2": "Kissner",
             "time": "21:00"
         },
         "status": "Geplant",
         "doppel": {
             "team1": [
-                "Prodehl",
-                "Knust"
+                "Knust",
+                "Weber"
             ],
             "team2": [
-                "Weber",
-                "Beumer"
+                "Marschollek",
+                "Heyn"
             ],
             "time": "20:30"
         }
@@ -684,24 +685,24 @@
         "date": "2027-03-02",
         "court2_type": "einzel",
         "p1": {
-            "p1": "Rumpf",
+            "p1": "Wojtanowitsch",
             "p2": "Dedores",
             "time": "19:00"
         },
         "p2": {
-            "p1": "Van de Looh",
-            "p2": "Redieker",
+            "p1": "Rumpf",
+            "p2": "Hansmann",
             "time": "20:00"
         },
         "p3": {
-            "p1": "Marschollek",
-            "p2": "Kuhlhoff",
+            "p1": "Prodehl",
+            "p2": "Weber",
             "time": "21:00"
         },
         "status": "Geplant",
         "doppel": {
-            "p1": "Heyn",
-            "p2": "Hinz",
+            "p1": "Redieker",
+            "p2": "Van de Looh",
             "time": "20:30"
         }
     },
@@ -715,24 +716,24 @@
             "time": "19:00"
         },
         "p2": {
-            "p1": "Trojanski",
-            "p2": "Beumer",
+            "p1": "Marschollek",
+            "p2": "Mönning",
             "time": "20:00"
         },
         "p3": {
-            "p1": "Prodehl",
-            "p2": "Wojtanowitsch",
+            "p1": "Kuhlhoff",
+            "p2": "Trojanski",
             "time": "21:00"
         },
         "status": "Geplant",
         "doppel": {
             "team1": [
                 "Knust",
-                "Hansmann"
+                "Beumer"
             ],
             "team2": [
-                "Weber",
-                "Quante"
+                "Quante",
+                "Hinz"
             ],
             "time": "20:30"
         }
@@ -743,23 +744,23 @@
         "court2_type": "einzel",
         "p1": {
             "p1": "Rumpf",
-            "p2": "Redieker",
+            "p2": "Prodehl",
             "time": "19:00"
         },
         "p2": {
-            "p1": "Kissner",
-            "p2": "Prodehl",
+            "p1": "Weber",
+            "p2": "Hansmann",
             "time": "20:00"
         },
         "p3": {
-            "p1": "Hinz",
+            "p1": "Redieker",
             "p2": "Heyn",
             "time": "21:00"
         },
         "status": "Geplant",
         "doppel": {
-            "p1": "Kuhlhoff",
-            "p2": "Mönning",
+            "p1": "Kissner",
+            "p2": "Wojtanowitsch",
             "time": "20:30"
         }
     },
@@ -768,29 +769,29 @@
         "date": "2027-03-23",
         "court2_type": "doppel",
         "p1": {
-            "p1": "Weber",
-            "p2": "Trojanski",
+            "p1": "Kuhlhoff",
+            "p2": "Knust",
             "time": "19:00"
         },
         "p2": {
-            "p1": "Knust",
-            "p2": "Hansmann",
+            "p1": "Marschollek",
+            "p2": "Trojanski",
             "time": "20:00"
         },
         "p3": {
-            "p1": "Wojtanowitsch",
+            "p1": "Mönning",
             "p2": "Beumer",
             "time": "21:00"
         },
         "status": "Geplant",
         "doppel": {
             "team1": [
-                "Quante",
-                "Marschollek"
+                "Weber",
+                "Quante"
             ],
             "team2": [
-                "Hinz",
-                "Prodehl"
+                "Prodehl",
+                "Hinz"
             ],
             "time": "20:30"
         }
@@ -800,24 +801,24 @@
         "date": "2027-03-30",
         "court2_type": "einzel",
         "p1": {
-            "p1": "Weber",
-            "p2": "Kuhlhoff",
+            "p1": "Hansmann",
+            "p2": "Redieker",
             "time": "19:00"
         },
         "p2": {
-            "p1": "Rumpf",
-            "p2": "Mönning",
+            "p1": "Kissner",
+            "p2": "Van de Looh",
             "time": "20:00"
         },
         "p3": {
-            "p1": "Redieker",
-            "p2": "Van de Looh",
+            "p1": "Wojtanowitsch",
+            "p2": "Rumpf",
             "time": "21:00"
         },
         "status": "Geplant",
         "doppel": {
-            "p1": "Kissner",
-            "p2": "Nolte",
+            "p1": "Nolte",
+            "p2": "Mönning",
             "time": "20:30"
         }
     },
@@ -826,29 +827,29 @@
         "date": "2027-04-06",
         "court2_type": "doppel",
         "p1": {
-            "p1": "Marschollek",
-            "p2": "Trojanski",
+            "p1": "Trojanski",
+            "p2": "Weber",
             "time": "19:00"
         },
         "p2": {
             "p1": "Dedores",
-            "p2": "Wojtanowitsch",
+            "p2": "Hinz",
             "time": "20:00"
         },
         "p3": {
             "p1": "Nolte",
-            "p2": "Prodehl",
+            "p2": "Kuhlhoff",
             "time": "21:00"
         },
         "status": "Geplant",
         "doppel": {
             "team1": [
-                "Hansmann",
-                "Beumer"
+                "Beumer",
+                "Heyn"
             ],
             "team2": [
-                "Heyn",
-                "Hinz"
+                "Marschollek",
+                "Prodehl"
             ],
             "time": "20:30"
         }
@@ -858,24 +859,24 @@
         "date": "2027-04-13",
         "court2_type": "einzel",
         "p1": {
-            "p1": "Hansmann",
-            "p2": "Kissner",
+            "p1": "Rumpf",
+            "p2": "Beumer",
             "time": "19:00"
         },
         "p2": {
-            "p1": "Kuhlhoff",
-            "p2": "Knust",
+            "p1": "Wojtanowitsch",
+            "p2": "Redieker",
             "time": "20:00"
         },
         "p3": {
-            "p1": "Rumpf",
-            "p2": "Weber",
+            "p1": "Hansmann",
+            "p2": "Knust",
             "time": "21:00"
         },
         "status": "Geplant",
         "doppel": {
-            "p1": "Mönning",
-            "p2": "Redieker",
+            "p1": "Kissner",
+            "p2": "Mönning",
             "time": "20:30"
         }
     },
@@ -884,29 +885,29 @@
         "date": "2027-04-20",
         "court2_type": "doppel",
         "p1": {
-            "p1": "Beumer",
-            "p2": "Wojtanowitsch",
+            "p1": "Kuhlhoff",
+            "p2": "Marschollek",
             "time": "19:00"
         },
         "p2": {
-            "p1": "Dedores",
-            "p2": "Hinz",
+            "p1": "Weber",
+            "p2": "Dedores",
             "time": "20:00"
         },
         "p3": {
-            "p1": "Trojanski",
-            "p2": "Prodehl",
+            "p1": "Hinz",
+            "p2": "Trojanski",
             "time": "21:00"
         },
         "status": "Geplant",
         "doppel": {
             "team1": [
-                "Quante",
-                "Redieker"
+                "Heyn",
+                "Prodehl"
             ],
             "team2": [
-                "Heyn",
-                "Marschollek"
+                "Quante",
+                "Hansmann"
             ],
             "time": "20:30"
         }
@@ -916,24 +917,24 @@
         "date": "2027-04-27",
         "court2_type": "einzel",
         "p1": {
-            "p1": "Van de Looh",
-            "p2": "Kuhlhoff",
+            "p1": "Knust",
+            "p2": "Beumer",
             "time": "19:00"
         },
         "p2": {
-            "p1": "Quante",
-            "p2": "Weber",
+            "p1": "Rumpf",
+            "p2": "Kissner",
             "time": "20:00"
         },
         "p3": {
-            "p1": "Knust",
-            "p2": "Mönning",
+            "p1": "Redieker",
+            "p2": "Quante",
             "time": "21:00"
         },
         "status": "Geplant",
         "doppel": {
-            "p1": "Rumpf",
-            "p2": "Kissner",
+            "p1": "Mönning",
+            "p2": "Van de Looh",
             "time": "20:30"
         }
     }
@@ -941,11 +942,27 @@
         const playerRules = {
     "Beumer": [
         "50% Einzel, 50% Doppel.",
-        {"label": "Abwesend", "items": ["02.03.2027"]}
+        {
+            "label": "Abwesend",
+            "items": [
+                "02.03.2027"
+            ]
+        }
     ],
     "Dedores": [
         "Nur Einzel.",
-        {"label": "Abwesend", "items": ["19.01.2027", "26.01.2027", "16.02.2027", "23.02.2027", "23.03.2027", "30.03.2027", "13.04.2027"]},
+        {
+            "label": "Abwesend",
+            "items": [
+                "19.01.2027",
+                "26.01.2027",
+                "16.02.2027",
+                "23.02.2027",
+                "23.03.2027",
+                "30.03.2027",
+                "13.04.2027"
+            ]
+        },
         "Bis zu 7 Einsätze."
     ],
     "Hansmann": [
@@ -953,11 +970,26 @@
     ],
     "Heyn": [
         "70% Einzel, 30% Doppel.",
-        {"label": "Abwesend", "items": ["12.01.2027", "09.02.2027", "09.03.2027", "30.03.2027", "13.04.2027", "27.04.2027"]}
+        {
+            "label": "Abwesend",
+            "items": [
+                "12.01.2027",
+                "09.02.2027",
+                "09.03.2027",
+                "30.03.2027",
+                "13.04.2027",
+                "27.04.2027"
+            ]
+        }
     ],
     "Hinz": [
         "50% Einzel, 50% Doppel.",
-        {"label": "Abwesend", "items": ["27.04.2027"]}
+        {
+            "label": "Abwesend",
+            "items": [
+                "27.04.2027"
+            ]
+        }
     ],
     "Kissner": [
         "Nur Einzel."
@@ -968,19 +1000,45 @@
     ],
     "Kuhlhoff": [
         "Nur Einzel.",
-        {"label": "Abwesend", "items": ["05.01.2027", "02.02.2027"]}
+        {
+            "label": "Abwesend",
+            "items": [
+                "05.01.2027",
+                "02.02.2027"
+            ]
+        }
     ],
     "Marschollek": [
         "Ca. 90% Doppel.",
-        {"label": "Abwesend", "items": ["19.01.2027", "16.03.2027"]}
+        {
+            "label": "Abwesend",
+            "items": [
+                "19.01.2027",
+                "16.03.2027"
+            ]
+        }
     ],
     "Mönning": [
         "Nur Einzel.",
-        {"label": "Abwesend", "items": ["05.01.2027", "12.01.2027"]}
+        {
+            "label": "Abwesend",
+            "items": [
+                "05.01.2027",
+                "12.01.2027"
+            ]
+        }
     ],
     "Nolte": [
         "Nur Einzel.",
-        {"label": "Abwesend", "items": ["02.03.2027", "23.03.2027", "20.04.2027", "27.04.2027"]}
+        {
+            "label": "Abwesend",
+            "items": [
+                "02.03.2027",
+                "23.03.2027",
+                "20.04.2027",
+                "27.04.2027"
+            ]
+        }
     ],
     "Prodehl": [
         "Ca. 60% Doppel."
@@ -997,13 +1055,16 @@
     "Trojanski": [
         "Nur Einzel.",
         "Mindestens ein Spieltag Pause zwischen Einsätzen.",
-        {"label": "Abwesend", "items": ["16.02.2027"]}
+        {
+            "label": "Abwesend",
+            "items": [
+                "16.02.2027"
+            ]
+        }
     ],
     "Van de Looh": [
         "Nur Einzel.",
         "Mindestens drei Spieltage Pause zwischen Einsätzen."
-    ],
-    "Weber": [
     ],
     "Wojtanowitsch": [
         "Nur Einzel."
@@ -1030,25 +1091,25 @@
         "kosten": 3.5
     },
     "Hansmann": {
-        "einzel": 4,
-        "doppel": 4,
-        "total": 8,
-        "ratio": 50,
-        "kosten": 3.5
-    },
-    "Heyn": {
-        "einzel": 6,
-        "doppel": 2,
-        "total": 8,
-        "ratio": 25,
-        "kosten": 3.75
-    },
-    "Hinz": {
         "einzel": 6,
         "doppel": 3,
         "total": 9,
         "ratio": 33,
         "kosten": 4.12
+    },
+    "Heyn": {
+        "einzel": 5,
+        "doppel": 3,
+        "total": 8,
+        "ratio": 38,
+        "kosten": 3.62
+    },
+    "Hinz": {
+        "einzel": 5,
+        "doppel": 4,
+        "total": 9,
+        "ratio": 44,
+        "kosten": 4.0
     },
     "Kissner": {
         "einzel": 9,
@@ -1065,11 +1126,11 @@
         "kosten": 3.75
     },
     "Kuhlhoff": {
-        "einzel": 9,
+        "einzel": 8,
         "doppel": 0,
-        "total": 9,
+        "total": 8,
         "ratio": 0,
-        "kosten": 4.5
+        "kosten": 4.0
     },
     "Marschollek": {
         "einzel": 4,
@@ -1107,18 +1168,18 @@
         "kosten": 1.62
     },
     "Redieker": {
-        "einzel": 7,
-        "doppel": 2,
+        "einzel": 8,
+        "doppel": 1,
         "total": 9,
-        "ratio": 22,
-        "kosten": 4.25
+        "ratio": 11,
+        "kosten": 4.38
     },
     "Rumpf": {
-        "einzel": 8,
+        "einzel": 9,
         "doppel": 0,
-        "total": 8,
+        "total": 9,
         "ratio": 0,
-        "kosten": 4.0
+        "kosten": 4.5
     },
     "Trojanski": {
         "einzel": 8,
@@ -1142,11 +1203,11 @@
         "kosten": 4.0
     },
     "Wojtanowitsch": {
-        "einzel": 9,
+        "einzel": 8,
         "doppel": 0,
-        "total": 9,
+        "total": 8,
         "ratio": 0,
-        "kosten": 4.5
+        "kosten": 4.0
     }
 };
         const topfA = ["Prodehl", "Beumer", "Heyn"];
@@ -1157,12 +1218,31 @@
             setup() {
                 const currentFilter = ref('ALL');
                 const showPastMatches = ref(false);
-                        const visibleRules = computed(() => Object.fromEntries(
-                    Object.entries(playerRules).map(([player, rules]) => [player, rules.map(rule => {
-                        if (typeof rule !== 'string' || !rule.startsWith('Abwesend:')) return rule;
-                        const dates = [...rule.matchAll(/\d{2}\.\d{2}\.\d{4}/g)].map(([date]) => date);
-                        return { label: 'Abwesend', items: dates };
-                    })])
+                function normalizeRule(rule) {
+                    if (typeof rule !== 'string' || !rule.startsWith('Abwesend:')) return rule;
+
+                    const dates = [...rule.matchAll(/\d{2}\.\d{2}\.\d{2,4}/g)].map(([date]) => date);
+                    if (!dates.length) {
+                        const matchdays = new Set();
+                        for (const [, hashDay, start, end, extraDay] of rule.matchAll(/#(\d+)|Spieltage?\s+(\d+)(?:[–-](\d+))?(?:\s+und\s+(\d+))?/g)) {
+                            if (hashDay) matchdays.add(Number(hashDay));
+                            if (start) {
+                                const first = Number(start);
+                                const last = Number(end || start);
+                                for (let day = first; day <= last; day++) matchdays.add(day);
+                                if (extraDay) matchdays.add(Number(extraDay));
+                            }
+                        }
+                        for (const day of [...matchdays].sort((a, b) => a - b)) {
+                            const date = new Date(Date.UTC(2026, 9, 6 + (day - 1) * 7));
+                            dates.push(`${String(date.getUTCDate()).padStart(2, '0')}.${String(date.getUTCMonth() + 1).padStart(2, '0')}.${date.getUTCFullYear()}`);
+                        }
+                    }
+                    return { label: 'Abwesend', items: dates };
+                }
+
+                const visibleRules = computed(() => Object.fromEntries(
+                    Object.entries(playerRules).map(([player, rules]) => [player, rules.map(normalizeRule)])
                 ));
                 const showTopfA = ref(false);
                 const selectedMatchday = ref(null);
