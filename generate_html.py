@@ -1274,8 +1274,7 @@ html_template = """<!DOCTYPE html>
                             <td colspan="5" class="py-3 px-3 text-center bg-amber-50 dark:bg-amber-950/40 border-amber-200 dark:border-amber-900">
                                 <div class="flex items-center justify-center gap-2 text-amber-900 dark:text-amber-300 font-bold text-xs md:text-sm whitespace-nowrap">
                                     <span>🎾 Spieltag #{{ m.spieltag }} — {{ formatFullDate(m.date) }}:</span>
-                                    <span v-if="isNextUpcoming(m, idx)" class="next-match-label">★ Als Nächstes</span>
-                                    <span class="bg-amber-200 dark:bg-amber-900 text-amber-900 dark:text-amber-100 px-2.5 py-1 rounded-md shadow-sm border border-amber-300 dark:border-amber-700 font-extrabold uppercase tracking-wide">
+                                                                        <span class="bg-amber-200 dark:bg-amber-900 text-amber-900 dark:text-amber-100 px-2.5 py-1 rounded-md shadow-sm border border-amber-300 dark:border-amber-700 font-extrabold uppercase tracking-wide">
                                         Reserviert für alle
                                     </span>
                                 </div>
@@ -1283,12 +1282,11 @@ html_template = """<!DOCTYPE html>
                         </template>
                         <template v-else>
                         <td class="py-2 px-1" :class="m.status === 'Abgeschlossen' ? 'text-gray-400 dark:text-gray-600' : 'text-gray-600 dark:text-gray-300'">
-                            <span class="md:hidden">{{ formatShortDate(m.date) }}<span v-if="isNextUpcoming(m, idx)" class="next-match-label ml-1">★ Als Nächstes</span></span>
+                            <span class="md:hidden">{{ formatShortDate(m.date) }}</span>
                             <div class="hidden md:block leading-tight">
                                 <span class="font-bold text-[10px]">#{{ m.spieltag }}</span>
                                 <div class="text-[11px]">{{ formatFullDate(m.date) }}</div>
-                                <span v-if="isNextUpcoming(m, idx)" class="next-match-label">★ Als Nächstes</span>
-                            </div>
+                                                            </div>
                         </td>
                         <!-- Platz 1 (19:00) -->
                         <td class="py-2 px-1.5">
@@ -1636,7 +1634,6 @@ html_template = """<!DOCTYPE html>
                 });
 
                 function isNextUpcoming(m, idx) {
-                    if (currentFilter.value !== 'ALL') return false;
                     return idx === nextUpcomingIndex.value;
                 }
 
@@ -1649,7 +1646,7 @@ html_template = """<!DOCTYPE html>
                 function formatFullDate(dateStr) {
                     try {
                         const d = new Date(dateStr);
-                        return d.toLocaleDateString('de-DE', { weekday: 'short', day: '2-digit', month: '2-digit', year: 'numeric' });
+                        return d.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' });
                     } catch (e) {
                         return dateStr;
                     }
@@ -1681,10 +1678,10 @@ html_template = """<!DOCTYPE html>
                         return base;
                     }
                     let base = 'hover:bg-gray-50 dark:hover:bg-gray-800 transition';
-                    if (isNextUpcoming(m, idx) && currentFilter.value === 'ALL') {
+                    if (isNextUpcoming(m, idx)) {
                         base += ' bg-emerald-50/70 dark:bg-emerald-950/40';
                     }
-                    if (currentFilter.value !== 'ALL' && !getMatchPlayers(m).includes(currentFilter.value)) {
+                    if (!isNextUpcoming(m, idx) && currentFilter.value !== 'ALL' && !getMatchPlayers(m).includes(currentFilter.value)) {
                         base += ' opacity-25';
                     }
                     return base;

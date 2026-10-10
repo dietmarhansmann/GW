@@ -776,6 +776,7 @@ def render_from_2026_template(schedule, games, doubles):
     page = re.sub(r"<title>.*?</title>", "<title>Tennis-Spielplan zweite Saisonhälfte 2027</title>", page, count=1)
     page = page.replace("<b>13</b> Spieltage (Saison 2026/2027)", "<b>17</b> Spieltage (2. Saisonhälfte 2027)")
     page = page.replace("Nächster Spieltag: <b>06.10.2026</b> (#1)", "Nächster Spieltag: <b>05.01.2027</b> (#14)")
+    page = page.replace("d.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' })", "d.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' })")
     heading = (
         '<h1><img src="icons/icon-192.png" alt="" class="h-11 w-11 rounded-xl shadow-sm">'
         'GW Halle 2026<a href="spielplan_2027.html" class="year-switch no-print" '
