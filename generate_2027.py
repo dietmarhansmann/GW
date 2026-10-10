@@ -713,7 +713,7 @@ def render_from_2026_template(schedule, games, doubles):
         "Mönning": ["Nur Einzel.", {"label": "Abwesend", "items": ["05.01.2027", "12.01.2027"]}],
         "Nolte": ["Nur Einzel.", {"label": "Abwesend", "items": ["02.03.2027", "23.03.2027", "20.04.2027", "27.04.2027"]}],
         "Prodehl": ["Ca. 60% Doppel."],
-        "Quante": ["Genau drei Doppel-Einsätze und ein Einzel-Einsatz in der zweiten Saisonhälfte 2027."],
+        "Quante": ["Drei Doppel-Einsätze und ein Einzel-Einsatz."],
         "Redieker": ["80% Einzel, 20% Doppel."],
         "Rumpf": ["Nur Einzel."],
         "Trojanski": ["Nur Einzel.", "Mindestens ein Spieltag Pause zwischen Einsätzen.", {"label": "Abwesend", "items": ["16.02.2027"]}],
