@@ -110,7 +110,7 @@ PLAYER_RULES = {
                 "id": "slot_preference_monning",
                 "target": "doppel_pref",
                 "ratio": 0.0,
-                "description": "Spielt ausschließlich Einzel (0% Doppel)."
+                "description": "Nur Einzel."
             },
             {
                 "id": "abwesend",
@@ -140,7 +140,7 @@ PLAYER_RULES = {
                 "id": "slot_preference_dedores",
                 "target": "doppel_pref",
                 "ratio": 0.0,
-                "description": "Spielt ausschließlich Einzel (0% Doppel)."
+                "description": "Nur Einzel."
             },
             {
                 "id": "abwesend",
@@ -209,7 +209,7 @@ PLAYER_RULES = {
                 "id": "slot_preference_kissner",
                 "target": "doppel_pref",
                 "ratio": 0.0,
-                "description": "Spielt nur Einzel (0% Doppel)."
+                "description": "Nur Einzel."
             }
         ]
     },
@@ -247,7 +247,7 @@ PLAYER_RULES = {
                 "id": "slot_preference_trojanski",
                 "target": "doppel_pref",
                 "ratio": 0.0,
-                "description": "Spielt ausschließlich Einzel (0% Doppel)."
+                "description": "Nur Einzel."
             },
             {
                 "id": "abwesend",
@@ -267,7 +267,7 @@ PLAYER_RULES = {
                 "id": "slot_preference_kuhlhoff",
                 "target": "doppel_pref",
                 "ratio": 0.0,
-                "description": "Spielt ausschließlich Einzel (0% Doppel)."
+                "description": "Nur Einzel."
             }
         ]
     },
@@ -282,7 +282,7 @@ PLAYER_RULES = {
                 "id": "slot_preference_vandeloo",
                 "target": "doppel_pref",
                 "ratio": 0.0,
-                "description": "Spielt ausschließlich Einzel (0% Doppel)."
+                "description": "Nur Einzel."
             }
         ]
     },
@@ -292,7 +292,7 @@ PLAYER_RULES = {
                 "id": "slot_preference_wojtanowitsch",
                 "target": "doppel_pref",
                 "ratio": 0.0,
-                "description": "Spielt ausschließlich Einzel (0% Doppel)."
+                "description": "Nur Einzel."
             }
         ]
     },
@@ -302,7 +302,7 @@ PLAYER_RULES = {
                 "id": "slot_preference_nolte",
                 "target": "doppel_pref",
                 "ratio": 0.0,
-                "description": "Spielt ausschließlich Einzel (0% Doppel)."
+                "description": "Nur Einzel."
             },
             {
                 "id": "abwesend",
