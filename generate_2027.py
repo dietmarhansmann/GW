@@ -20,7 +20,7 @@ PLAYERS = [
 RATIOS = {
     "Beumer": 0.50, "Dedores": 0.0, "Hansmann": 0.30, "Heyn": 0.30,
     "Hinz": 0.50, "Kissner": 0.0, "Kuhlhoff": 0.0, "Marschollek": 0.90,
-    "Mönning": 0.0, "Nolte": 0.0, "Prodehl": 0.60, "Quante": 0.75, "Redieker": 0.20, "Rumpf": 0.0, "Trojanski": 0.0,
+    "Knust": 0.20, "Mönning": 0.0, "Nolte": 0.0, "Prodehl": 0.60, "Quante": 0.75, "Redieker": 0.20, "Rumpf": 0.0, "Trojanski": 0.0,
     "Van de Looh": 0.0, "Wojtanowitsch": 0.0,
 }
 
@@ -38,6 +38,8 @@ ABSENCES = {
 
 # A player is not scheduled after reaching their requested number of appearances.
 MAX_APPEARANCES = {"Dedores": 7, "Quante": 4}
+# Knust follows a biweekly cadence with slight shifts to balance the match formats.
+KNUST_DAYS = {14, 16, 18, 21, 23, 25, 28, 30}
 
 # Manual pairings live in manual_matches_2027.json next to this script.
 # Edit that JSON file, then rerun this generator; overrides are validated and
@@ -83,7 +85,9 @@ def choose_attendees():
                 continue
             if counts[p] >= MAX_APPEARANCES.get(p, float("inf")):
                 continue
-            if p == "Trojanski" and day - last_played[p] < 2:
+            if p == "Knust" and day not in KNUST_DAYS:
+                continue
+            if p in {"Knust", "Trojanski"} and day - last_played[p] < 2:
                 continue
             if p == "Van de Looh" and day - last_played[p] < 4:
                 continue
@@ -100,6 +104,32 @@ def choose_attendees():
         for p in selected:
             counts[p] += 1
             last_played[p] = day
+
+    # Schedule Knust on a roughly biweekly cadence, reserving two doubles-format weeks.
+    knust_days = sorted(KNUST_DAYS)
+    for day in knust_days:
+        if "Knust" in attendance[day]:
+            continue
+        replaceable = [
+            player for player in attendance[day]
+            if player != "Knust"
+            and day not in ABSENCES.get(player, set())
+            and (player != "Quante" or day not in QUANTE_DAYS)
+            and (player != "Trojanski" or day - last_played.get(player, -99) >= 2)
+            and (player != "Van de Looh" or day - last_played.get(player, -99) >= 4)
+        ]
+        if not replaceable:
+            raise RuntimeError(f"Could not reserve alternating appearance for Knust on matchday {day}")
+        replacement = max(replaceable, key=lambda player: (counts[player], last_played[player]))
+        attendance[day].remove(replacement)
+        attendance[day].append("Knust")
+        counts[replacement] -= 1
+        last_played[replacement] = max(
+            (previous for previous in range(START_DAY, day) if replacement in attendance[previous]),
+            default=-99,
+        )
+        counts["Knust"] += 1
+        last_played["Knust"] = day
     return attendance
 
 
@@ -112,6 +142,8 @@ def doubles_choices(day, attendees, doubles_so_far, games_so_far, time_counts):
     best, best_score = None, float("inf")
     for choice in combinations(eligible, 4):
         if day in QUANTE_DOUBLE_DAYS and "Quante" not in choice:
+            continue
+        if "Knust" in choice and doubles_so_far["Knust"] >= 2:
             continue
         score = 0.0
         for p in attendees:
@@ -382,7 +414,7 @@ def generate():
             if player not in TIME_RULES
         ):
             continue
-        score = 0
+        time_score = 0
         for player, values in counts.items():
             if player in TIME_RULES:
                 continue
@@ -390,11 +422,24 @@ def generate():
             total = sum(values)
             quotient, remainder = divmod(total, len(TIME_SLOTS))
             ideal = [quotient + (1 if index < remainder else 0) for index in range(len(TIME_SLOTS))]
-            score += sum((actual - target) ** 2 for actual, target in zip(values, ideal))
+            time_score += sum((actual - target) ** 2 for actual, target in zip(values, ideal))
+
+        games, doubles = Counter(), Counter()
+        for match in candidate:
+            for pair in match["singles"]:
+                games.update(pair)
+            if match["teams"]:
+                for team in match["teams"]:
+                    games.update(team)
+                    doubles.update(team)
+        ratio_score = sum(
+            ((doubles[player] - ratio * games[player]) ** 2) / max(games[player], 1)
+            for player, ratio in RATIOS.items()
+            if games[player] and player != "Knust"
+        )
+        score = time_score + 20 * ratio_score
         if score < best_score:
             best_schedule, best_score = candidate, score
-        if score <= 2:
-            break
     if best_schedule is None:
         raise RuntimeError("Could not generate a valid 2027 schedule")
     return best_schedule
@@ -466,6 +511,13 @@ def validate(matches):
     for player, counts in time_counts.items():
         if player not in TIME_RULES:
             assert max(counts) - min(counts) <= 3, f"Unbalanced court times for {player}: {counts}"
+    knust_days = [m["day"] for m in matches if any("Knust" in pair for pair in m["singles"]) or (m["teams"] and any("Knust" in team for team in m["teams"]))]
+    assert knust_days == sorted(KNUST_DAYS), f"Knust cadence violation: {knust_days}"
+    knust_doubles = sum(
+        bool(m["teams"]) and any("Knust" in team for team in m["teams"])
+        for m in matches
+    )
+    assert knust_doubles <= 2, f"Knust exceeds the 20% doubles target: {knust_doubles} doubles in {len(knust_days)} appearances"
     assert len(matches) == 17
     return games, doubles
 
@@ -563,24 +615,44 @@ def render_matching_2026(schedule, games, doubles):
         target = f"{round(ratio * 100)}% Doppel" if ratio is not None else "Keine Quote festgelegt"
         stats.append(f"<tr><td>{badge(player)}</td><td>{total}</td><td>{total-dcount}</td><td>{dcount}</td><td>{share}%</td><td>{target}</td></tr>")
 
-    rules = [
-        "Beumer: 50% Einzel / 50% Doppel; abwesend am 02.03.2027 (#22).",
-        "Dedores: ausschließlich Einzel.",
-        "Allgemein: Für Spieler ohne Zeit-Sonderregel werden die Einsätze möglichst gleichmäßig auf 19:00, 20:00, 21:00 und 20:30 Uhr verteilt.",
-        "Hansmann: ca. 70% Einzel / 30% Doppel.",
-        "Heyn: 75% Einzel / 25% Doppel.",
-        "Hinz: 50% Einzel / 50% Doppel; abwesend am 27.04.2027 (#30).",
-        "Kissner: ausschließlich Einzel. Kuhlhoff: ausschließlich Einzel; abwesend am 05.01.2027 (#14) und 02.02.2027 (#18). Mönning: ausschließlich Einzel; abwesend am 05.01.2027 (#14) und 12.01.2027 (#15). Nolte und Wojtanowitsch: ausschließlich Einzel.",
-        "Marschollek: ca. 90% Doppel; abwesend am 19.01.2027 (#16) und 16.03.2027 (#24).",
-        "Prodehl: ca. 60% Doppel. Trojanski: Einzel, mindestens ein Spieltag Pause; abwesend am 16.02.2027 (#20).",
-        "Van de Looh: Einzel, mindestens drei Spieltage Pause. Knust nimmt ab 2027 teil.",
-        "Quante: drei Doppel-Einsätze und ein Einzel-Einsatz in der zweiten Saisonhälfte 2027.",
-    ]
+    rules = {
+        "Beumer": ["50% Einzel / 50% Doppel.", {"label": "Abwesend", "items": ["02.03.2027"]}],
+        "Dedores": ["Nur Einzel."],
+        "Allgemeine Regeln": ["Für Spieler ohne Zeit-Sonderregel werden die Einsätze möglichst gleichmäßig auf 19:00, 20:00, 21:00 und 20:30 Uhr verteilt."],
+        "Hansmann": ["Ca. 70% Einzel / 30% Doppel."],
+        "Heyn": ["75% Einzel / 25% Doppel."],
+        "Hinz": ["50% Einzel / 50% Doppel.", {"label": "Abwesend", "items": ["27.04.2027"]}],
+        "Kissner": ["Nur Einzel."],
+        "Kuhlhoff": ["Nur Einzel.", {"label": "Abwesend", "items": ["05.01.2027", "02.02.2027"]}],
+        "Marschollek": ["Ca. 90% Doppel.", {"label": "Abwesend", "items": ["19.01.2027", "16.03.2027"]}],
+        "Mönning": ["Nur Einzel.", {"label": "Abwesend", "items": ["05.01.2027", "12.01.2027"]}],
+        "Nolte": ["Nur Einzel."],
+        "Prodehl": ["Ca. 60% Doppel."],
+        "Quante": ["Drei Doppel-Einsätze und ein Einzel-Einsatz in der zweiten Saisonhälfte 2027."],
+        "Redieker": ["80% Einzel / 20% Doppel."],
+        "Rumpf": ["Nur Einzel."],
+        "Trojanski": ["Nur Einzel.", "Mindestens ein Spieltag Pause zwischen Einsätzen.", {"label": "Abwesend", "items": ["16.02.2027"]}],
+        "Van de Looh": ["Nur Einzel.", "Mindestens drei Spieltage Pause zwischen Einsätzen."],
+        "Knust": ["Grundsätzlich alle zwei Wochen; einzelne Verschiebungen für Formatbalance.", "80% Einzel / 20% Doppel."],
+        "Wojtanowitsch": ["Nur Einzel."],
+    }
     player_chips = "".join(
         f'<button class="player-badge" data-filter="{html.escape(p)}" data-player="{html.escape(p)}" style="background:{colors[p]};border-color:{colors[p]}">{html.escape(p)}</button>'
         for p in PLAYERS
     )
-    rules_html = "".join(f"<li>{html.escape(rule)}</li>" for rule in rules)
+    rules_html = "".join(
+        f'<div class="bg-gray-50 border border-gray-200 rounded p-2.5 text-xs"><strong>{html.escape(player)}</strong><ul class="list-disc list-inside text-gray-600 text-[11px] space-y-1">'
+        + "".join(
+            f"<li>{html.escape(rule['label'])}:<ul class=\"list-disc list-inside pl-3 mt-1 space-y-0.5\">"
+            + "".join(f"<li>{html.escape(item)}</li>" for item in rule["items"])
+            + "</ul></li>"
+            if isinstance(rule, dict)
+            else f"<li>{html.escape(rule)}</li>"
+            for rule in player_rules
+        )
+        + "</ul></div>"
+        for player, player_rules in rules.items()
+    )
 
     return f'''<!DOCTYPE html>
 <html lang="de"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -598,7 +670,7 @@ body{{font-family:Inter,Arial,sans-serif;background:#f3f4f6;color:#1f2937}}.play
 <div class="bg-white border border-gray-200 rounded-lg p-2.5 mb-2.5 shadow-sm no-print"><div class="font-bold text-xs uppercase tracking-wider text-gray-700 mb-2">Spieler anklicken zum Filtern</div><button class="filter-chip" data-filter="ALL"><span class="player-badge" style="background:#111827;color:white;border-color:#111827">Alle</span></button> {player_chips}</div>
 <div class="bg-white border border-gray-200 rounded-lg shadow-sm overflow-x-auto mb-2.5"><table id="schedule-table" class="schedule w-full text-left border-collapse text-xs table-auto"><thead><tr class="bg-gray-100 text-gray-600 uppercase text-[10px] tracking-wider"><th class="py-2 px-1">Spieltag / Datum</th><th class="py-2 px-1.5">19:00 Uhr</th><th class="py-2 px-1.5">20:00 Uhr</th><th class="py-2 px-1.5">21:00 Uhr</th><th class="py-2 px-1.5">Doppel / Einzel (20:30)</th></tr></thead><tbody class="divide-y divide-gray-200">{''.join(rows)}</tbody></table></div>
 <div class="no-print bg-white border border-emerald-200 rounded-lg p-3 mb-2.5 shadow-sm"><h2 class="text-xs font-bold uppercase tracking-wider text-emerald-800 mb-2">📊 Spieler-Statistik-Matrix (2027)</h2><div class="overflow-x-auto"><table class="w-full text-left border-collapse text-xs"><thead><tr class="bg-emerald-800 text-white"><th class="p-2">Spieler</th><th class="p-2">Gesamt</th><th class="p-2">Einzel</th><th class="p-2">Doppel</th><th class="p-2">Doppel-Anteil</th><th class="p-2">Wunsch</th></tr></thead><tbody class="divide-y divide-gray-100">{''.join(stats)}</tbody></table></div></div>
-<div class="no-print bg-white border border-emerald-200 rounded-lg p-3 shadow-sm"><h2 class="text-xs font-bold uppercase tracking-wider text-emerald-800 mb-2">📋 Aktive Spielerregeln & Abwesenheiten · 2027</h2><ul class="list-disc list-inside text-gray-600 text-[11px] space-y-1">{rules_html}</ul><p class="mt-3 text-[11px] text-gray-500">Die 2026er Regeln und Spieltermine bleiben unverändert. Ungerade Spieltage: Doppel auf Platz 2; gerade Spieltage: Einzel.</p></div>
+<div class="no-print bg-white border border-emerald-200 rounded-lg p-3 shadow-sm"><h2 class="text-xs font-bold uppercase tracking-wider text-emerald-800 mb-2">📋 Aktive Spielerregeln & Abwesenheiten · 2027</h2><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2">{rules_html}</div><p class="mt-3 text-[11px] text-gray-500">Die 2026er Regeln und Spieltermine bleiben unverändert. Ungerade Spieltage: Doppel auf Platz 2; gerade Spieltage: Einzel.</p></div>
 </div><script>
 document.querySelectorAll('[data-filter]').forEach(button=>button.addEventListener('click',()=>{{const player=button.dataset.filter;document.querySelectorAll('#schedule-table tbody tr').forEach(row=>{{const match=player==='ALL'||row.dataset.players.includes('|'+player+'|');row.hidden=!match;row.classList.toggle('dimmed',!match)}})}}));
 </script></body></html>'''
@@ -629,25 +701,24 @@ def render_from_2026_template(schedule, games, doubles):
         matches_data.append(item)
 
     rules = {
-        "Beumer": ["Wunsch nach 50% Einzel und 50% Doppel.", "Abwesend am 02.03.2027 (Spieltag 22)."],
-        "Dedores": ["Spielt ausschließlich Einzel.", "Abwesend am 19.01.2027 (#16), 26.01.2027 (#17), 16.02.2027 (#20), 23.02.2027 (#21), 23.03.2027 (#25), 30.03.2027 (#26) und 13.04.2027 (#28).", "Bis zu 7 Einsätze reichen."],
-        "Hansmann": ["Wunsch nach ca. 70% Einzel und 30% Doppel."],
-        "Heyn": ["Wunsch nach 70% Einzel und 30% Doppel.", "Abwesend am 12.01.2027 (Spieltag 15), 09.02.2027 (Spieltag 19), 09.03.2027 (Spieltag 23), 30.03.2027 (Spieltag 26), 13.04.2027 (Spieltag 28) und 27.04.2027 (Spieltag 30)."],
-        "Hinz": ["Wunsch nach 50% Einzel und 50% Doppel.", "Abwesend am 27.04.2027 (Spieltag 30)."],
-        "Kissner": ["Spielt ausschließlich Einzel."],
-        "Knust": ["Nimmt ab 2027 teil."],
-        "Kuhlhoff": ["Spielt ausschließlich Einzel.", "Abwesend am 05.01.2027 (Spieltag 14) und 02.02.2027 (Spieltag 18)."],
-        "Marschollek": ["Wunsch nach ca. 90% Doppel.", "Abwesend am 19.01.2027 (Spieltag 16) und 16.03.2027 (Spieltag 24)."],
-        "Mönning": ["Spielt ausschließlich Einzel.", "Abwesend am 05.01.2027 (Spieltag 14) und 12.01.2027 (Spieltag 15)."],
-        "Nolte": ["Spielt ausschließlich Einzel.", "Abwesend am 02.03.2027 (#22), 23.03.2027 (#25), 20.04.2027 (#29) und 27.04.2027 (#30)."],
-        "Prodehl": ["Wunsch nach ca. 60% Doppel."],
+        "Beumer": ["50% Einzel, 50% Doppel.", {"label": "Abwesend", "items": ["02.03.2027"]}],
+        "Dedores": ["Nur Einzel.", {"label": "Abwesend", "items": ["19.01.2027", "26.01.2027", "16.02.2027", "23.02.2027", "23.03.2027", "30.03.2027", "13.04.2027"]}, "Bis zu 7 Einsätze."],
+        "Hansmann": ["Ca. 70% Einzel, 30% Doppel."],
+        "Heyn": ["70% Einzel, 30% Doppel.", {"label": "Abwesend", "items": ["12.01.2027", "09.02.2027", "09.03.2027", "30.03.2027", "13.04.2027", "27.04.2027"]}],
+        "Hinz": ["50% Einzel, 50% Doppel.", {"label": "Abwesend", "items": ["27.04.2027"]}],
+        "Kissner": ["Nur Einzel."],
+        "Knust": ["Grundsätzlich alle zwei Wochen; einzelne Verschiebungen gleichen die Einzel-/Doppel-Formate aus.", "80% Einzel, 20% Doppel."],
+        "Kuhlhoff": ["Nur Einzel.", {"label": "Abwesend", "items": ["05.01.2027", "02.02.2027"]}],
+        "Marschollek": ["Ca. 90% Doppel.", {"label": "Abwesend", "items": ["19.01.2027", "16.03.2027"]}],
+        "Mönning": ["Nur Einzel.", {"label": "Abwesend", "items": ["05.01.2027", "12.01.2027"]}],
+        "Nolte": ["Nur Einzel.", {"label": "Abwesend", "items": ["02.03.2027", "23.03.2027", "20.04.2027", "27.04.2027"]}],
+        "Prodehl": ["Ca. 60% Doppel."],
         "Quante": ["Genau drei Doppel-Einsätze und ein Einzel-Einsatz in der zweiten Saisonhälfte 2027."],
-        "Redieker": ["Wunsch nach 80% Einzel und 20% Doppel."],
-        "Rumpf": ["Spielt ausschließlich Einzel."],
-        "Trojanski": ["Spielt ausschließlich Einzel.", "Mindestens ein Spieltag Pause zwischen Einsätzen.", "Abwesend am 16.02.2027 (Spieltag 20)."],
-        "Van de Looh": ["Spielt ausschließlich Einzel.", "Mindestens drei Spieltage Pause zwischen Einsätzen."],
-        "Weber": ["Keine besondere Einzel-/Doppelquote festgelegt."],
-        "Wojtanowitsch": ["Spielt ausschließlich Einzel."],
+        "Redieker": ["80% Einzel, 20% Doppel."],
+        "Rumpf": ["Nur Einzel."],
+        "Trojanski": ["Nur Einzel.", "Mindestens ein Spieltag Pause zwischen Einsätzen.", {"label": "Abwesend", "items": ["16.02.2027"]}],
+        "Van de Looh": ["Nur Einzel.", "Mindestens drei Spieltage Pause zwischen Einsätzen."],
+        "Wojtanowitsch": ["Nur Einzel."],
         "Allgemeine Regeln": ["Faire Verteilung der Einsätze innerhalb der zweiten Saisonhälfte.", "Spielzeiten 19:00, 20:00, 21:00 und 20:30 werden ohne Sondervorgabe je Spieler möglichst gleichmäßig verteilt.", "Doppelte Begegnungen und Partnerschaften werden möglichst vermieden."],
     }
     stats = {}
@@ -702,11 +773,13 @@ def render_from_2026_template(schedule, games, doubles):
     page = page.replace("<b>13</b> Spieltage (Saison 2026/2027)", "<b>17</b> Spieltage (2. Saisonhälfte 2027)")
     page = page.replace("Nächster Spieltag: <b>06.10.2026</b> (#1)", "Nächster Spieltag: <b>05.01.2027</b> (#14)")
     heading = (
-        '<h1>GW Halle 2026<a href="spielplan_2027.html" class="year-switch no-print" '
+        '<h1><img src="icons/icon-192.png" alt="" class="h-11 w-11 rounded-xl shadow-sm">'
+        'GW Halle 2026<a href="spielplan_2027.html" class="year-switch no-print" '
         'title="Zum Spielplan 2027 wechseln" aria-label="Zum Spielplan 2027 wechseln">↗ 2027</a></h1>'
     )
     replacement = (
-        '<h1>GW Halle 2027<a href="index.html" class="year-switch no-print" '
+        '<h1><img src="icons/icon-192.png" alt="" class="h-11 w-11 rounded-xl shadow-sm">'
+        'GW Halle 2027<a href="index.html" class="year-switch no-print" '
         'title="Zum Spielplan 2026 wechseln" aria-label="Zum Spielplan 2026 wechseln">↗ 2026</a></h1>'
     )
     count = page.count(heading)

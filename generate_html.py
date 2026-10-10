@@ -115,7 +115,7 @@ PLAYER_RULES = {
             {
                 "id": "abwesend",
                 "spieltage": [2, 5, 6, 9],
-                "description": "Abwesend an folgenden Tagen: 13.10.26 (#2), 03.11.26 (#5), 10.11.26 (#6), 01.12.26 (#9)."
+                "description": "Abwesend: 13.10.26 (#2), 03.11.26 (#5), 10.11.26 (#6), 01.12.26 (#9)."
             }
         ]
     },
@@ -125,12 +125,12 @@ PLAYER_RULES = {
                 "id": "slot_preference_hansmann",
                 "target": "doppel_pref",
                 "ratio": 0.3,
-                "description": "Möchte ca. 70% Einzel spielen (30% Doppel)."
+                "description": "70% Einzel, 30% Doppel."
             },
             {
                 "id": "abwesend",
                 "spieltage": [9],
-                "description": "Kann an Spieltag 9 nicht teilnehmen."
+                "description": "Abwesend: Spieltag 9."
             }
         ]
     },
@@ -145,7 +145,7 @@ PLAYER_RULES = {
             {
                 "id": "abwesend",
                 "spieltage": [3, 4, 8, 13],
-                "description": "Kann an folgenden Tagen nicht teilnehmen: 20.10.26 (#3), 27.10.26 (#4), 24.11.26 (#8), 29.12.26 (#13)."
+                "description": "Abwesend: 20.10.26 (#3), 27.10.26 (#4), 24.11.26 (#8), 29.12.26 (#13)."
             },
             {
                 "id": "allowed_times",
@@ -161,12 +161,12 @@ PLAYER_RULES = {
                 "id": "slot_preference_hinz",
                 "target": "doppel_pref",
                 "ratio": 0.5,
-                "description": "Möchte ca. 50% Doppel und 50% Einzel spielen."
+                "description": "50% Einzel, 50% Doppel."
             },
             {
                 "id": "abwesend",
                 "spieltage": list(range(1, 14)) + [30],
-                "description": "Kann vor dem 01.01.2027 (Spieltag 1–13) und am 27.04.2027 (Spieltag 30) nicht spielen."
+                "description": "Abwesend: Spieltage 1–13 und 30."
             }
         ]
     },
@@ -176,7 +176,7 @@ PLAYER_RULES = {
                 "id": "slot_preference_beumer",
                 "target": "doppel_pref",
                 "ratio": 0.5,
-                "description": "Möchte ca. 50% Doppel und 50% Einzel spielen."
+                "description": "50% Einzel, 50% Doppel."
             }
         ]
     },
@@ -186,12 +186,12 @@ PLAYER_RULES = {
                 "id": "slot_preference_prodehl",
                 "target": "doppel_pref",
                 "ratio": 0.6,
-                "description": "Möchte ca. 60% Doppel spielen."
+                "description": "Ca. 60% Doppel."
             },
             {
                 "id": "abwesend",
                 "spieltage": [5, 6],
-                "description": "Ist in den ersten beiden Wochen im November im Urlaub (Spieltag 5 & 6)."
+                "description": "Abwesend: 03.11.26 (#5) und 10.11.26 (#6)."
             }
         ]
     },
@@ -201,12 +201,12 @@ PLAYER_RULES = {
                 "id": "slot_preference_marschollek",
                 "target": "doppel_pref",
                 "ratio": 0.9,
-                "description": "Möchte ca. 90% Doppel spielen."
+                "description": "Ca. 90% Doppel."
             },
             {
                 "id": "abwesend",
                 "spieltage": [2, 3, 5, 10, 16, 24],
-                "description": "Kann an folgenden Tagen nicht teilnehmen: 13.10.26 (#2), 20.10.26 (#3), 03.11.26 (#5), 08.12.26 (#10), 19.01.27 (#16), 16.03.27 (#24)."
+                "description": "Abwesend: 13.10.26 (#2), 20.10.26 (#3), 03.11.26 (#5), 08.12.26 (#10), 19.01.27 (#16), 16.03.27 (#24)."
             }
         ]
     },
@@ -234,12 +234,12 @@ PLAYER_RULES = {
                 "id": "slot_preference_heyn",
                 "target": "doppel_pref",
                 "ratio": 0.5,
-                "description": "Möchte ca. 50% Doppel und 50% Einzel spielen."
+                "description": "50% Einzel, 50% Doppel."
             },
             {
                 "id": "abwesend",
                 "spieltage": [2, 4, 5, 6, 10, 13],
-                "description": "Kann an folgenden Tagen nicht teilnehmen: 13.10.26 (#2), 27.10.26 (#4), 03.11.26 (#5), 10.11.26 (#6), 08.12.26 (#10), 29.12.26 (#13)."
+                "description": "Abwesend: 13.10.26 (#2), 27.10.26 (#4), 03.11.26 (#5), 10.11.26 (#6), 08.12.26 (#10), 29.12.26 (#13)."
             }
         ]
     },
@@ -259,7 +259,7 @@ PLAYER_RULES = {
             {
                 "id": "abwesend",
                 "spieltage": [2, 5, 10],
-                "description": "Kann an folgenden Tagen nicht teilnehmen: 13.10.26 (#2), 03.11.26 (#5), 08.12.26 (#10)."
+                "description": "Abwesend: 13.10.26 (#2), 03.11.26 (#5), 08.12.26 (#10)."
             }
         ]
     },
@@ -268,7 +268,7 @@ PLAYER_RULES = {
             {
                 "id": "abwesend",
                 "spieltage": [2, 3, 6, 7, 8, 10, 13],
-                "description": "Kann an folgenden Tagen nicht teilnehmen: 13.10.26 (#2), 20.10.26 (#3), 10.11.26 (#6), 17.11.26 (#7), 24.11.26 (#8), 08.12.26 (#10), 29.12.26 (#13)."
+                "description": "Abwesend: 13.10.26 (#2), 20.10.26 (#3), 10.11.26 (#6), 17.11.26 (#7), 24.11.26 (#8), 08.12.26 (#10), 29.12.26 (#13)."
             },
             {
                 "id": "slot_preference_kuhlhoff",
@@ -314,7 +314,7 @@ PLAYER_RULES = {
             {
                 "id": "abwesend",
                 "spieltage": [3],
-                "description": "Kann an Spieltag 3 (20.10.2026) nicht teilnehmen."
+                "description": "Abwesend: Spieltag 3 (20.10.2026)."
             }
         ]
     },
@@ -969,8 +969,20 @@ else:
 
 # Prepare rules grouped by player for frontend display from nested structure
 frontend_rules_by_player = {}
+matchday_dates = {
+    spieltag: (datetime.date(2026, 10, 6) + datetime.timedelta(weeks=spieltag - 1))
+    for spieltag in range(1, 31)
+}
 for p, player_data in PLAYER_RULES.items():
-    rules_list = [r.get('description', '') for r in player_data.get("rules", []) if r.get('visible', True)]
+    rules_list = []
+    for rule in player_data.get("rules", []):
+        if not rule.get('visible', True):
+            continue
+        if rule.get('id') == 'abwesend':
+            dates = [matchday_dates[day].strftime('%d.%m.%Y') for day in rule.get('spieltage', [])]
+            rules_list.append({'label': 'Abwesend', 'items': dates})
+        else:
+            rules_list.append(rule.get('description', ''))
     if rules_list:
         frontend_rules_by_player[p] = rules_list
 
@@ -1420,7 +1432,9 @@ html_template = """<!DOCTYPE html>
                 </h3>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2">
-                <div v-for="(rulesList, player) in rulesByPlayer" :key="player" class="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded p-2.5 text-xs flex flex-col justify-between shadow-2xs">
+                <div v-for="(rulesList, player) in visibleRules" :key="player"
+                    :class="currentFilter !== 'ALL' && player !== currentFilter && player !== 'Allgemeine Regeln' ? 'opacity-30' : 'opacity-100'"
+                    class="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded p-2.5 text-xs flex flex-col justify-between shadow-2xs transition-opacity duration-200">
                     <div>
                         <div class="mb-2">
                             <span :style="{ backgroundColor: playerColors[player] ? playerColors[player].bg : '#eee', borderColor: playerColors[player] ? playerColors[player].border : '#ccc', color: '#111827' }"
@@ -1429,7 +1443,15 @@ html_template = """<!DOCTYPE html>
                             </span>
                         </div>
                         <ul class="list-disc list-inside text-gray-600 dark:text-gray-300 text-[11px] space-y-1 pl-1">
-                            <li v-for="(desc, idx) in rulesList" :key="idx">{{ desc }}</li>
+                            <template v-for="(rule, idx) in rulesList" :key="idx">
+                                <li v-if="typeof rule === 'string'">{{ rule }}</li>
+                                <li v-else>
+                                    {{ rule.label }}:
+                                    <ul class="list-disc list-inside pl-3 mt-1 space-y-0.5">
+                                        <li v-for="(item, itemIdx) in rule.items" :key="itemIdx">{{ item }}</li>
+                                    </ul>
+                                </li>
+                            </template>
                         </ul>
                     </div>
                 </div>
@@ -1450,7 +1472,7 @@ html_template = """<!DOCTYPE html>
             setup() {
                 const currentFilter = ref('ALL');
                 const showPastMatches = ref(false);
-                const rulesByPlayer = ref(playerRules);
+                const visibleRules = computed(() => playerRules);
                 const showTopfA = ref(false);
                 const selectedMatchday = ref(null);
                 const touchStartX = ref(null);
@@ -1855,7 +1877,7 @@ html_template = """<!DOCTYPE html>
                     matchdaySlots,
                     handleMatchdayTouchStart,
                     handleMatchdayTouchEnd,
-                    rulesByPlayer,
+                    visibleRules,
                     allPlayers,
                     displayedPlayers,
                     topfA,

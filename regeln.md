@@ -31,37 +31,37 @@ Dieses Dokument fasst alle geschäftlichen Regeln, Spielerpräferenzen, Abwesenh
 ## 3. Verschachteltes Regelwerk pro Spieler (`PLAYER_RULES`)
 
 ### Hansmann
-- **Slot-Präferenz**: Wunsch nach ca. 70% Einzel / 30% Doppel (`ratio: 0.3`).
-- **Abwesenheiten**: Kann an **Spieltag 9** (Dienstag, 01.12. / 02.12.2026) nicht teilnehmen.
+- **Slot-Präferenz**: Ca. 70% Einzel / 30% Doppel (`ratio: 0.3`).
+- **Abwesenheit**: Spieltag 9.
 
 ### Dedores
 - **Slot-Präferenz**: Spielt ausschließlich **Einzel** (0% Doppel, `ratio: 0.0`).
 - **Abwesenheiten**: 20.10.26 (#3), 27.10.26 (#4), 24.11.26 (#8), 29.12.26 (#13).
 
 ### Hinz
-- **Slot-Präferenz**: Wunsch nach ca. 50% Doppel / 50% Einzel (`ratio: 0.5`).
-- **Abwesenheiten**: Kann vor dem 01.01.2027 (Spieltage 1–13) und am 27.04.2027 (Spieltag 30) nicht spielen.
+- **Slot-Präferenz**: Ca. 50% Doppel / 50% Einzel (`ratio: 0.5`).
+- **Abwesenheiten**: Abwesend: Spieltage 1–13 und 30 (27.04.2027).
 
 ### Beumer
-- **Slot-Präferenz**: Wunsch nach ca. 50% Doppel / 50% Einzel (`ratio: 0.5`).
+- **Slot-Präferenz**: Ca. 50% Doppel / 50% Einzel (`ratio: 0.5`).
 
 ### Mönning
 - **Slot-Präferenz**: Spielt ausschließlich **Einzel** (0% Doppel, `ratio: 0.0`).
 - **Abwesenheiten**: 13.10.26 (#2, Zeitraum 29.09.–13.10.), 03.11.26 (#5, Zeitraum 03.11.–10.11.), 10.11.26 (#6, Zeitraum 03.11.–10.11.), 01.12.26 (#9, Dienstag 02.12.).
 
 ### Prodehl
-- **Slot-Präferenz**: Wunsch nach ca. 60% Doppel (`ratio: 0.6`).
-- **Urlaub**: In den ersten beiden Novemberwochen im Zeitraum **03.11. – 10.11.2026** (Spieltag 5 & 6) abwesend.
+- **Slot-Präferenz**: Ca. 60% Doppel (`ratio: 0.6`).
+- **Abwesenheit**: 03.11.2026 (Spieltag 5) und 10.11.2026 (Spieltag 6).
 
 ### Marschollek
-- **Slot-Präferenz**: Wunsch nach ca. 90% Doppel (`ratio: 0.9`).
+- **Slot-Präferenz**: Ca. 90% Doppel (`ratio: 0.9`).
 - **Abwesenheiten**: 13.10.26 (#2, im Zeitraum 29.09.–13.10.), 20.10.26 (#3), 03.11.26 (#5, im Zeitraum 03.11.–10.11.), 08.12.26 (#10), 19.01.27 (#16), 16.03.27 (#24).
 
 ### Kissner
 - **Slot-Präferenz**: Spielt ausschließlich **Einzel** (0% Doppel, `ratio: 0.0`).
 
 ### Heyn
-- **Slot-Präferenz**: Wunsch nach ca. 50% Doppel / 50% Einzel (`ratio: 0.5`).
+- **Slot-Präferenz**: Ca. 50% Doppel / 50% Einzel (`ratio: 0.5`).
 - **Abwesenheiten**: 13.10.26 (#2, Zeitraum 29.09.–13.10.), 27.10.26 (#4), 03.11.26 (#5, Zeitraum 03.11.–10.11.), 10.11.26 (#6, Zeitraum 03.11.–10.11.), 08.12.26 (#10), 29.12.26 (#13).
 
 ### Trojanski
@@ -94,12 +94,12 @@ Dieses Dokument fasst alle geschäftlichen Regeln, Spielerpräferenzen, Abwesenh
 **Zeitraum:** 05.01.2027 bis 27.04.2027. Die bisherigen dauerhaften Spiel- und Frequenzwünsche gelten weiter. Die folgenden bekannten Abwesenheiten sind bereits eingetragen; weitere Angaben werden ergänzt, sobald sie vorliegen.
 
 ### Beumer
-- **Slot-Präferenz**: Wunsch nach 50% Einzel / 50% Doppel (`ratio: 0.5`).
+- **Slot-Präferenz**: 50% Einzel / 50% Doppel (`ratio: 0.5`).
 - **Abwesenheit**: 02.03.2027 (Spieltag 22).
 
 ### Dedores
 - **Slot-Präferenz**: Ausschließlich Einzel (`ratio: 0.0`).
-- **Einsatzumfang**: Bis zu 7 Einsätze reichen.
+- **Einsatzumfang**: Bis zu 7 Einsätze.
 - **Abwesenheiten**: 19.01.2027 (Spieltag 16), 26.01.2027 (Spieltag 17), 16.02.2027 (Spieltag 20), 23.02.2027 (Spieltag 21), 23.03.2027 (Spieltag 25), 30.03.2027 (Spieltag 26) und 13.04.2027 (Spieltag 28).
 - **Zeitvorgabe (intern)**: Nur um 19:00 oder 20:00 Uhr.
 
@@ -113,11 +113,11 @@ Dieses Dokument fasst alle geschäftlichen Regeln, Spielerpräferenzen, Abwesenh
 - **Weitere Abwesenheiten**: Bisher keine für Spieltage 14–30 gemeldet.
 
 ### Heyn
-- **Slot-Präferenz**: Wunsch nach 70% Einzel / 30% Doppel (`ratio: 0.30`).
+- **Slot-Präferenz**: 70% Einzel / 30% Doppel (`ratio: 0.30`).
 - **Abwesenheiten**: 12.01.2027 (Spieltag 15), 09.02.2027 (Spieltag 19), 09.03.2027 (Spieltag 23), 30.03.2027 (Spieltag 26), 13.04.2027 (Spieltag 28) und 27.04.2027 (Spieltag 30).
 
 ### Hinz
-- **Slot-Präferenz**: Wunsch nach ca. 50% Doppel / 50% Einzel (`ratio: 0.5`).
+- **Slot-Präferenz**: Ca. 50% Doppel / 50% Einzel (`ratio: 0.5`).
 - **Abwesenheit**: 27.04.2027 (Spieltag 30).
 - **Hinweis**: Die bisherige Sperre für Spieltage 1–13 betrifft die erste Saisonhälfte; Hinz kann ab Spieltag 14 grundsätzlich berücksichtigt werden.
 
@@ -127,14 +127,16 @@ Dieses Dokument fasst alle geschäftlichen Regeln, Spielerpräferenzen, Abwesenh
 
 ### Knust
 - **Teilnahme**: Ab 2027 vorgesehen.
-- **Weitere Regeln/Abwesenheiten**: Bisher keine für Spieltage 14–30 gemeldet.
+- **Frequenz**: Grundsätzlich alle zwei Wochen; einzelne Verschiebungen gleichen die wechselnden Einzel-/Doppel-Formate aus.
+- **Slot-Präferenz**: 80% Einzel / 20% Doppel (`ratio: 0.2`).
+- **Weitere Abwesenheiten**: Bisher keine für Spieltage 14–30 gemeldet.
 
 ### Kuhlhoff
 - **Slot-Präferenz**: Ausschließlich Einzel (`ratio: 0.0`).
 - **Abwesenheiten**: 05.01.2027 (Spieltag 14) und 02.02.2027 (Spieltag 18).
 
 ### Marschollek
-- **Slot-Präferenz**: Wunsch nach ca. 90% Doppel (`ratio: 0.9`).
+- **Slot-Präferenz**: Ca. 90% Doppel (`ratio: 0.9`).
 - **Abwesenheiten**: 19.01.2027 (Spieltag 16) und 16.03.2027 (Spieltag 24).
 
 ### Mönning
@@ -146,14 +148,14 @@ Dieses Dokument fasst alle geschäftlichen Regeln, Spielerpräferenzen, Abwesenh
 - **Abwesenheiten**: 02.03.2027 (Spieltag 22), 23.03.2027 (Spieltag 25), 20.04.2027 (Spieltag 29) und 27.04.2027 (Spieltag 30).
 
 ### Prodehl
-- **Slot-Präferenz**: Wunsch nach ca. 60% Doppel (`ratio: 0.6`).
+- **Slot-Präferenz**: Ca. 60% Doppel (`ratio: 0.6`).
 - **Weitere Abwesenheiten**: Bisher keine für Spieltage 14–30 gemeldet.
 
 ### Quante
 - **Einsatzvorgabe (intern)**: Genau 3 Einsätze als Doppel und 1 Einsatz als Einzel in der zweiten Saisonhälfte 2027.
 
 ### Redieker
-- **Slot-Präferenz**: Wunsch nach 80% Einzel / 20% Doppel (`ratio: 0.20`).
+- **Slot-Präferenz**: 80% Einzel / 20% Doppel (`ratio: 0.20`).
 - **Weitere Abwesenheiten**: Bisher keine für Spieltage 14–30 gemeldet.
 
 ### Rumpf

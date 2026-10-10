@@ -411,7 +411,9 @@
                 </h3>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2">
-                <div v-for="(rulesList, player) in rulesByPlayer" :key="player" class="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded p-2.5 text-xs flex flex-col justify-between shadow-2xs">
+                <div v-for="(rulesList, player) in visibleRules" :key="player"
+                    :class="currentFilter !== 'ALL' && player !== currentFilter && player !== 'Allgemeine Regeln' ? 'opacity-30' : 'opacity-100'"
+                    class="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded p-2.5 text-xs flex flex-col justify-between shadow-2xs transition-opacity duration-200">
                     <div>
                         <div class="mb-2">
                             <span :style="{ backgroundColor: playerColors[player] ? playerColors[player].bg : '#eee', borderColor: playerColors[player] ? playerColors[player].border : '#ccc', color: '#111827' }"
@@ -420,7 +422,15 @@
                             </span>
                         </div>
                         <ul class="list-disc list-inside text-gray-600 dark:text-gray-300 text-[11px] space-y-1 pl-1">
-                            <li v-for="(desc, idx) in rulesList" :key="idx">{{ desc }}</li>
+                            <template v-for="(rule, idx) in rulesList" :key="idx">
+                                <li v-if="typeof rule === 'string'">{{ rule }}</li>
+                                <li v-else>
+                                    {{ rule.label }}:
+                                    <ul class="list-disc list-inside pl-3 mt-1 space-y-0.5">
+                                        <li v-for="(item, itemIdx) in rule.items" :key="itemIdx">{{ item }}</li>
+                                    </ul>
+                                </li>
+                            </template>
                         </ul>
                     </div>
                 </div>
@@ -815,30 +825,30 @@
         const playerRules = {
     "Mönning": [
         "Spielt ausschließlich Einzel (0% Doppel).",
-        "Abwesend an folgenden Tagen: 13.10.26 (#2), 03.11.26 (#5), 10.11.26 (#6), 01.12.26 (#9)."
+        "Abwesend: 13.10.26 (#2), 03.11.26 (#5), 10.11.26 (#6), 01.12.26 (#9)."
     ],
     "Hansmann": [
-        "Möchte ca. 70% Einzel spielen (30% Doppel).",
-        "Kann an Spieltag 9 nicht teilnehmen."
+        "70% Einzel, 30% Doppel.",
+        "Abwesend: Spieltag 9."
     ],
     "Dedores": [
         "Spielt ausschließlich Einzel (0% Doppel).",
-        "Kann an folgenden Tagen nicht teilnehmen: 20.10.26 (#3), 27.10.26 (#4), 24.11.26 (#8), 29.12.26 (#13)."
+        "Abwesend: 20.10.26 (#3), 27.10.26 (#4), 24.11.26 (#8), 29.12.26 (#13)."
     ],
     "Hinz": [
-        "Möchte ca. 50% Doppel und 50% Einzel spielen.",
-        "Kann vor dem 01.01.2027 (Spieltag 1–13) und am 27.04.2027 (Spieltag 30) nicht spielen."
+        "50% Einzel, 50% Doppel.",
+        "Abwesend: Spieltage 1–13 und 30."
     ],
     "Beumer": [
-        "Möchte ca. 50% Doppel und 50% Einzel spielen."
+        "50% Einzel, 50% Doppel."
     ],
     "Prodehl": [
-        "Möchte ca. 60% Doppel spielen.",
-        "Ist in den ersten beiden Wochen im November im Urlaub (Spieltag 5 & 6)."
+        "Ca. 60% Doppel.",
+        "Abwesend: 03.11.26 (#5) und 10.11.26 (#6)."
     ],
     "Marschollek": [
-        "Möchte ca. 90% Doppel spielen.",
-        "Kann an folgenden Tagen nicht teilnehmen: 13.10.26 (#2), 20.10.26 (#3), 03.11.26 (#5), 08.12.26 (#10), 19.01.27 (#16), 16.03.27 (#24)."
+        "Ca. 90% Doppel.",
+        "Abwesend: 13.10.26 (#2), 20.10.26 (#3), 03.11.26 (#5), 08.12.26 (#10), 19.01.27 (#16), 16.03.27 (#24)."
     ],
     "Kissner": [
         "Spielt nur Einzel (0% Doppel)."
@@ -847,16 +857,16 @@
         "Nimmt erst 2027 teil."
     ],
     "Heyn": [
-        "Möchte ca. 50% Doppel und 50% Einzel spielen.",
-        "Kann an folgenden Tagen nicht teilnehmen: 13.10.26 (#2), 27.10.26 (#4), 03.11.26 (#5), 10.11.26 (#6), 08.12.26 (#10), 29.12.26 (#13)."
+        "50% Einzel, 50% Doppel.",
+        "Abwesend: 13.10.26 (#2), 27.10.26 (#4), 03.11.26 (#5), 10.11.26 (#6), 08.12.26 (#10), 29.12.26 (#13)."
     ],
     "Trojanski": [
         "Regelmäßiger Rhythmus.",
         "Spielt ausschließlich Einzel (0% Doppel).",
-        "Kann an folgenden Tagen nicht teilnehmen: 13.10.26 (#2), 03.11.26 (#5), 08.12.26 (#10)."
+        "Abwesend: 13.10.26 (#2), 03.11.26 (#5), 08.12.26 (#10)."
     ],
     "Kuhlhoff": [
-        "Kann an folgenden Tagen nicht teilnehmen: 13.10.26 (#2), 20.10.26 (#3), 10.11.26 (#6), 17.11.26 (#7), 24.11.26 (#8), 08.12.26 (#10), 29.12.26 (#13).",
+        "Abwesend: 13.10.26 (#2), 20.10.26 (#3), 10.11.26 (#6), 17.11.26 (#7), 24.11.26 (#8), 08.12.26 (#10), 29.12.26 (#13).",
         "Spielt ausschließlich Einzel (0% Doppel)."
     ],
     "van de Loo": [
@@ -868,7 +878,7 @@
     ],
     "Nolte": [
         "Spielt ausschließlich Einzel (0% Doppel).",
-        "Kann an Spieltag 3 (20.10.2026) nicht teilnehmen."
+        "Abwesend: Spieltag 3 (20.10.2026)."
     ],
     "Allgemeine Regeln": [
         "Jeder reguläre Spieler strebt nach Möglichkeit bis zu 7 Spiele an.",
@@ -1022,7 +1032,32 @@
             setup() {
                 const currentFilter = ref('ALL');
                 const showPastMatches = ref(false);
-                const rulesByPlayer = ref(playerRules);
+                function normalizeRule(rule) {
+                    if (typeof rule !== 'string' || !rule.startsWith('Abwesend:')) return rule;
+
+                    const dates = [...rule.matchAll(/\d{2}\.\d{2}\.\d{2,4}/g)].map(([date]) => date);
+                    if (!dates.length) {
+                        const matchdays = new Set();
+                        for (const [, hashDay, start, end, extraDay] of rule.matchAll(/#(\d+)|Spieltage?\s+(\d+)(?:[–-](\d+))?(?:\s+und\s+(\d+))?/g)) {
+                            if (hashDay) matchdays.add(Number(hashDay));
+                            if (start) {
+                                const first = Number(start);
+                                const last = Number(end || start);
+                                for (let day = first; day <= last; day++) matchdays.add(day);
+                                if (extraDay) matchdays.add(Number(extraDay));
+                            }
+                        }
+                        for (const day of [...matchdays].sort((a, b) => a - b)) {
+                            const date = new Date(Date.UTC(2026, 9, 6 + (day - 1) * 7));
+                            dates.push(`${String(date.getUTCDate()).padStart(2, '0')}.${String(date.getUTCMonth() + 1).padStart(2, '0')}.${date.getUTCFullYear()}`);
+                        }
+                    }
+                    return { label: 'Abwesend', items: dates };
+                }
+
+                const visibleRules = computed(() => Object.fromEntries(
+                    Object.entries(playerRules).map(([player, rules]) => [player, rules.map(normalizeRule)])
+                ));
                 const showTopfA = ref(false);
                 const selectedMatchday = ref(null);
                 const touchStartX = ref(null);
@@ -1427,7 +1462,7 @@
                     matchdaySlots,
                     handleMatchdayTouchStart,
                     handleMatchdayTouchEnd,
-                    rulesByPlayer,
+                    visibleRules,
                     allPlayers,
                     displayedPlayers,
                     topfA,

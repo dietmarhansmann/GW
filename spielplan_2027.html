@@ -55,6 +55,8 @@
         .dark .player-filter-pill.is-active { box-shadow: 0 0 0 2px #1f2937, 0 0 0 4px #34d399, 0 5px 14px rgba(5, 150, 105, .24); }
         .schedule-table-card { overflow-x: auto; border-color: #dfe9e3; }
         #schedule-table thead th { padding: 12px 14px; color: #dcefe5; background: #174b39; font-size: 10px; letter-spacing: .12em; }
+        #schedule-table thead th:last-child,
+        #schedule-table thead th:last-child span { color: #fff !important; }
         #schedule-table tbody tr { transition: background-color .18s ease, opacity .18s ease; }
         #schedule-table tbody tr.is-next-match { background-color: #ecfdf5 !important; }
         #schedule-table tbody tr.is-next-match td:first-child { box-shadow: inset 4px 0 #059669; }
@@ -241,7 +243,7 @@
                         <th class="py-2 px-1.5">19:00 Uhr</th>
                         <th class="py-2 px-1.5">20:00 Uhr</th>
                         <th class="py-2 px-1.5">21:00 Uhr</th>
-                        <th class="py-2 px-1.5">Doppel / Einzel <span class="font-normal normal-case text-gray-500 dark:text-gray-400">(20:30)</span></th>
+                        <th class="py-2 px-1.5">Doppel / Einzel <span>(20:30)</span></th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
@@ -409,7 +411,9 @@
                 </h3>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2">
-                <div v-for="(rulesList, player) in rulesByPlayer" :key="player" class="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded p-2.5 text-xs flex flex-col justify-between shadow-2xs">
+                <div v-for="(rulesList, player) in visibleRules" :key="player"
+                    :class="currentFilter !== 'ALL' && player !== currentFilter && player !== 'Allgemeine Regeln' ? 'opacity-30' : 'opacity-100'"
+                    class="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded p-2.5 text-xs flex flex-col justify-between shadow-2xs transition-opacity duration-200">
                     <div>
                         <div class="mb-2">
                             <span :style="{ backgroundColor: playerColors[player] ? playerColors[player].bg : '#eee', borderColor: playerColors[player] ? playerColors[player].border : '#ccc', color: '#111827' }"
@@ -418,7 +422,15 @@
                             </span>
                         </div>
                         <ul class="list-disc list-inside text-gray-600 dark:text-gray-300 text-[11px] space-y-1 pl-1">
-                            <li v-for="(desc, idx) in rulesList" :key="idx">{{ desc }}</li>
+                            <template v-for="(rule, idx) in rulesList" :key="idx">
+                                <li v-if="typeof rule === 'string'">{{ rule }}</li>
+                                <li v-else>
+                                    {{ rule.label }}:
+                                    <ul class="list-disc list-inside pl-3 mt-1 space-y-0.5">
+                                        <li v-for="(item, itemIdx) in rule.items" :key="itemIdx">{{ item }}</li>
+                                    </ul>
+                                </li>
+                            </template>
                         </ul>
                     </div>
                 </div>
@@ -434,24 +446,24 @@
         "date": "2027-01-05",
         "court2_type": "einzel",
         "p1": {
-            "p1": "Knust",
-            "p2": "Trojanski",
+            "p1": "Van de Looh",
+            "p2": "Knust",
             "time": "19:00"
         },
         "p2": {
-            "p1": "Weber",
-            "p2": "Van de Looh",
+            "p1": "Dedores",
+            "p2": "Marschollek",
             "time": "20:00"
         },
         "p3": {
-            "p1": "Hansmann",
-            "p2": "Wojtanowitsch",
+            "p1": "Redieker",
+            "p2": "Heyn",
             "time": "21:00"
         },
         "status": "Geplant",
         "doppel": {
-            "p1": "Marschollek",
-            "p2": "Nolte",
+            "p1": "Kissner",
+            "p2": "Trojanski",
             "time": "20:30"
         }
     },
@@ -461,28 +473,28 @@
         "court2_type": "doppel",
         "p1": {
             "p1": "Kissner",
-            "p2": "Kuhlhoff",
+            "p2": "Redieker",
             "time": "19:00"
         },
         "p2": {
-            "p1": "Dedores",
-            "p2": "Redieker",
+            "p1": "Wojtanowitsch",
+            "p2": "Kuhlhoff",
             "time": "20:00"
         },
         "p3": {
-            "p1": "Nolte",
-            "p2": "Rumpf",
+            "p1": "Hansmann",
+            "p2": "Nolte",
             "time": "21:00"
         },
         "status": "Geplant",
         "doppel": {
             "team1": [
                 "Prodehl",
-                "Hansmann"
+                "Weber"
             ],
             "team2": [
-                "Beumer",
-                "Hinz"
+                "Hinz",
+                "Beumer"
             ],
             "time": "20:30"
         }
@@ -492,24 +504,24 @@
         "date": "2027-01-19",
         "court2_type": "einzel",
         "p1": {
-            "p1": "Weber",
-            "p2": "Mönning",
+            "p1": "Hinz",
+            "p2": "Beumer",
             "time": "19:00"
         },
         "p2": {
-            "p1": "Beumer",
-            "p2": "Wojtanowitsch",
+            "p1": "Trojanski",
+            "p2": "Mönning",
             "time": "20:00"
         },
         "p3": {
-            "p1": "Trojanski",
-            "p2": "Heyn",
+            "p1": "Rumpf",
+            "p2": "Knust",
             "time": "21:00"
         },
         "status": "Geplant",
         "doppel": {
-            "p1": "Kissner",
-            "p2": "Knust",
+            "p1": "Wojtanowitsch",
+            "p2": "Heyn",
             "time": "20:30"
         }
     },
@@ -518,29 +530,29 @@
         "date": "2027-01-26",
         "court2_type": "doppel",
         "p1": {
-            "p1": "Hansmann",
-            "p2": "Rumpf",
+            "p1": "Prodehl",
+            "p2": "Kuhlhoff",
             "time": "19:00"
         },
         "p2": {
-            "p1": "Nolte",
-            "p2": "Mönning",
+            "p1": "Kissner",
+            "p2": "Nolte",
             "time": "20:00"
         },
         "p3": {
-            "p1": "Hinz",
-            "p2": "Kuhlhoff",
+            "p1": "Beumer",
+            "p2": "Mönning",
             "time": "21:00"
         },
         "status": "Geplant",
         "doppel": {
             "team1": [
                 "Marschollek",
-                "Prodehl"
+                "Redieker"
             ],
             "team2": [
-                "Heyn",
-                "Redieker"
+                "Weber",
+                "Hansmann"
             ],
             "time": "20:30"
         }
@@ -550,24 +562,24 @@
         "date": "2027-02-02",
         "court2_type": "einzel",
         "p1": {
-            "p1": "Dedores",
-            "p2": "Van de Looh",
+            "p1": "Wojtanowitsch",
+            "p2": "Dedores",
             "time": "19:00"
         },
         "p2": {
-            "p1": "Knust",
-            "p2": "Kissner",
+            "p1": "Heyn",
+            "p2": "Rumpf",
             "time": "20:00"
         },
         "p3": {
-            "p1": "Beumer",
-            "p2": "Weber",
+            "p1": "Hinz",
+            "p2": "Trojanski",
             "time": "21:00"
         },
         "status": "Geplant",
         "doppel": {
-            "p1": "Trojanski",
-            "p2": "Wojtanowitsch",
+            "p1": "Van de Looh",
+            "p2": "Knust",
             "time": "20:30"
         }
     },
@@ -577,28 +589,28 @@
         "court2_type": "doppel",
         "p1": {
             "p1": "Nolte",
-            "p2": "Dedores",
+            "p2": "Mönning",
             "time": "19:00"
         },
         "p2": {
-            "p1": "Rumpf",
-            "p2": "Kuhlhoff",
+            "p1": "Dedores",
+            "p2": "Weber",
             "time": "20:00"
         },
         "p3": {
-            "p1": "Mönning",
-            "p2": "Prodehl",
+            "p1": "Kuhlhoff",
+            "p2": "Kissner",
             "time": "21:00"
         },
         "status": "Geplant",
         "doppel": {
             "team1": [
-                "Hinz",
+                "Marschollek",
                 "Hansmann"
             ],
             "team2": [
-                "Redieker",
-                "Marschollek"
+                "Prodehl",
+                "Beumer"
             ],
             "time": "20:30"
         }
@@ -608,24 +620,24 @@
         "date": "2027-02-16",
         "court2_type": "einzel",
         "p1": {
-            "p1": "Wojtanowitsch",
-            "p2": "Beumer",
+            "p1": "Mönning",
+            "p2": "Heyn",
             "time": "19:00"
         },
         "p2": {
-            "p1": "Kissner",
-            "p2": "Heyn",
+            "p1": "Redieker",
+            "p2": "Hinz",
             "time": "20:00"
         },
         "p3": {
-            "p1": "Mönning",
-            "p2": "Knust",
+            "p1": "Marschollek",
+            "p2": "Wojtanowitsch",
             "time": "21:00"
         },
         "status": "Geplant",
         "doppel": {
-            "p1": "Rumpf",
-            "p2": "Weber",
+            "p1": "Kuhlhoff",
+            "p2": "Rumpf",
             "time": "20:30"
         }
     },
@@ -634,29 +646,29 @@
         "date": "2027-02-23",
         "court2_type": "doppel",
         "p1": {
-            "p1": "Marschollek",
-            "p2": "Mönning",
+            "p1": "Trojanski",
+            "p2": "Hansmann",
             "time": "19:00"
         },
         "p2": {
-            "p1": "Trojanski",
-            "p2": "Nolte",
+            "p1": "Nolte",
+            "p2": "Wojtanowitsch",
             "time": "20:00"
         },
         "p3": {
-            "p1": "Redieker",
-            "p2": "Kuhlhoff",
+            "p1": "Mönning",
+            "p2": "Kissner",
             "time": "21:00"
         },
         "status": "Geplant",
         "doppel": {
             "team1": [
-                "Hinz",
-                "Prodehl"
+                "Prodehl",
+                "Knust"
             ],
             "team2": [
-                "Heyn",
-                "Hansmann"
+                "Weber",
+                "Beumer"
             ],
             "time": "20:30"
         }
@@ -666,24 +678,24 @@
         "date": "2027-03-02",
         "court2_type": "einzel",
         "p1": {
-            "p1": "Marschollek",
-            "p2": "Weber",
+            "p1": "Rumpf",
+            "p2": "Dedores",
             "time": "19:00"
         },
         "p2": {
-            "p1": "Knust",
-            "p2": "Dedores",
+            "p1": "Van de Looh",
+            "p2": "Redieker",
             "time": "20:00"
         },
         "p3": {
-            "p1": "Rumpf",
-            "p2": "Kissner",
+            "p1": "Marschollek",
+            "p2": "Kuhlhoff",
             "time": "21:00"
         },
         "status": "Geplant",
         "doppel": {
-            "p1": "Van de Looh",
-            "p2": "Wojtanowitsch",
+            "p1": "Heyn",
+            "p2": "Hinz",
             "time": "20:30"
         }
     },
@@ -692,182 +704,8 @@
         "date": "2027-03-09",
         "court2_type": "doppel",
         "p1": {
-            "p1": "Trojanski",
-            "p2": "Dedores",
-            "time": "19:00"
-        },
-        "p2": {
-            "p1": "Kuhlhoff",
-            "p2": "Hansmann",
-            "time": "20:00"
-        },
-        "p3": {
             "p1": "Nolte",
-            "p2": "Hinz",
-            "time": "21:00"
-        },
-        "status": "Geplant",
-        "doppel": {
-            "team1": [
-                "Quante",
-                "Redieker"
-            ],
-            "team2": [
-                "Beumer",
-                "Prodehl"
-            ],
-            "time": "20:30"
-        }
-    },
-    {
-        "spieltag": 24,
-        "date": "2027-03-16",
-        "court2_type": "einzel",
-        "p1": {
-            "p1": "Heyn",
-            "p2": "Kissner",
-            "time": "19:00"
-        },
-        "p2": {
-            "p1": "Wojtanowitsch",
-            "p2": "Rumpf",
-            "time": "20:00"
-        },
-        "p3": {
-            "p1": "Knust",
-            "p2": "Weber",
-            "time": "21:00"
-        },
-        "status": "Geplant",
-        "doppel": {
-            "p1": "Mönning",
-            "p2": "Kuhlhoff",
-            "time": "20:30"
-        }
-    },
-    {
-        "spieltag": 25,
-        "date": "2027-03-23",
-        "court2_type": "doppel",
-        "p1": {
-            "p1": "Hinz",
-            "p2": "Redieker",
-            "time": "19:00"
-        },
-        "p2": {
-            "p1": "Prodehl",
-            "p2": "Marschollek",
-            "time": "20:00"
-        },
-        "p3": {
-            "p1": "Hansmann",
-            "p2": "Trojanski",
-            "time": "21:00"
-        },
-        "status": "Geplant",
-        "doppel": {
-            "team1": [
-                "Knust",
-                "Heyn"
-            ],
-            "team2": [
-                "Quante",
-                "Beumer"
-            ],
-            "time": "20:30"
-        }
-    },
-    {
-        "spieltag": 26,
-        "date": "2027-03-30",
-        "court2_type": "einzel",
-        "p1": {
-            "p1": "Wojtanowitsch",
-            "p2": "Kuhlhoff",
-            "time": "19:00"
-        },
-        "p2": {
-            "p1": "Weber",
-            "p2": "Mönning",
-            "time": "20:00"
-        },
-        "p3": {
-            "p1": "Van de Looh",
-            "p2": "Kissner",
-            "time": "21:00"
-        },
-        "status": "Geplant",
-        "doppel": {
-            "p1": "Rumpf",
-            "p2": "Nolte",
-            "time": "20:30"
-        }
-    },
-    {
-        "spieltag": 27,
-        "date": "2027-04-06",
-        "court2_type": "doppel",
-        "p1": {
-            "p1": "Prodehl",
-            "p2": "Trojanski",
-            "time": "19:00"
-        },
-        "p2": {
-            "p1": "Dedores",
-            "p2": "Hinz",
-            "time": "20:00"
-        },
-        "p3": {
-            "p1": "Marschollek",
-            "p2": "Redieker",
-            "time": "21:00"
-        },
-        "status": "Geplant",
-        "doppel": {
-            "team1": [
-                "Hansmann",
-                "Knust"
-            ],
-            "team2": [
-                "Heyn",
-                "Beumer"
-            ],
-            "time": "20:30"
-        }
-    },
-    {
-        "spieltag": 28,
-        "date": "2027-04-13",
-        "court2_type": "einzel",
-        "p1": {
-            "p1": "Rumpf",
-            "p2": "Nolte",
-            "time": "19:00"
-        },
-        "p2": {
-            "p1": "Redieker",
-            "p2": "Kissner",
-            "time": "20:00"
-        },
-        "p3": {
-            "p1": "Mönning",
-            "p2": "Wojtanowitsch",
-            "time": "21:00"
-        },
-        "status": "Geplant",
-        "doppel": {
-            "p1": "Kuhlhoff",
-            "p2": "Weber",
-            "time": "20:30"
-        }
-    },
-    {
-        "spieltag": 29,
-        "date": "2027-04-20",
-        "court2_type": "doppel",
-        "p1": {
-            "p1": "Dedores",
-            "p2": "Hansmann",
+            "p2": "Dedores",
             "time": "19:00"
         },
         "p2": {
@@ -877,18 +715,192 @@
         },
         "p3": {
             "p1": "Prodehl",
-            "p2": "Heyn",
+            "p2": "Wojtanowitsch",
             "time": "21:00"
         },
         "status": "Geplant",
         "doppel": {
             "team1": [
                 "Knust",
-                "Quante"
+                "Hansmann"
             ],
             "team2": [
-                "Marschollek",
+                "Weber",
+                "Quante"
+            ],
+            "time": "20:30"
+        }
+    },
+    {
+        "spieltag": 24,
+        "date": "2027-03-16",
+        "court2_type": "einzel",
+        "p1": {
+            "p1": "Rumpf",
+            "p2": "Redieker",
+            "time": "19:00"
+        },
+        "p2": {
+            "p1": "Kissner",
+            "p2": "Prodehl",
+            "time": "20:00"
+        },
+        "p3": {
+            "p1": "Hinz",
+            "p2": "Heyn",
+            "time": "21:00"
+        },
+        "status": "Geplant",
+        "doppel": {
+            "p1": "Kuhlhoff",
+            "p2": "Mönning",
+            "time": "20:30"
+        }
+    },
+    {
+        "spieltag": 25,
+        "date": "2027-03-23",
+        "court2_type": "doppel",
+        "p1": {
+            "p1": "Weber",
+            "p2": "Trojanski",
+            "time": "19:00"
+        },
+        "p2": {
+            "p1": "Knust",
+            "p2": "Hansmann",
+            "time": "20:00"
+        },
+        "p3": {
+            "p1": "Wojtanowitsch",
+            "p2": "Beumer",
+            "time": "21:00"
+        },
+        "status": "Geplant",
+        "doppel": {
+            "team1": [
+                "Quante",
+                "Marschollek"
+            ],
+            "team2": [
+                "Hinz",
+                "Prodehl"
+            ],
+            "time": "20:30"
+        }
+    },
+    {
+        "spieltag": 26,
+        "date": "2027-03-30",
+        "court2_type": "einzel",
+        "p1": {
+            "p1": "Weber",
+            "p2": "Kuhlhoff",
+            "time": "19:00"
+        },
+        "p2": {
+            "p1": "Rumpf",
+            "p2": "Mönning",
+            "time": "20:00"
+        },
+        "p3": {
+            "p1": "Redieker",
+            "p2": "Van de Looh",
+            "time": "21:00"
+        },
+        "status": "Geplant",
+        "doppel": {
+            "p1": "Kissner",
+            "p2": "Nolte",
+            "time": "20:30"
+        }
+    },
+    {
+        "spieltag": 27,
+        "date": "2027-04-06",
+        "court2_type": "doppel",
+        "p1": {
+            "p1": "Marschollek",
+            "p2": "Trojanski",
+            "time": "19:00"
+        },
+        "p2": {
+            "p1": "Dedores",
+            "p2": "Wojtanowitsch",
+            "time": "20:00"
+        },
+        "p3": {
+            "p1": "Nolte",
+            "p2": "Prodehl",
+            "time": "21:00"
+        },
+        "status": "Geplant",
+        "doppel": {
+            "team1": [
+                "Hansmann",
+                "Beumer"
+            ],
+            "team2": [
+                "Heyn",
                 "Hinz"
+            ],
+            "time": "20:30"
+        }
+    },
+    {
+        "spieltag": 28,
+        "date": "2027-04-13",
+        "court2_type": "einzel",
+        "p1": {
+            "p1": "Hansmann",
+            "p2": "Kissner",
+            "time": "19:00"
+        },
+        "p2": {
+            "p1": "Kuhlhoff",
+            "p2": "Knust",
+            "time": "20:00"
+        },
+        "p3": {
+            "p1": "Rumpf",
+            "p2": "Weber",
+            "time": "21:00"
+        },
+        "status": "Geplant",
+        "doppel": {
+            "p1": "Mönning",
+            "p2": "Redieker",
+            "time": "20:30"
+        }
+    },
+    {
+        "spieltag": 29,
+        "date": "2027-04-20",
+        "court2_type": "doppel",
+        "p1": {
+            "p1": "Beumer",
+            "p2": "Wojtanowitsch",
+            "time": "19:00"
+        },
+        "p2": {
+            "p1": "Dedores",
+            "p2": "Hinz",
+            "time": "20:00"
+        },
+        "p3": {
+            "p1": "Trojanski",
+            "p2": "Prodehl",
+            "time": "21:00"
+        },
+        "status": "Geplant",
+        "doppel": {
+            "team1": [
+                "Quante",
+                "Redieker"
+            ],
+            "team2": [
+                "Heyn",
+                "Marschollek"
             ],
             "time": "20:30"
         }
@@ -898,97 +910,97 @@
         "date": "2027-04-27",
         "court2_type": "einzel",
         "p1": {
-            "p1": "Redieker",
-            "p2": "Weber",
+            "p1": "Van de Looh",
+            "p2": "Kuhlhoff",
             "time": "19:00"
         },
         "p2": {
             "p1": "Quante",
-            "p2": "Rumpf",
+            "p2": "Weber",
             "time": "20:00"
         },
         "p3": {
-            "p1": "Van de Looh",
-            "p2": "Kuhlhoff",
+            "p1": "Knust",
+            "p2": "Mönning",
             "time": "21:00"
         },
         "status": "Geplant",
         "doppel": {
-            "p1": "Kissner",
-            "p2": "Mönning",
+            "p1": "Rumpf",
+            "p2": "Kissner",
             "time": "20:30"
         }
     }
 ];
         const playerRules = {
     "Beumer": [
-        "Wunsch nach 50% Einzel und 50% Doppel.",
-        "Abwesend am 02.03.2027 (Spieltag 22)."
+        "50% Einzel, 50% Doppel.",
+        {"label": "Abwesend", "items": ["02.03.2027"]}
     ],
     "Dedores": [
-        "Spielt ausschließlich Einzel.",
-        "Abwesend am 19.01.2027 (#16), 26.01.2027 (#17), 16.02.2027 (#20), 23.02.2027 (#21), 23.03.2027 (#25), 30.03.2027 (#26) und 13.04.2027 (#28).",
-        "Bis zu 7 Einsätze reichen."
+        "Nur Einzel.",
+        {"label": "Abwesend", "items": ["19.01.2027", "26.01.2027", "16.02.2027", "23.02.2027", "23.03.2027", "30.03.2027", "13.04.2027"]},
+        "Bis zu 7 Einsätze."
     ],
     "Hansmann": [
-        "Wunsch nach ca. 70% Einzel und 30% Doppel."
+        "Ca. 70% Einzel, 30% Doppel."
     ],
     "Heyn": [
-        "Wunsch nach 70% Einzel und 30% Doppel.",
-        "Abwesend am 12.01.2027 (Spieltag 15), 09.02.2027 (Spieltag 19), 09.03.2027 (Spieltag 23), 30.03.2027 (Spieltag 26), 13.04.2027 (Spieltag 28) und 27.04.2027 (Spieltag 30)."
+        "70% Einzel, 30% Doppel.",
+        {"label": "Abwesend", "items": ["12.01.2027", "09.02.2027", "09.03.2027", "30.03.2027", "13.04.2027", "27.04.2027"]}
     ],
     "Hinz": [
-        "Wunsch nach 50% Einzel und 50% Doppel.",
-        "Abwesend am 27.04.2027 (Spieltag 30)."
+        "50% Einzel, 50% Doppel.",
+        {"label": "Abwesend", "items": ["27.04.2027"]}
     ],
     "Kissner": [
-        "Spielt ausschließlich Einzel."
+        "Nur Einzel."
     ],
     "Knust": [
-        "Nimmt ab 2027 teil."
+        "Grundsätzlich alle zwei Wochen; einzelne Verschiebungen gleichen die Einzel-/Doppel-Formate aus.",
+        "80% Einzel, 20% Doppel."
     ],
     "Kuhlhoff": [
-        "Spielt ausschließlich Einzel.",
-        "Abwesend am 05.01.2027 (Spieltag 14) und 02.02.2027 (Spieltag 18)."
+        "Nur Einzel.",
+        {"label": "Abwesend", "items": ["05.01.2027", "02.02.2027"]}
     ],
     "Marschollek": [
-        "Wunsch nach ca. 90% Doppel.",
-        "Abwesend am 19.01.2027 (Spieltag 16) und 16.03.2027 (Spieltag 24)."
+        "Ca. 90% Doppel.",
+        {"label": "Abwesend", "items": ["19.01.2027", "16.03.2027"]}
     ],
     "Mönning": [
-        "Spielt ausschließlich Einzel.",
-        "Abwesend am 05.01.2027 (Spieltag 14) und 12.01.2027 (Spieltag 15)."
+        "Nur Einzel.",
+        {"label": "Abwesend", "items": ["05.01.2027", "12.01.2027"]}
     ],
     "Nolte": [
-        "Spielt ausschließlich Einzel.",
-        "Abwesend am 02.03.2027 (#22), 23.03.2027 (#25), 20.04.2027 (#29) und 27.04.2027 (#30)."
+        "Nur Einzel.",
+        {"label": "Abwesend", "items": ["02.03.2027", "23.03.2027", "20.04.2027", "27.04.2027"]}
     ],
     "Prodehl": [
-        "Wunsch nach ca. 60% Doppel."
+        "Ca. 60% Doppel."
     ],
     "Quante": [
         "Genau drei Doppel-Einsätze und ein Einzel-Einsatz in der zweiten Saisonhälfte 2027."
     ],
     "Redieker": [
-        "Wunsch nach 80% Einzel und 20% Doppel."
+        "80% Einzel, 20% Doppel."
     ],
     "Rumpf": [
-        "Spielt ausschließlich Einzel."
+        "Nur Einzel."
     ],
     "Trojanski": [
-        "Spielt ausschließlich Einzel.",
+        "Nur Einzel.",
         "Mindestens ein Spieltag Pause zwischen Einsätzen.",
-        "Abwesend am 16.02.2027 (Spieltag 20)."
+        {"label": "Abwesend", "items": ["16.02.2027"]}
     ],
     "Van de Looh": [
-        "Spielt ausschließlich Einzel.",
+        "Nur Einzel.",
         "Mindestens drei Spieltage Pause zwischen Einsätzen."
     ],
     "Weber": [
-        "Keine besondere Einzel-/Doppelquote festgelegt."
     ],
     "Wojtanowitsch": [
-        "Spielt ausschließlich Einzel."
+        "Nur Einzel."
     ],
     "Allgemeine Regeln": [
         "Faire Verteilung der Einsätze innerhalb der zweiten Saisonhälfte.",
@@ -998,11 +1010,11 @@
 };
         const playerStats = {
     "Beumer": {
-        "einzel": 4,
+        "einzel": 5,
         "doppel": 4,
-        "total": 8,
-        "ratio": 50,
-        "kosten": 3.5
+        "total": 9,
+        "ratio": 44,
+        "kosten": 4.0
     },
     "Dedores": {
         "einzel": 7,
@@ -1012,25 +1024,25 @@
         "kosten": 3.5
     },
     "Hansmann": {
-        "einzel": 5,
+        "einzel": 4,
         "doppel": 4,
-        "total": 9,
-        "ratio": 44,
-        "kosten": 4.0
+        "total": 8,
+        "ratio": 50,
+        "kosten": 3.5
     },
     "Heyn": {
-        "einzel": 4,
-        "doppel": 4,
+        "einzel": 6,
+        "doppel": 2,
         "total": 8,
-        "ratio": 50,
-        "kosten": 3.5
+        "ratio": 25,
+        "kosten": 3.75
     },
     "Hinz": {
-        "einzel": 4,
-        "doppel": 4,
-        "total": 8,
-        "ratio": 50,
-        "kosten": 3.5
+        "einzel": 6,
+        "doppel": 3,
+        "total": 9,
+        "ratio": 33,
+        "kosten": 4.12
     },
     "Kissner": {
         "einzel": 9,
@@ -1041,10 +1053,10 @@
     },
     "Knust": {
         "einzel": 6,
-        "doppel": 3,
-        "total": 9,
-        "ratio": 33,
-        "kosten": 4.12
+        "doppel": 2,
+        "total": 8,
+        "ratio": 25,
+        "kosten": 3.75
     },
     "Kuhlhoff": {
         "einzel": 9,
@@ -1054,11 +1066,11 @@
         "kosten": 4.5
     },
     "Marschollek": {
-        "einzel": 5,
-        "doppel": 3,
+        "einzel": 4,
+        "doppel": 4,
         "total": 8,
-        "ratio": 38,
-        "kosten": 3.62
+        "ratio": 50,
+        "kosten": 3.5
     },
     "Mönning": {
         "einzel": 9,
@@ -1068,18 +1080,18 @@
         "kosten": 4.5
     },
     "Nolte": {
-        "einzel": 8,
+        "einzel": 7,
         "doppel": 0,
-        "total": 8,
+        "total": 7,
         "ratio": 0,
-        "kosten": 4.0
+        "kosten": 3.5
     },
     "Prodehl": {
-        "einzel": 4,
+        "einzel": 5,
         "doppel": 4,
-        "total": 8,
-        "ratio": 50,
-        "kosten": 3.5
+        "total": 9,
+        "ratio": 44,
+        "kosten": 4.0
     },
     "Quante": {
         "einzel": 1,
@@ -1089,18 +1101,18 @@
         "kosten": 1.62
     },
     "Redieker": {
-        "einzel": 6,
-        "doppel": 3,
+        "einzel": 7,
+        "doppel": 2,
         "total": 9,
-        "ratio": 33,
-        "kosten": 4.12
+        "ratio": 22,
+        "kosten": 4.25
     },
     "Rumpf": {
-        "einzel": 9,
+        "einzel": 8,
         "doppel": 0,
-        "total": 9,
+        "total": 8,
         "ratio": 0,
-        "kosten": 4.5
+        "kosten": 4.0
     },
     "Trojanski": {
         "einzel": 8,
@@ -1117,18 +1129,18 @@
         "kosten": 2.5
     },
     "Weber": {
+        "einzel": 5,
+        "doppel": 4,
+        "total": 9,
+        "ratio": 44,
+        "kosten": 4.0
+    },
+    "Wojtanowitsch": {
         "einzel": 9,
         "doppel": 0,
         "total": 9,
         "ratio": 0,
         "kosten": 4.5
-    },
-    "Wojtanowitsch": {
-        "einzel": 8,
-        "doppel": 0,
-        "total": 8,
-        "ratio": 0,
-        "kosten": 4.0
     }
 };
         const topfA = ["Prodehl", "Beumer", "Heyn"];
@@ -1139,7 +1151,13 @@
             setup() {
                 const currentFilter = ref('ALL');
                 const showPastMatches = ref(false);
-                const rulesByPlayer = ref(playerRules);
+                        const visibleRules = computed(() => Object.fromEntries(
+                    Object.entries(playerRules).map(([player, rules]) => [player, rules.map(rule => {
+                        if (typeof rule !== 'string' || !rule.startsWith('Abwesend:')) return rule;
+                        const dates = [...rule.matchAll(/\d{2}\.\d{2}\.\d{4}/g)].map(([date]) => date);
+                        return { label: 'Abwesend', items: dates };
+                    })])
+                ));
                 const showTopfA = ref(false);
                 const selectedMatchday = ref(null);
                 const touchStartX = ref(null);
@@ -1543,7 +1561,7 @@
                     matchdaySlots,
                     handleMatchdayTouchStart,
                     handleMatchdayTouchEnd,
-                    rulesByPlayer,
+                    visibleRules,
                     allPlayers,
                     displayedPlayers,
                     topfA,
