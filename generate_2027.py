@@ -753,6 +753,10 @@ def render_from_2026_template(schedule, games, doubles):
         "function formatPlayerBadge(player, isFinished, matchPlayers = []) {",
     )
     page = page.replace(
+        "const shortName = player.length > 4 ? `${player.slice(0, 4)}...` : player;\n                    return `<span title=\"${player}\" style=\"background-color: ${colors.bg}; border-color: ${colors.border}; color: ${colors.text}; opacity: ${opacity} !important;\" class=\"player-badge inline-flex items-center px-1.5 py-0.5 rounded border text-[11px] font-semibold shadow-2xs transition\">",
+        "const shortName = player.length > 4 ? `${player.slice(0, 4)}...` : player;\n                    const filteredClass = currentFilter.value !== 'ALL' && isFiltered ? 'is-filtered' : '';\n                    return `<span title=\"${player}\" style=\"background-color: ${colors.bg}; border-color: ${colors.border}; color: ${colors.text}; opacity: ${opacity} !important;\" class=\"player-badge inline-flex items-center px-1.5 py-0.5 rounded border text-[11px] font-semibold shadow-2xs transition ${filteredClass}\">",
+    )
+    page = page.replace(
         """let opacityClass = '';\n                    if (currentFilter.value !== 'ALL' && !isFiltered) {\n                        opacityClass = 'opacity-30';\n                    }""",
         """const opacity = currentFilter.value === 'ALL' || isFiltered\n                        ? 1\n                        : (matchPlayers.includes(currentFilter.value) ? 0.7 : 0.4);""",
     )

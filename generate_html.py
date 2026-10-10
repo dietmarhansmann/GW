@@ -1067,17 +1067,17 @@ html_template = """<!DOCTYPE html>
         .player-filter-calendar { display: grid; width: 38px; min-height: 34px; place-items: center; padding-inline: 8px; border-left: 1px solid rgba(17, 24, 39, .14); }
         .player-filter-calendar svg { width: 19px; height: 19px; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
         .dark .player-filter-pill.is-active { box-shadow: 0 0 0 2px #1f2937, 0 0 0 4px #34d399, 0 5px 14px rgba(5, 150, 105, .24); }
+        .match-players .player-badge.is-filtered, .matchday-team .player-badge.is-filtered { position: relative; z-index: 1; border: 2px solid #064e3b !important; box-shadow: 0 0 0 2px #fff, 0 0 0 4px #059669, 0 3px 9px rgba(5, 78, 59, .28); font-weight: 900; transform: scale(1.06); }
+        .dark .match-players .player-badge.is-filtered, .dark .matchday-team .player-badge.is-filtered { border-color: #a7f3d0 !important; box-shadow: 0 0 0 2px #1f2937, 0 0 0 4px #34d399, 0 3px 10px rgba(52, 211, 153, .3); }
         .schedule-table-card { overflow-x: auto; border-color: #dfe9e3; }
         #schedule-table thead th { padding: 12px 14px; color: #dcefe5; background: #174b39; font-size: 10px; letter-spacing: .12em; }
         #schedule-table thead th:last-child,
         #schedule-table thead th:last-child span { color: #fff !important; }
         #schedule-table tbody tr { transition: background-color .18s ease, opacity .18s ease; }
         #schedule-table tbody tr.is-next-match { background-color: #ecfdf5 !important; }
-        #schedule-table tbody tr.is-next-match td:first-child { box-shadow: inset 4px 0 #059669; }
         .next-match-label { display: inline-flex; align-items: center; gap: 4px; margin-top: 4px; padding: 2px 7px; border-radius: 999px; background: #047857; color: #fff; font-size: 9px; font-weight: 800; letter-spacing: .04em; white-space: nowrap; }
         .schedule-table-hint { display: none; }
         .dark #schedule-table tbody tr.is-next-match { background-color: rgba(6, 78, 59, .45) !important; }
-        .dark #schedule-table tbody tr.is-next-match td:first-child { box-shadow: inset 4px 0 #34d399; }
         #schedule-table td { padding: 11px 14px; }
         .statistics-card, .rules-card { border-color: #dfe9e3; }
         .statistics-card thead tr { background: #174b39; }
@@ -1249,7 +1249,7 @@ html_template = """<!DOCTYPE html>
 
         <!-- Ultra-Compact Table -->
         <p class="schedule-table-hint" aria-hidden="true">← Tabelle seitlich wischen für weitere Zeiten →</p>
-        <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm overflow-x-auto mb-2.5">
+        <div class="schedule-table-card bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm overflow-x-auto mb-2.5">
             <table id="schedule-table" class="w-full text-left border-collapse text-xs table-auto">
                 <thead>
                     <tr class="bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-400 uppercase text-[10px] tracking-wider border-b border-gray-200 dark:border-gray-700">
@@ -1665,8 +1665,9 @@ html_template = """<!DOCTYPE html>
                         opacityClass = 'opacity-30';
                     }
 
+                    const filteredClass = currentFilter.value !== 'ALL' && isFiltered ? 'is-filtered' : '';
                     const shortName = player.length > 4 ? `${player.slice(0, 4)}...` : player;
-                    return `<span title="${player}" style="background-color: ${colors.bg}; border-color: ${colors.border}; color: ${colors.text};" class="player-badge inline-flex items-center px-1.5 py-0.5 rounded border text-[11px] font-semibold shadow-2xs transition ${opacityClass}">
+                    return `<span title="${player}" style="background-color: ${colors.bg}; border-color: ${colors.border}; color: ${colors.text};" class="player-badge inline-flex items-center px-1.5 py-0.5 rounded border text-[11px] font-semibold shadow-2xs transition ${opacityClass} ${filteredClass}">
                         <span class="player-name-full">${player}</span><span class="player-name-short">${shortName}</span>
                     </span>`;
                 }
@@ -1681,7 +1682,7 @@ html_template = """<!DOCTYPE html>
                     }
                     let base = 'hover:bg-gray-50 dark:hover:bg-gray-800 transition';
                     if (isNextUpcoming(m, idx) && currentFilter.value === 'ALL') {
-                        base += ' bg-emerald-50/70 dark:bg-emerald-950/40 border-l-4 border-emerald-600';
+                        base += ' bg-emerald-50/70 dark:bg-emerald-950/40';
                     }
                     if (currentFilter.value !== 'ALL' && !getMatchPlayers(m).includes(currentFilter.value)) {
                         base += ' opacity-25';
