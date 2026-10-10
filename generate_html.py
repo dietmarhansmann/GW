@@ -1187,6 +1187,9 @@ html_template = """<!DOCTYPE html>
                 </nav>
             </div>
         </header>
+        <div class="md:hidden no-print -mt-2 mb-2 text-right">
+            <a href="anleitung.html" class="text-xs font-medium text-emerald-700 underline underline-offset-2" title="Kurzanleitung öffnen">📖 Anleitung</a>
+        </div>
 
         <!-- Quick Stats & Global Export Bar -->
         <div class="no-print schedule-overview mb-3 flex flex-wrap justify-between items-center gap-3">
