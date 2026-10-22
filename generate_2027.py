@@ -792,7 +792,7 @@ def render_from_2026_template(schedule, games, doubles):
     heading = (
         '<div class="heading-title">\n'
         '                <h1><img src="icons/icon-192.png" alt="" class="h-11 w-11 rounded-xl shadow-sm">'
-        'GW Tennis</h1>'
+        '<span class="heading-copy">GW Tennis<a href="anleitung.html" class="heading-guide-link md:hidden" title="Kurzanleitung öffnen">📖 Anleitung</a></span>'
     )
     if page.count(heading) != 1:
         raise RuntimeError("Could not locate plan heading in index.html")
