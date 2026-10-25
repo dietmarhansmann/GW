@@ -95,9 +95,13 @@
                     <li><b>Zahlen, Daten, Fakten:</b> Unten siehst du genau, wer wie oft zum Schläger greift und wie das Verhältnis zwischen schweißtreibenden Einzeln und geselligen Doppeln aussieht.</li>
                     <li><b>Sortieren:</b> Ein Klick auf einen Spaltenkopf (z. B. <i>Einzel</i> oder <i>Doppel</i>) zeigt dir sofort, wer der fleißigste Spieler ist.</li>
                     <li><b>CSV-Export:</b> Mit dem <b class="text-emerald-800">„📥 CSV Export“</b>-Button kannst du die Tabelle direkt in Excel zerlegen.</li>
-                    <li><b>Kostenformel:</b> Das Info-Symbol (<code class="bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded font-bold">ℹ️</code>) verrät dir, wie sich die Hallen-Kosten ganz transparent zusammensetzen: <br>
-                        <code class="bg-emerald-50 text-emerald-900 px-2 py-1 rounded inline-block mt-1 font-mono text-xs border border-emerald-200">Kosten = (Einzel × 0.5) + (Doppel × 0.375)</code>
+                    <li><b>Kostenberechnung pro Spieler:</b> Jeder Einzel-Einsatz zählt mit <b>0,50</b>. Beim Doppel werden <b>1,50</b> auf die vier Spieler verteilt, also <b>0,375 pro Spieler</b>.
+                        <br><code class="bg-emerald-50 text-emerald-900 px-2 py-1 rounded inline-block mt-1 font-mono text-xs border border-emerald-200">Kosten = (Einzel-Einsätze × 0,50) + (Doppel-Einsätze × 0,375)</code>
                     </li>
+                    <li><b>Kostenanteil in Prozent oder Euro:</b> In das Feld <b>„Gesamtkosten (€)“</b> oberhalb der Statistik den Gesamtbetrag eintragen. Ohne Betrag zeigt die Spalte <b>„Kostenanteil (%)“</b> den prozentualen Anteil jedes Spielers an der Summe der individuellen Kosten. Nach Eingabe wechselt sie auf <b>„Kostenanteil (€)“</b> und verteilt den Gesamtbetrag proportional zu diesen Kostenanteilen. Das Feld leeren, um wieder Prozentwerte anzuzeigen.
+                        <br><span class="inline-block mt-1">Beispiel: Hat ein Spieler 10 % Anteil und die Gesamtkosten betragen 200 €, werden ihm 20 € zugeordnet.</span>
+                    </li>
+                    <li><b>CSV-Export:</b> Der Export übernimmt den aktuell angezeigten Kostenanteil – Prozent ohne Gesamtkostenbetrag, Euro mit eingetragenem Betrag.</li>
                 </ul>
             </div>
 

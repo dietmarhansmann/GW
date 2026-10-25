@@ -618,7 +618,7 @@ def render_matching_2026(schedule, games, doubles):
     rules = {
         "Beumer": ["50% Einzel / 50% Doppel.", {"label": "Abwesend", "items": ["02.03.2027"]}],
         "Dedores": ["Nur Einzel."],
-        "Allgemeine Regeln": ["Für Spieler ohne Zeit-Sonderregel werden die Einsätze möglichst gleichmäßig auf 19:00, 20:00, 21:00 und 20:30 Uhr verteilt."],
+        "Allgemeine Regeln": ["Für Spieler ohne Zeit-Sonderregel werden die Einsätze möglichst gleichmäßig auf 19:00, 20:00, 21:00 und 20:30 Uhr verteilt.", "Kostenanteil je Einzel-Einsatz: 0,50.", "Kostenanteil je Doppel-Einsatz: 1,50 werden auf 4 Spieler verteilt (= 0,375 je Spieler).", "Gesamtkosten je Spieler: (Einzel-Einsätze × 0,50) + (Doppel-Einsätze × 0,375), aufsummiert über alle Spieltage der zweiten Saisonhälfte 2027."],
         "Hansmann": ["Ca. 70% Einzel / 30% Doppel."],
         "Heyn": ["75% Einzel / 25% Doppel."],
         "Hinz": ["50% Einzel / 50% Doppel.", {"label": "Abwesend", "items": ["27.04.2027"]}],
@@ -719,7 +719,7 @@ def render_from_2026_template(schedule, games, doubles):
         "Trojanski": ["Nur Einzel.", "Mindestens ein Spieltag Pause zwischen Einsätzen.", {"label": "Abwesend", "items": ["16.02.2027"]}],
         "Van de Looh": ["Nur Einzel.", "Mindestens drei Spieltage Pause zwischen Einsätzen."],
         "Wojtanowitsch": ["Nur Einzel."],
-        "Allgemeine Regeln": ["Faire Verteilung der Einsätze innerhalb der zweiten Saisonhälfte.", "Spielzeiten 19:00, 20:00, 21:00 und 20:30 werden ohne Sondervorgabe je Spieler möglichst gleichmäßig verteilt.", "Doppelte Begegnungen und Partnerschaften werden möglichst vermieden."],
+        "Allgemeine Regeln": ["Faire Verteilung der Einsätze innerhalb der zweiten Saisonhälfte.", "Spielzeiten 19:00, 20:00, 21:00 und 20:30 werden ohne Sondervorgabe je Spieler möglichst gleichmäßig verteilt.", "Doppelte Begegnungen und Partnerschaften werden möglichst vermieden.", "Kostenanteil je Einzel-Einsatz: 0,50.", "Kostenanteil je Doppel-Einsatz: 1,50 werden auf 4 Spieler verteilt (= 0,375 je Spieler).", "Gesamtkosten je Spieler: (Einzel-Einsätze × 0,50) + (Doppel-Einsätze × 0,375), aufsummiert über alle Spieltage der zweiten Saisonhälfte 2027."],
     }
     stats = {}
     for player in PLAYERS:

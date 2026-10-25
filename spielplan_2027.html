@@ -371,12 +371,15 @@
                     <span>📊 Spieler-Statistik-Matrix (Einzel vs. Doppel)</span>
                 </h3>
                 <div class="flex items-center gap-2">
+                    <label for="total-costs" class="text-[10px] text-gray-600 dark:text-gray-300 font-medium whitespace-nowrap">Gesamtkosten (€)</label>
+                    <input id="total-costs" v-model.number="totalCosts" type="number" min="0" step="0.01" inputmode="decimal" placeholder="z. B. 250" class="w-24 px-2 py-1 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-xs text-gray-900 dark:text-gray-100" aria-label="Gesamtkosten in Euro eingeben">
                     <span class="text-[10px] text-gray-500 dark:text-gray-400 font-medium hidden sm:inline">Klick auf Spaltenköpfe zum Sortieren</span>
                     <button @click="exportStatsCsv()" class="no-print bg-emerald-800 hover:bg-emerald-900 text-white px-2.5 py-1 rounded text-[11px] font-semibold transition border border-emerald-700 flex items-center gap-1 shadow-xs" title="Statistik als CSV herunterladen">
                         <span>📥 CSV Export</span>
                     </button>
                 </div>
             </div>
+            <p class="mb-2 text-[10px] text-gray-500 dark:text-gray-400">Der Kostenanteil zeigt den prozentualen Anteil an den Gesamtkosten. Bei Eingabe eines Gesamtbetrags werden die individuellen Anteile in Euro angezeigt.</p>
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse text-xs">
                     <thead>
@@ -389,6 +392,10 @@
                             <th @click="sortBy('kosten')" class="p-2 text-center font-semibold cursor-pointer hover:bg-emerald-700">
                                 <span>Kosten</span>
                                 {{ sortColumn === 'kosten' ? (sortDirection === 'asc' ? '▲' : '▼') : '↕' }}
+                            </th>
+                            <th @click="sortBy('kostenProzent')" class="p-2 text-center font-semibold cursor-pointer hover:bg-emerald-700">
+                                {{ totalCosts !== null && totalCosts !== '' && totalCosts >= 0 ? 'Kostenanteil (€)' : 'Kostenanteil (%)' }}
+                                {{ sortColumn === 'kostenProzent' ? (sortDirection === 'asc' ? '▲' : '▼') : '↕' }}
                             </th>
                         </tr>
                     </thead>
@@ -406,6 +413,7 @@
                                 </span>
                             </td>
                             <td class="p-2 text-center font-bold text-emerald-800 dark:text-emerald-400">{{ stat.kosten }}</td>
+                            <td class="p-2 text-center font-semibold text-gray-700 dark:text-gray-300">{{ stat.kostenEuro !== null ? formatStatCost(stat.kostenEuro) : `${stat.kostenProzent.toLocaleString('de-DE', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}%` }}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -1074,7 +1082,10 @@
     "Allgemeine Regeln": [
         "Faire Verteilung der Einsätze innerhalb der zweiten Saisonhälfte.",
         "Spielzeiten 19:00, 20:00, 21:00 und 20:30 werden ohne Sondervorgabe je Spieler möglichst gleichmäßig verteilt.",
-        "Doppelte Begegnungen und Partnerschaften werden möglichst vermieden."
+        "Doppelte Begegnungen und Partnerschaften werden möglichst vermieden.",
+        "Kostenanteil je Einzel-Einsatz: 0,50.",
+        "Kostenanteil je Doppel-Einsatz: 1,50 werden auf 4 Spieler verteilt (= 0,375 je Spieler).",
+        "Gesamtkosten je Spieler: (Einzel-Einsätze × 0,50) + (Doppel-Einsätze × 0,375), aufsummiert über alle Spieltage der zweiten Saisonhälfte 2027."
     ]
 };
         const playerStats = {
@@ -1219,6 +1230,7 @@
         const app = createApp({
             setup() {
                 const currentFilter = ref('ALL');
+                const totalCosts = ref(null);
                 const showPastMatches = ref(false);
                 function normalizeRule(rule) {
                     if (typeof rule !== 'string' || !rule.startsWith('Abwesend:')) return rule;
@@ -1497,10 +1509,22 @@
                 }
 
                 const sortedPlayerStats = computed(() => {
-                    const statsArr = Object.keys(playerStats).map(name => ({
-                        name,
-                        ...playerStats[name]
-                    }));
+                    const totalCostWeight = Object.values(playerStats).reduce((sum, stat) => sum + stat.kosten, 0);
+                    const enteredTotalCosts = Number(totalCosts.value);
+                    const hasEnteredTotalCosts = totalCosts.value !== null && totalCosts.value !== '' && Number.isFinite(enteredTotalCosts) && enteredTotalCosts >= 0;
+                    const statsArr = Object.keys(playerStats).map(name => {
+                        const stat = playerStats[name];
+                        const kostenProzent = totalCostWeight > 0 ? stat.kosten / totalCostWeight * 100 : 0;
+                        const kostenEuro = hasEnteredTotalCosts && totalCostWeight > 0
+                            ? enteredTotalCosts * stat.kosten / totalCostWeight
+                            : null;
+                        return {
+                            name,
+                            ...stat,
+                            kostenProzent,
+                            kostenEuro
+                        };
+                    });
 
                     return statsArr.sort((a, b) => {
                         let valA = a[sortColumn.value];
@@ -1516,10 +1540,19 @@
                     });
                 });
 
+                function formatStatCost(cost) {
+                    if (cost === null || cost === undefined) return '';
+                    return new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(cost);
+                }
+
                 function exportStatsCsv() {
-                    let csv = "Spieler;Einzel;Doppel;Gesamt Spiele;Doppel-Anteil (%);Kosten\n";
+                    const kostenanteilHeader = totalCosts.value !== null && totalCosts.value !== '' && Number.isFinite(Number(totalCosts.value)) && Number(totalCosts.value) >= 0 ? 'Kostenanteil (EUR)' : 'Kostenanteil (%)';
+                    let csv = `Spieler;Einzel;Doppel;Gesamt Spiele;Doppel-Anteil (%);${kostenanteilHeader};Kosten\n`;
                     sortedPlayerStats.value.forEach(s => {
-                        csv += `${s.name};${s.einzel};${s.doppel};${s.total};${s.ratio}%;${s.kosten}\n`;
+                        const costShare = s.kostenEuro === null
+                            ? `${s.kostenProzent.toFixed(1)}%`
+                            : formatStatCost(s.kostenEuro);
+                        csv += `${s.name};${s.einzel};${s.doppel};${s.total};${s.ratio}%;${costShare};${s.kosten}\n`;
                     });
                     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
                     const link = document.createElement("a");
@@ -1671,7 +1704,9 @@
                     sortColumn,
                     sortDirection,
                     sortBy,
+                    totalCosts,
                     sortedPlayerStats,
+                    formatStatCost,
                     exportStatsCsv,
                     downloadPlayerIcs,
                     printPage
